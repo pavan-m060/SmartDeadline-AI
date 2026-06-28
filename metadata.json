@@ -1,0 +1,6 @@
+{
+  "name": "SmartDeadline AI",
+  "description": "An AI-powered academic productivity platform that helps university students organize assignments, reduce procrastination, manage deadlines, and improve study efficiency using Google Gemini AI.",
+  "requestFramePermissions": ["microphone"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
