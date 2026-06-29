@@ -472,9 +472,13 @@ export async function aiVoiceAssistant(
       "Authorization": `Bearer ${getToken() || ""}`
     },
     body: JSON.stringify({
-      transcript,
-      context: { assignments, studySessions, masterStudyPlan, stats }
-    })
+  transcript,
+  context: {
+    assignments: assignments.slice(0, 10),
+    studySessions: studySessions.slice(0, 20),
+    stats
+  }
+   })
   });
 
   if (!response.ok) {
