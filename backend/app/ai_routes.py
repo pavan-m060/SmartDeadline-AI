@@ -157,7 +157,7 @@ def parse_syllabus_endpoint():
             return jsonify({
                 "error": "Failed to save imported syllabus tasks",
                 "details": str(e)
-            }), 500
+            }), 400
 
     if action == 'parse_only':
         if not raw_text or not raw_text.strip():
@@ -169,7 +169,7 @@ def parse_syllabus_endpoint():
             return jsonify({
                 "error": "Failed to parse syllabus with Gemini",
                 "details": str(e)
-            }), 500
+            }), 400
 
     if not raw_text or not raw_text.strip():
         return jsonify({"error": "No syllabus content found. Please upload a file or paste text first."}), 400
@@ -241,7 +241,7 @@ def parse_syllabus_endpoint():
         return jsonify({
             "error": "Failed to parse syllabus or save tasks",
             "details": str(e)
-        }), 500
+        }), 400
 
 @ai_bp.route('/study-plan', methods=['POST'])
 @jwt_required()
@@ -495,6 +495,38 @@ def motivation():
 
     motivation_result = gemini.generate_motivation(assignment_data, block_reason, current_mood)
     return jsonify(motivation_result), 200
+
+
+@ai_bp.route('/generate-smart-reminder', methods=['POST'])
+@jwt_required()
+def generate_smart_reminder():
+    """Generates a short AI reminder message based on assignment title and remaining time."""
+    data = request.get_json()
+    if not data or 'title' not in data or 'timeRemaining' not in data:
+        return jsonify({"error": "Missing 'title' or 'timeRemaining'"}), 400
+        
+    title = data['title']
+    time_remaining = data['timeRemaining']
+    
+    prompt = f"Write a short, engaging, 1-sentence reminder notification to tell a student that their assignment '{title}' is due in {time_remaining}. It should motivate them to start working on it."
+    
+    try:
+        response = gemini.generate_chat_response([{"role": "user", "parts": [{"text": prompt}]}])
+        if "error" in response:
+            # Fallback message
+            return jsonify({"message": f"Reminder: Your assignment '{title}' is due in {time_remaining}!"}), 200
+            
+        candidates = response.get('candidates', [])
+        if candidates and len(candidates) > 0:
+            content = candidates[0].get('content', {})
+            parts = content.get('parts', [])
+            if parts and len(parts) > 0:
+                text = parts[0].get('text', '').strip()
+                return jsonify({"message": text}), 200
+                
+        return jsonify({"message": f"Reminder: Your assignment '{title}' is due in {time_remaining}!"}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 400
 
 
 @ai_bp.route('/priorities', methods=['POST'])
@@ -1182,7 +1214,7 @@ def get_copilot_messages():
         messages = CopilotMessage.query.filter_by(user_id=current_user_id).order_by(CopilotMessage.timestamp.asc()).all()
         return jsonify([m.to_dict() for m in messages]), 200
     except Exception as e:
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
+        return jsonify({"error": f"Database error: {str(e)}"}), 400
 
 
 @ai_bp.route('/copilot/messages', methods=['POST'])
@@ -1215,7 +1247,7 @@ def save_copilot_message():
         return jsonify(new_msg.to_dict()), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
+        return jsonify({"error": f"Database error: {str(e)}"}), 400
 
 
 @ai_bp.route('/copilot/messages', methods=['DELETE'])
@@ -1229,7 +1261,7 @@ def clear_copilot_messages():
         return jsonify({"message": "Copilot conversation history cleared from database."}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
+        return jsonify({"error": f"Database error: {str(e)}"}), 400
 
 
 @ai_bp.route('/predict', methods=['POST'])
@@ -1281,7 +1313,7 @@ def run_and_save_prediction():
         return jsonify(new_prediction.to_dict()), 201
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Database or AI processing error: {str(e)}"}), 500
+        return jsonify({"error": f"Database or AI processing error: {str(e)}"}), 400
 
 
 @ai_bp.route('/predictions', methods=['GET'])
@@ -1293,7 +1325,7 @@ def get_prediction_history():
         predictions = AIPrediction.query.filter_by(user_id=current_user_id).order_by(AIPrediction.timestamp.desc()).all()
         return jsonify([p.to_dict() for p in predictions]), 200
     except Exception as e:
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
+        return jsonify({"error": f"Database error: {str(e)}"}), 400
 
 
 @ai_bp.route('/predictions', methods=['DELETE'])
@@ -1307,7 +1339,7 @@ def clear_prediction_history():
         return jsonify({"message": "Prediction history successfully cleared."}), 200
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": f"Database error: {str(e)}"}), 500
+        return jsonify({"error": f"Database error: {str(e)}"}), 400
 
 
 

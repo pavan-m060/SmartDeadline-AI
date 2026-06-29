@@ -23,8 +23,8 @@ export default function AttachmentManager({
 
   // Determine file-specific icon and style color
   const getFileIconAndColor = (name: string, type: string) => {
-    const ext = name.split(".").pop()?.toLowerCase() || "";
-    const mime = type.toLowerCase();
+    const ext = (name || '').split(".").pop()?.toLowerCase() || "";
+    const mime = (type || '').toLowerCase();
 
     if (ext === "pdf" || mime.includes("pdf")) {
       return {
@@ -60,10 +60,10 @@ export default function AttachmentManager({
     }
     if (ext === "zip" || mime.includes("zip") || mime.includes("compressed") || mime.includes("archive")) {
       return {
-        icon: <FileArchive className="w-5 h-5 text-indigo-400" />,
-        bgColor: "bg-indigo-500/10",
+        icon: <FileArchive className="w-5 h-5 text-slate-300" />,
+        bgColor: "bg-brand-purple/10",
         borderColor: "border-indigo-500/20",
-        textColor: "text-indigo-400"
+        textColor: "text-slate-300"
       };
     }
     
@@ -71,7 +71,7 @@ export default function AttachmentManager({
     return {
       icon: <File className="w-5 h-5 text-slate-400" />,
       bgColor: "bg-slate-500/10",
-      borderColor: "border-slate-500/20",
+      borderColor: "border-slate-800",
       textColor: "text-slate-400"
     };
   };
@@ -214,14 +214,14 @@ export default function AttachmentManager({
 
   // Is previewable check
   const isTextFile = (type: string, name: string) => {
-    const mime = type.toLowerCase();
-    const ext = name.split(".").pop()?.toLowerCase() || "";
+    const mime = (type || '').toLowerCase();
+    const ext = (name || '').split(".").pop()?.toLowerCase() || "";
     return mime.startsWith("text/") || ["txt", "md", "json", "js", "ts", "html", "css"].includes(ext);
   };
 
   const isImageFile = (type: string, name: string) => {
-    const mime = type.toLowerCase();
-    const ext = name.split(".").pop()?.toLowerCase() || "";
+    const mime = (type || '').toLowerCase();
+    const ext = (name || '').split(".").pop()?.toLowerCase() || "";
     return mime.startsWith("image/") || ["png", "jpg", "jpeg", "gif", "webp", "svg"].includes(ext);
   };
 
@@ -229,13 +229,13 @@ export default function AttachmentManager({
     <div className="space-y-4">
       {}
       <div className="flex items-center justify-between">
-        <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider block">
+        <label className="text-xs font-mono font-semibold text-slate-400 font-medium block">
           {title} ({attachments.length})
         </label>
         <button
           type="button"
           onClick={() => fileInputRef.current?.click()}
-          className="text-xs text-indigo-400 hover:text-indigo-300 font-semibold flex items-center gap-1.5 cursor-pointer bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 hover:bg-slate-850 transition"
+          className="text-xs text-slate-300 hover:text-indigo-300 font-semibold flex items-center gap-1.5 cursor-pointer bg-slate-900 border border-slate-800/50 rounded-lg px-2.5 py-1.5 hover:bg-slate-850 transition"
         >
           <Upload className="w-3.5 h-3.5" />
           <span>Upload File</span>
@@ -276,7 +276,7 @@ export default function AttachmentManager({
             return (
               <div 
                 key={att.id} 
-                className="flex items-center justify-between p-3 bg-slate-950/60 hover:bg-slate-950 border border-slate-850 hover:border-slate-800 rounded-xl transition duration-200 group"
+                className="flex items-center justify-between p-3 bg-slate-950 hover:bg-slate-950 border border-slate-850 hover:border-slate-800 rounded-xl transition duration-200 group"
               >
                 <div className="flex items-center gap-3 truncate max-w-[70%]">
                   <div className={`p-2 rounded-lg ${style.bgColor} border ${style.borderColor} shrink-0`}>
@@ -286,7 +286,7 @@ export default function AttachmentManager({
                     <p className="font-medium text-xs text-slate-200 truncate" title={att.name}>
                       {att.name}
                     </p>
-                    <div className="flex items-center gap-2 text-[10px] text-slate-500 font-mono mt-0.5">
+                    <div className="flex items-center gap-2 text-xs text-slate-500 font-mono mt-0.5">
                       <span className="font-semibold text-slate-400">{att.size}</span>
                       <span>•</span>
                       <span className="truncate">{formatUploadDate(att.uploadDate)}</span>
@@ -300,7 +300,7 @@ export default function AttachmentManager({
                   <button
                     type="button"
                     onClick={() => setPreviewAttachment(att)}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-900 border border-transparent hover:border-slate-800 transition cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-100 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition cursor-pointer"
                     title="Preview Attachment"
                   >
                     <Eye className="w-3.5 h-3.5" />
@@ -310,7 +310,7 @@ export default function AttachmentManager({
                   <a
                     href={att.dataUrl}
                     download={att.name}
-                    className="p-1.5 rounded-lg text-slate-400 hover:text-indigo-400 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition flex items-center justify-center cursor-pointer"
+                    className="p-1.5 rounded-lg text-slate-400 hover:text-slate-300 hover:bg-slate-900 border border-transparent hover:border-slate-800 transition flex items-center justify-center cursor-pointer"
                     title="Download Attachment"
                   >
                     <Download className="w-3.5 h-3.5" />
@@ -349,24 +349,24 @@ export default function AttachmentManager({
           onDrop={handleDrop}
           className={`border border-dashed rounded-xl p-8 transition duration-200 text-center relative ${
             dragActive 
-              ? "border-indigo-500 bg-indigo-500/5 text-indigo-400" 
-              : "border-slate-800 bg-slate-950/20 text-slate-500 hover:border-slate-700/60"
+              ? "border-indigo-500 bg-brand-purple/5 text-slate-300" 
+              : "border-slate-800 bg-slate-950 text-slate-500 hover:border-slate-800"
           }`}
         >
           <div className="flex flex-col items-center justify-center gap-2 max-w-sm mx-auto pointer-events-none">
-            <div className="p-3 bg-slate-900/40 border border-slate-850 rounded-2xl text-slate-400">
-              <Paperclip className="w-6 h-6 text-indigo-400" />
+            <div className="p-3 bg-slate-900 border border-slate-850 rounded-xl text-slate-400">
+              <Paperclip className="w-6 h-6 text-slate-300" />
             </div>
             <p className="text-xs font-semibold text-slate-300">
               Drag & drop files to attach
             </p>
-            <p className="text-[10px] text-slate-500 font-mono leading-relaxed mt-0.5">
+            <p className="text-xs text-slate-500 font-mono leading-relaxed mt-0.5">
               Supports PDFs, Word documents, PowerPoint slides, Images, and ZIP archives up to 2MB.
             </p>
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="mt-3 text-xs font-semibold px-4 py-1.5 rounded-xl border border-slate-800 bg-slate-950/80 text-indigo-400 hover:text-indigo-300 hover:bg-slate-900 transition pointer-events-auto cursor-pointer"
+              className="mt-3 text-xs font-semibold px-4 py-1.5 rounded-xl border border-slate-800 bg-slate-950 text-slate-300 hover:text-indigo-300 hover:bg-slate-900 transition pointer-events-auto cursor-pointer"
             >
               Select Files
             </button>
@@ -376,29 +376,29 @@ export default function AttachmentManager({
 
       {}
       {previewAttachment && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-900 border border-slate-800 w-full max-w-4xl max-h-[85vh] rounded-2xl overflow-hidden flex flex-col shadow-2xl">
+        <div className="fixed inset-0 bg-black/85  z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-900 border border-slate-800/50 w-full max-w-4xl max-h-[85vh] rounded-xl overflow-hidden flex flex-col shadow-sm border-slate-800">
             {}
-            <div className="p-4 border-b border-slate-800 flex items-center justify-between bg-slate-950/50">
+            <div className="p-4 border-b border-slate-800/50 flex items-center justify-between bg-slate-950">
               <div className="flex items-center gap-2.5 truncate max-w-[70%]">
-                <Paperclip className="w-4 h-4 text-indigo-400 shrink-0" />
+                <Paperclip className="w-4 h-4 text-slate-300 shrink-0" />
                 <span className="font-semibold text-sm text-slate-200 truncate" title={previewAttachment.name}>
                   {previewAttachment.name}
                 </span>
-                <span className="text-[10px] font-mono text-slate-500 shrink-0">({previewAttachment.size})</span>
+                <span className="text-xs font-mono text-slate-500 shrink-0">({previewAttachment.size})</span>
               </div>
               <div className="flex items-center gap-2">
                 <a
                   href={previewAttachment.dataUrl}
                   download={previewAttachment.name}
-                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-white flex items-center gap-1.5 transition"
+                  className="px-3 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-xs font-bold text-slate-100 flex items-center gap-1.5 transition"
                 >
                   <Download className="w-3.5 h-3.5" />
                   <span>Download</span>
                 </a>
                 <button
                   onClick={() => setPreviewAttachment(null)}
-                  className="p-1.5 rounded-lg hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white transition"
+                  className="p-1.5 rounded-lg hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-100 transition"
                 >
                   <X className="w-4 h-4" />
                 </button>
@@ -421,7 +421,7 @@ export default function AttachmentManager({
                     {getDecodedText(previewAttachment.dataUrl)}
                   </pre>
                 </div>
-              ) : previewAttachment.type.toLowerCase() === "application/pdf" || previewAttachment.name.toLowerCase().endsWith(".pdf") ? (
+              ) : (previewAttachment.type || '').toLowerCase() === "application/pdf" || (previewAttachment.name || '').toLowerCase().endsWith(".pdf") ? (
                 
                 <div className="w-full h-full max-h-[60vh] flex flex-col items-center justify-center">
                   <object 
@@ -430,7 +430,7 @@ export default function AttachmentManager({
                     className="w-full h-[55vh] rounded-xl border border-slate-800"
                   >
                     <div className="text-center space-y-3.5 py-12 max-w-md">
-                      <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center mx-auto">
+                      <div className="w-16 h-16 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center mx-auto">
                         <FileText className="w-8 h-8" />
                       </div>
                       <p className="font-semibold text-slate-200">PDF Document View</p>
@@ -440,7 +440,7 @@ export default function AttachmentManager({
                       <a
                         href={previewAttachment.dataUrl}
                         download={previewAttachment.name}
-                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 font-semibold text-xs text-white rounded-xl transition shadow"
+                        className="inline-flex items-center gap-1.5 px-4 py-2 bg-indigo-600 hover:bg-indigo-700 font-semibold text-xs text-slate-100 rounded-xl transition shadow"
                       >
                         <Download className="w-4 h-4" />
                         <span>Download & Open PDF</span>
@@ -451,7 +451,7 @@ export default function AttachmentManager({
               ) : (
                 
                 <div className="text-center space-y-4 max-w-md py-8">
-                  <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-2xl w-16 h-16 flex items-center justify-center mx-auto">
+                  <div className="p-4 bg-brand-purple/10 border border-indigo-500/20 text-slate-300 rounded-xl w-16 h-16 flex items-center justify-center mx-auto">
                     <File className="w-8 h-8" />
                   </div>
                   <div>
@@ -469,7 +469,7 @@ export default function AttachmentManager({
                     <a
                       href={previewAttachment.dataUrl}
                       download={previewAttachment.name}
-                      className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 font-bold text-xs text-white rounded-xl transition shadow"
+                      className="inline-flex items-center gap-1.5 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 font-bold text-xs text-slate-100 rounded-xl transition shadow"
                     >
                       <Download className="w-4 h-4" />
                       <span>Download File</span>
@@ -480,7 +480,7 @@ export default function AttachmentManager({
             </div>
 
             {}
-            <div className="p-4 border-t border-slate-800 bg-slate-950/30 text-[11px] text-slate-500 font-mono text-center">
+            <div className="p-4 border-t border-slate-800 bg-slate-950 text-[11px] text-slate-500 font-mono text-center">
               Uploaded on: {formatUploadDate(previewAttachment.uploadDate)}
             </div>
           </div>

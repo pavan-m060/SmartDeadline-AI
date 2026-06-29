@@ -31,7 +31,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
   const [email ] = useState(userProfile?.email || "scholar@stanford.edu");
   const [avatar, setAvatar] = useState(userProfile?.avatar || "🎓");
   const [customAvatarUrl, setCustomAvatarUrl] = useState(
-    userProfile?.avatar && (userProfile.avatar.startsWith("http") || userProfile.avatar.startsWith("data:"))
+    userProfile?.avatar && (userProfile.avatar.startsWith("http") || userProfile.avatar.startsWith("data:") || userProfile.avatar.startsWith("linear-gradient"))
       ? userProfile.avatar
       : ""
   );
@@ -185,33 +185,39 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
   // Determine current display avatar
   const renderAvatarSource = () => {
-    if (customAvatarUrl.trim() !== "") {
-      if (customAvatarUrl.startsWith("linear-gradient")) {
-        return (
-          <div 
-            className="w-full h-full rounded-full" 
-            style={{ background: customAvatarUrl }} 
-          />
-        );
-      }
+    // Determine the actual avatar to display, prioritizing customAvatarUrl
+    const displayAvatar = customAvatarUrl.trim() !== "" ? customAvatarUrl : avatar;
+
+    if (displayAvatar.startsWith("linear-gradient")) {
+      return (
+        <div 
+          className="w-full h-full rounded-full" 
+          style={{ background: displayAvatar }} 
+        />
+      );
+    } else if (displayAvatar.startsWith("http") || displayAvatar.startsWith("data:")) {
       return (
         <img 
-          src={customAvatarUrl} 
+          src={displayAvatar} 
           alt="Avatar" 
           referrerPolicy="no-referrer"
           className="w-full h-full rounded-full object-cover" 
-          onError={() => setCustomAvatarUrl("")}
+          onError={() => {
+            if (customAvatarUrl) setCustomAvatarUrl("");
+            else setAvatar("🎓");
+          }}
         />
       );
     }
-    return <span className="text-5xl select-none">{avatar}</span>;
+    
+    return <span className="text-5xl select-none">{displayAvatar}</span>;
   };
 
   // Achievements based on stats
   const academicAchievements = [
     {
       title: "Consistent Scholar",
-      desc: "Logged study time on SmartDeadline AI",
+      desc: "Logged study time on Smart Deadline AI",
       unlocked: stats.totalHours > 0,
       icon: Clock,
       color: "text-blue-400 bg-blue-500/10 border-blue-500/20"
@@ -242,21 +248,21 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
   return (
     <div className="space-y-8 pb-16 animate-fade-in max-w-6xl mx-auto">
       {}
-      <div className="relative overflow-hidden bg-slate-900/40 border border-slate-800/80 rounded-2xl p-6 md:p-8 flex flex-col md:flex-row items-center md:justify-between gap-6">
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+      <div className="relative overflow-hidden bg-slate-900 border border-slate-800/50 rounded-xl p-6 md:p-8 flex flex-col md:flex-row items-center md:justify-between gap-6">
+        
         
         <div className="flex flex-col md:flex-row items-center gap-5 text-center md:text-left z-10">
-          <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-slate-950 border-2 border-indigo-500/20 shadow-2xl">
+          <div className="relative w-24 h-24 flex items-center justify-center rounded-full bg-slate-950 border-2 border-indigo-500/20 shadow-sm border-slate-800">
             {renderAvatarSource()}
           </div>
           <div>
-            <h2 className="font-display font-extrabold text-2xl text-white tracking-tight">
+            <h2 className="font-sans font-semibold text-2xl text-slate-100 tracking-tight">
               {fullName}
             </h2>
             <p className="text-slate-400 text-xs font-mono mt-1 flex flex-wrap items-center justify-center md:justify-start gap-2">
               <span>{email}</span>
               <span className="text-slate-600">•</span>
-              <span className="text-indigo-400 font-semibold">{semester}</span>
+              <span className="text-slate-300 font-semibold">{semester}</span>
             </p>
             <p className="text-xs text-slate-500 mt-1">
               {university || "No Institution Specified"} — {department || "General Department"}
@@ -268,7 +274,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
           {onLogout && (
             <button
               onClick={onLogout}
-              className="px-4 py-2 bg-slate-950 hover:bg-slate-900 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
+              className="px-4 py-2 bg-slate-950 hover:bg-slate-900 border border-slate-800/50 hover:border-slate-700 text-slate-300 hover:text-slate-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition cursor-pointer"
             >
               <LogOut className="w-3.5 h-3.5 text-rose-400" />
               <span>Log Out</span>
@@ -296,7 +302,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-8">
         {}
         <div className="space-y-4">
-          <div className="bg-slate-900/40 border border-slate-800/80 p-3.5 rounded-2xl flex flex-row lg:flex-col gap-1 overflow-x-auto">
+          <div className="bg-slate-900 border border-slate-800/50 p-3.5 rounded-xl flex flex-row lg:flex-col gap-1 overflow-x-auto">
             {tabs.map((tab) => {
               const TabIcon = tab.icon;
               const active = activeTab === tab.id;
@@ -306,8 +312,8 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   onClick={() => setActiveTab(tab.id)}
                   className={`flex-1 lg:flex-initial flex items-center justify-center lg:justify-start gap-2.5 px-4 py-3 rounded-xl text-xs font-semibold tracking-wide transition cursor-pointer whitespace-nowrap ${
                     active
-                      ? "bg-indigo-600 text-white shadow-lg shadow-indigo-600/10"
-                      : "text-slate-400 hover:text-white hover:bg-slate-800/45"
+                      ? "bg-indigo-600 text-slate-100 shadow-sm shadow-indigo-600/10"
+                      : "text-slate-400 hover:text-slate-100 hover:bg-slate-800/45"
                   }`}
                 >
                   <TabIcon className="w-4 h-4 shrink-0" />
@@ -318,15 +324,15 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
           </div>
 
           {}
-          <div className="bg-slate-900/40 border border-slate-800/80 p-5 rounded-2xl space-y-4">
-            <h4 className="text-[10px] font-mono font-bold tracking-wider text-slate-500 uppercase">Academic Stats</h4>
+          <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl space-y-4">
+            <h4 className="text-xs font-mono font-bold tracking-wider text-slate-500 uppercase">Academic Stats</h4>
             <div className="grid grid-cols-2 gap-3.5">
-              <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-900 text-center">
-                <span className="block text-slate-500 text-[10px] font-mono">HOURS STUDIED</span>
-                <span className="text-base font-bold text-white font-mono mt-0.5 block">{stats.totalHours.toFixed(1)}</span>
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-900 text-center">
+                <span className="block text-slate-500 text-xs font-mono">HOURS STUDIED</span>
+                <span className="text-base font-bold text-slate-100 font-mono mt-0.5 block">{stats.totalHours.toFixed(1)}</span>
               </div>
-              <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-900 text-center">
-                <span className="block text-slate-500 text-[10px] font-mono">STREAK DAY</span>
+              <div className="p-3 bg-slate-950 rounded-xl border border-slate-900 text-center">
+                <span className="block text-slate-500 text-xs font-mono">STREAK DAY</span>
                 <span className="text-base font-bold text-orange-400 font-mono mt-0.5 block">🔥 {stats.streak}</span>
               </div>
             </div>
@@ -337,19 +343,19 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
         <div className="lg:col-span-3">
           {activeTab === "profile" && (
             <form onSubmit={handleUpdateProfileSubmit} className="space-y-6">
-              <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+              <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
                 <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">Academic Identity</h3>
+                  <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">Academic Identity</h3>
                   <p className="text-slate-400 text-xs mt-1">Configure your course metadata, institution info, and custom avatar styling.</p>
                 </div>
 
                 {}
                 <div className="space-y-4">
-                  <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Choose Profile Picture / Avatar</label>
+                  <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Choose Profile Picture / Avatar</label>
                   
                   {}
-                  <div className="p-4 bg-slate-950/60 border border-slate-900 rounded-xl space-y-3">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block">Emoji Symbols</span>
+                  <div className="p-4 bg-slate-950 border border-slate-900 rounded-xl space-y-3">
+                    <span className="text-xs font-mono text-slate-500 uppercase block">Emoji Symbols</span>
                     <div className="flex flex-wrap gap-2">
                       {emojis.map((e) => (
                         <button
@@ -362,7 +368,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                           className={`w-9 h-9 rounded-xl flex items-center justify-center text-base transition border cursor-pointer ${
                             avatar === e && customAvatarUrl === ""
                               ? "bg-indigo-600/20 border-indigo-500 scale-110 shadow"
-                              : "bg-slate-950 border-slate-800/80 hover:border-slate-700"
+                              : "bg-slate-950 border-slate-800 hover:border-slate-700"
                           }`}
                         >
                           {e}
@@ -372,8 +378,8 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   </div>
 
                   {}
-                  <div className="p-4 bg-slate-950/60 border border-slate-900 rounded-xl space-y-3">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block">Gradient Presets</span>
+                  <div className="p-4 bg-slate-950 border border-slate-900 rounded-xl space-y-3">
+                    <span className="text-xs font-mono text-slate-500 uppercase block">Gradient Presets</span>
                     <div className="flex flex-wrap gap-2">
                       {gradientAvatars.map((grad) => (
                         <button
@@ -382,10 +388,9 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                           onClick={() => setCustomAvatarUrl(grad.value)}
                           className={`w-9 h-9 rounded-full transition border cursor-pointer p-0.5 overflow-hidden ${
                             customAvatarUrl === grad.value
-                              ? "border-indigo-500 scale-110 shadow-lg"
+                              ? "border-indigo-500 scale-110 shadow-sm"
                               : "border-slate-800 hover:border-slate-700"
                           }`}
-                          title={grad.name}
                         >
                           <div className="w-full h-full rounded-full" style={{ background: grad.value }} />
                         </button>
@@ -394,8 +399,8 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   </div>
 
                   {}
-                  <div className="p-4 bg-slate-950/60 border border-slate-900 rounded-xl space-y-2">
-                    <span className="text-[10px] font-mono text-slate-500 uppercase block">Custom Profile Image URL</span>
+                  <div className="p-4 bg-slate-950 border border-slate-900 rounded-xl space-y-2">
+                    <span className="text-xs font-mono text-slate-500 uppercase block">Custom Profile Image URL</span>
                     <input
                       type="url"
                       value={customAvatarUrl.startsWith("linear-gradient") ? "" : customAvatarUrl}
@@ -409,7 +414,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   {}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Full Name</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Full Name</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <User className="w-4 h-4" />
@@ -426,7 +431,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
                   {}
                   <div className="space-y-1.5 opacity-60">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Academic Email (Read-only)</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Academic Email (Read-only)</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <Mail className="w-4 h-4" />
@@ -435,14 +440,14 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                         type="email"
                         disabled
                         value={email}
-                        className="w-full bg-slate-950/80 border border-slate-900 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-slate-400 focus:outline-none cursor-not-allowed"
+                        className="w-full bg-slate-950 border border-slate-900 rounded-xl pl-10 pr-3.5 py-2.5 text-xs text-slate-400 focus:outline-none cursor-not-allowed"
                       />
                     </div>
                   </div>
 
                   {}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">University / Institution</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">University / Institution</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <School className="w-4 h-4" />
@@ -459,7 +464,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
                   {}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Academic Department</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Academic Department</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <FileText className="w-4 h-4" />
@@ -477,7 +482,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
                   {}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Major Field of Study</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Major Field of Study</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <BookOpen className="w-4 h-4" />
@@ -494,7 +499,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
                   {}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Current Term / Semester</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Current Term / Semester</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <Calendar className="w-4 h-4" />
@@ -512,7 +517,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
                   {}
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Expected Graduation Year</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Expected Graduation Year</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <GraduationCap className="w-4 h-4" />
@@ -534,7 +539,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   <button
                     type="submit"
                     disabled={saving}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 hover:shadow-lg hover:shadow-indigo-600/10 active:scale-[0.99] cursor-pointer"
+                    className="w-full py-3 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 hover:shadow-sm hover:shadow-indigo-600/10 active:scale-[0.99] cursor-pointer"
                   >
                     {saving ? (
                       <>
@@ -549,9 +554,9 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
               </div>
 
               {}
-              <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+              <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
                 <div>
-                  <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">Academic Accomplishments</h3>
+                  <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">Academic Accomplishments</h3>
                   <p className="text-xs text-slate-400">Unlock these medals by actively organizing and tracking your courses.</p>
                 </div>
 
@@ -563,20 +568,20 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                         key={idx}
                         className={`p-4 rounded-xl border flex gap-3.5 transition ${
                           badge.unlocked 
-                            ? "bg-slate-950/40 border-slate-800/80" 
-                            : "bg-slate-950/10 border-slate-900/60 opacity-35 select-none"
+                            ? "bg-slate-950 border-slate-800" 
+                            : "bg-slate-950 border-slate-800 opacity-35 select-none"
                         }`}
                       >
                         <div className={`p-2.5 rounded-xl shrink-0 h-fit ${
-                          badge.unlocked ? badge.color : "text-slate-700 bg-slate-900 border border-slate-800/40"
+                          badge.unlocked ? badge.color : "text-slate-700 bg-slate-900 border border-slate-800/50"
                         }`}>
                           <Icon className="w-4 h-4" />
                         </div>
                         <div>
                           <div className="flex items-center gap-2">
-                            <h4 className="text-xs font-bold text-white leading-tight">{badge.title}</h4>
+                            <h4 className="text-xs font-bold text-slate-100 leading-tight">{badge.title}</h4>
                             {badge.unlocked && (
-                              <span className="text-[8px] font-mono font-bold bg-indigo-500/15 text-indigo-400 px-1.5 py-0.2 rounded border border-indigo-500/15">
+                              <span className="text-[8px] font-mono font-bold bg-brand-purple/15 text-slate-300 px-1.5 py-0.2 rounded border border-indigo-500/15">
                                 UNLOCKED
                               </span>
                             )}
@@ -594,18 +599,18 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
           {activeTab === "preferences" && (
             <form onSubmit={handleUpdateProfileSubmit} className="space-y-6">
               {}
-              <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+              <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
                 <div className="flex items-center gap-2">
-                  <Palette className="w-5 h-5 text-indigo-400" />
+                  <Palette className="w-5 h-5 text-slate-300" />
                   <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">Workspace Theme</h3>
+                    <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">Workspace Theme</h3>
                     <p className="text-slate-400 text-xs mt-1">Select the theme color accents applied throughout your student dashboard.</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-3.5">
                   {[
-                    { id: "indigo", name: "Royal Indigo", color: "bg-indigo-500", glow: "indigo" },
+                    { id: "indigo", name: "Royal Indigo", color: "bg-brand-purple", glow: "indigo" },
                     { id: "emerald", name: "Emerald Moss", color: "bg-emerald-500", glow: "emerald" },
                     { id: "amber", name: "Sunset Amber", color: "bg-amber-500", glow: "amber" },
                     { id: "rose", name: "Rose Gold", color: "bg-rose-500", glow: "rose" },
@@ -617,11 +622,11 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                       onClick={() => setTheme(preset.id)}
                       className={`p-4 rounded-xl border text-center transition cursor-pointer flex flex-col items-center justify-center gap-2.5 ${
                         theme === preset.id
-                          ? "bg-slate-950 border-indigo-500 shadow-xl"
-                          : "bg-slate-950/40 border-slate-900 hover:border-slate-800"
+                          ? "bg-slate-950 border-indigo-500 shadow-sm"
+                          : "bg-slate-950 border-slate-900 hover:border-slate-800"
                       }`}
                     >
-                      <span className={`w-6 h-6 rounded-full block border border-slate-800 ${preset.color} shadow-lg`} />
+                      <span className={`w-6 h-6 rounded-full block border border-slate-800 ${preset.color} shadow-sm`} />
                       <span className="text-[11px] font-semibold text-slate-200">{preset.name}</span>
                     </button>
                   ))}
@@ -629,18 +634,18 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
               </div>
 
               {}
-              <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+              <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
                 <div className="flex items-center gap-2">
-                  <Clock className="w-5 h-5 text-indigo-400" />
+                  <Clock className="w-5 h-5 text-slate-300" />
                   <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">Study Hour & Target Preferences</h3>
+                    <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">Study Hour & Target Preferences</h3>
                     <p className="text-slate-400 text-xs mt-1">Fine-tune your preferred study times and continuous focus block durations.</p>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Preferred Daily Start Time</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Preferred Daily Start Time</label>
                     <input
                       type="time"
                       value={preferredStartTime}
@@ -650,7 +655,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Preferred Daily End Time</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Preferred Daily End Time</label>
                     <input
                       type="time"
                       value={preferredEndTime}
@@ -660,7 +665,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Target Study Hours Per Week</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Target Study Hours Per Week</label>
                     <input
                       type="number"
                       min={1}
@@ -672,7 +677,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Continuous Sprint Duration (mins)</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Continuous Sprint Duration (mins)</label>
                     <input
                       type="number"
                       min={5}
@@ -686,12 +691,12 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
               </div>
 
               {}
-              <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+              <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
                 <div className="flex items-center gap-2">
-                  <Bell className="w-5 h-5 text-indigo-400" />
+                  <Bell className="w-5 h-5 text-slate-300" />
                   <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">Notification Preferences</h3>
-                    <p className="text-slate-400 text-xs mt-1">Configure when and how SmartDeadline AI notifies you about approaching deadlines.</p>
+                    <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">Notification Preferences</h3>
+                    <p className="text-slate-400 text-xs mt-1">Configure when and how Smart Deadline AI notifies you about approaching deadlines.</p>
                   </div>
                 </div>
 
@@ -721,7 +726,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   ].map((notif) => (
                     <label
                       key={notif.id}
-                      className="flex items-start gap-4 p-4 bg-slate-950/60 border border-slate-900 rounded-xl cursor-pointer hover:border-slate-800 transition"
+                      className="flex items-start gap-4 p-4 bg-slate-950 border border-slate-900 rounded-xl cursor-pointer hover:border-slate-800 transition"
                     >
                       <input
                         type="checkbox"
@@ -730,7 +735,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                         className="mt-1 accent-indigo-500 w-4 h-4 cursor-pointer"
                       />
                       <div className="-mt-0.5">
-                        <span className="text-xs font-bold text-white block">{notif.label}</span>
+                        <span className="text-xs font-bold text-slate-100 block">{notif.label}</span>
                         <span className="text-[11px] text-slate-400 mt-0.5 block leading-relaxed">{notif.desc}</span>
                       </div>
                     </label>
@@ -739,11 +744,11 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
               </div>
 
               {}
-              <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+              <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-5 h-5 text-indigo-400" />
+                  <Sparkles className="w-5 h-5 text-slate-300" />
                   <div>
-                    <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">AI Co-Pilot Personality Vibe</h3>
+                    <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">AI Co-Pilot Personality Vibe</h3>
                     <p className="text-slate-400 text-xs mt-1">Select the guidance approach and voice matching your ideal academic mentor.</p>
                   </div>
                 </div>
@@ -761,12 +766,12 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                       onClick={() => setAiPersonality(persona.id)}
                       className={`p-4 rounded-xl border text-left transition cursor-pointer flex flex-col gap-1.5 h-full ${
                         aiPersonality === persona.id
-                          ? "bg-slate-950 border-indigo-500 shadow-lg"
-                          : "bg-slate-950/40 border-slate-900 hover:border-slate-800"
+                          ? "bg-slate-950 border-indigo-500 shadow-sm"
+                          : "bg-slate-950 border-slate-900 hover:border-slate-800"
                       }`}
                     >
-                      <span className="text-xs font-bold text-white flex items-center gap-2">
-                        <span className={`w-2 h-2 rounded-full ${aiPersonality === persona.id ? "bg-indigo-500" : "bg-slate-700"}`} />
+                      <span className="text-xs font-bold text-slate-100 flex items-center gap-2">
+                        <span className={`w-2 h-2 rounded-full ${aiPersonality === persona.id ? "bg-brand-purple" : "bg-slate-700"}`} />
                         {persona.name}
                       </span>
                       <p className="text-[11px] text-slate-400 leading-relaxed pl-4">{persona.desc}</p>
@@ -776,11 +781,11 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
               </div>
 
               {}
-              <div className="p-4 bg-slate-900/40 border border-slate-800/80 rounded-2xl">
+              <div className="p-4 bg-slate-900 border border-slate-800/50 rounded-xl">
                 <button
                   type="submit"
                   disabled={saving}
-                  className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 hover:shadow-lg hover:shadow-indigo-600/10 active:scale-[0.99] cursor-pointer"
+                  className="w-full py-3 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 hover:shadow-sm hover:shadow-indigo-600/10 active:scale-[0.99] cursor-pointer"
                 >
                   {saving ? (
                     <>
@@ -796,9 +801,9 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
           )}
 
           {activeTab === "security" && (
-            <div className="bg-slate-900/40 border border-slate-800/80 p-6 rounded-2xl space-y-6">
+            <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-6">
               <div>
-                <h3 className="text-sm font-bold text-white uppercase tracking-wider font-display">Credential Integrity</h3>
+                <h3 className="text-sm font-bold text-slate-100 font-medium font-sans">Credential Integrity</h3>
                 <p className="text-slate-400 text-xs mt-1">Regularly update your login passcode to guarantee academic workspace safety.</p>
               </div>
 
@@ -818,7 +823,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
               <form onSubmit={handlePasswordChangeSubmit} className="space-y-4">
                 <div className="space-y-1.5">
-                  <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Current Password</label>
+                  <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Current Password</label>
                   <div className="relative">
                     <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                       <Lock className="w-4 h-4" />
@@ -836,7 +841,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">New Password</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">New Password</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <Lock className="w-4 h-4" />
@@ -853,7 +858,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   </div>
 
                   <div className="space-y-1.5">
-                    <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest block">Confirm New Password</label>
+                    <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-widest block">Confirm New Password</label>
                     <div className="relative">
                       <span className="absolute inset-y-0 left-0 pl-3.5 flex items-center text-slate-500">
                         <Lock className="w-4 h-4" />
@@ -874,7 +879,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   <button
                     type="submit"
                     disabled={passwordLoading}
-                    className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 hover:shadow-lg active:scale-[0.99] cursor-pointer"
+                    className="w-full py-3 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition disabled:opacity-50 hover:shadow-sm active:scale-[0.99] cursor-pointer"
                   >
                     {passwordLoading ? (
                       <>
@@ -891,16 +896,16 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
           )}
 
           {activeTab === "danger" && (
-            <div className="bg-slate-900/40 border border-rose-950/40 p-6 rounded-2xl space-y-6">
+            <div className="bg-slate-900 border border-rose-950/40 p-6 rounded-xl space-y-6">
               <div>
-                <h3 className="text-sm font-bold text-rose-400 uppercase tracking-wider font-display">Irreversible Academic Actions</h3>
+                <h3 className="text-sm font-bold text-rose-400 font-medium font-sans">Irreversible Academic Actions</h3>
                 <p className="text-slate-400 text-xs mt-1">Caution: Removing your account deletes all stored syllabi, assignments, timers, and statistics forever.</p>
               </div>
 
               <div className="p-4 bg-rose-500/5 border border-rose-500/10 rounded-xl flex items-start gap-3">
                 <Trash2 className="w-5 h-5 text-rose-400 shrink-0 mt-0.5" />
                 <div>
-                  <span className="text-xs font-bold text-white block">Delete Your Scholar Profile</span>
+                  <span className="text-xs font-bold text-slate-100 block">Delete Your Scholar Profile</span>
                   <p className="text-[11px] text-slate-400 mt-1 leading-relaxed">
                     This action will wipe all your custom metrics from the server instantly. This cannot be undone. Please copy your records if you intend to restore them manually in future.
                   </p>
@@ -911,7 +916,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                 <button
                   type="button"
                   onClick={() => setIsDeleteModalOpen(true)}
-                  className="px-5 py-3 bg-rose-600/15 hover:bg-rose-600 text-rose-400 hover:text-white border border-rose-500/20 hover:border-rose-600 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition cursor-pointer"
+                  className="px-5 py-3 bg-rose-600/15 hover:bg-rose-600 text-rose-400 hover:text-slate-100 border border-rose-500/20 hover:border-rose-600 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition cursor-pointer"
                 >
                   <Trash2 className="w-4 h-4" />
                   <span>Delete Academic Account...</span>
@@ -924,21 +929,21 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
 
       {}
       {isDeleteModalOpen && (
-        <div className="fixed inset-0 bg-black/85 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-          <div className="bg-slate-950 border border-slate-800 max-w-md w-full p-6 rounded-2xl space-y-5 animate-scale-in">
+        <div className="fixed inset-0 bg-black/85  z-50 flex items-center justify-center p-4">
+          <div className="bg-slate-950 border border-slate-800 max-w-md w-full p-6 rounded-xl space-y-5 animate-scale-in">
             <div className="flex items-center gap-3 text-rose-400">
               <div className="p-2 bg-rose-500/10 border border-rose-500/20 rounded-xl">
                 <ShieldAlert className="w-6 h-6" />
               </div>
               <div>
-                <h4 className="font-display font-extrabold text-base text-white tracking-wide">Absolute Account Wipeout</h4>
+                <h4 className="font-sans font-semibold text-base text-slate-100 tracking-wide">Absolute Account Wipeout</h4>
                 <p className="text-[11px] text-rose-400/80 uppercase font-mono mt-0.5 tracking-wider">Warning: Permanent Deletion</p>
               </div>
             </div>
 
             <p className="text-xs text-slate-300 leading-relaxed">
               You are about to remove all syllabi scans, calculated risk predictions, timed milestones, and profile records from the database. 
-              To proceed, please type <strong className="text-white font-mono bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">DELETE</strong> in the box below.
+              To proceed, please type <strong className="text-slate-100 font-mono bg-slate-900 px-1.5 py-0.5 rounded border border-slate-800">DELETE</strong> in the box below.
             </p>
 
             <div className="space-y-1.5">
@@ -947,7 +952,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                 value={deleteConfirmationText}
                 onChange={(e) => setDeleteConfirmationText(e.target.value)}
                 placeholder="Type DELETE to confirm"
-                className="w-full bg-slate-900 border border-slate-800 rounded-xl px-4 py-2.5 text-xs text-white text-center focus:outline-none focus:ring-1 focus:ring-rose-500 font-mono tracking-widest"
+                className="w-full bg-slate-900 border border-slate-800/50 rounded-xl px-4 py-2.5 text-xs text-slate-100 text-center focus:outline-none focus:ring-1 focus:ring-rose-500 font-mono tracking-widest"
               />
             </div>
 
@@ -965,7 +970,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                   setDeleteConfirmationText("");
                   setDeleteError(null);
                 }}
-                className="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-white rounded-xl text-xs font-semibold transition border border-slate-800 cursor-pointer"
+                className="flex-1 py-2.5 bg-slate-900 hover:bg-slate-800 text-slate-400 hover:text-slate-100 rounded-xl text-xs font-semibold transition border border-slate-800 cursor-pointer"
               >
                 Keep Account
               </button>
@@ -973,7 +978,7 @@ export default function Profile({ userProfile, onUpdateProfile, stats, onLogout 
                 type="button"
                 disabled={deleteLoading || deleteConfirmationText !== "DELETE"}
                 onClick={handleDeleteAccountConfirm}
-                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-white rounded-xl text-xs font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5"
+                className="flex-1 py-2.5 bg-rose-600 hover:bg-rose-500 text-slate-100 rounded-xl text-xs font-semibold transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center gap-1.5"
               >
                 {deleteLoading ? (
                   <>

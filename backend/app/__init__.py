@@ -62,6 +62,11 @@ def create_app(config_class=Config):
                     connection.connection.commit()
                     app.logger.info("Successfully added attachments_json column to assignments table.")
                 
+                if 'reminder_settings_json' not in columns:
+                    cursor.execute("ALTER TABLE assignments ADD COLUMN reminder_settings_json TEXT;")
+                    connection.connection.commit()
+                    app.logger.info("Successfully added reminder_settings_json column to assignments table.")
+                
                 # Check users table
                 cursor.execute("PRAGMA table_info(users)")
                 user_columns = [info[1] for info in cursor.fetchall()]

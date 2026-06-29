@@ -81,7 +81,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
         <div className="flex justify-center">
           <button 
             onClick={() => onNavigate("landing")}
-            className="flex items-center gap-2 group text-xs font-mono text-slate-500 hover:text-indigo-400 mb-4 transition cursor-pointer"
+            className="flex items-center gap-2 group text-xs font-mono text-slate-500 hover:text-slate-300 mb-4 transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition" />
             <span>Return to Landing Page</span>
@@ -89,10 +89,10 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
         </div>
 
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 mb-3">
-            <GraduationCap className="w-6 h-6 text-white" />
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl shadow-sm shadow-sm mb-3">
+            <GraduationCap className="w-6 h-6 text-slate-100" />
           </div>
-          <h2 className="text-3xl font-extrabold text-white tracking-tight font-display">
+          <h2 className="text-2xl font-semibold text-slate-100 tracking-tight font-sans">
             Create Student Profile
           </h2>
           <p className="mt-1.5 text-sm text-slate-400">
@@ -102,7 +102,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
       </div>
 
       <div className="mt-6 sm:mx-auto sm:w-full sm:max-w-xl relative z-10">
-        <div className="bg-slate-900/60 border border-slate-800/80 py-8 px-6 shadow-2xl rounded-2xl backdrop-blur-sm space-y-6">
+        <div className="bg-slate-900 border border-slate-800/50 py-8 px-6 shadow-sm border-slate-800 rounded-xl  space-y-6">
           
           {error && (
             <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg text-xs leading-relaxed">
@@ -112,8 +112,8 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
 
           <form onSubmit={handleSubmit} className="space-y-5">
             {}
-            <div className="p-4 bg-slate-950/60 border border-slate-800 rounded-xl space-y-3">
-              <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">
+            <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-3">
+              <span className="text-xs font-mono font-bold text-slate-400 font-medium block">
                 Choose Academy Avatar Symbol
               </span>
               <div className="flex flex-wrap gap-2.5">
@@ -137,7 +137,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {}
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Full Name</label>
+                <label className="text-xs font-mono font-bold text-slate-400 font-medium block">Full Name</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <User className="w-4 h-4" />
@@ -155,7 +155,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
 
               {}
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">University / College</label>
+                <label className="text-xs font-mono font-bold text-slate-400 font-medium block">University / College</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <GraduationCap className="w-4 h-4" />
@@ -173,7 +173,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
 
               {}
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Academic Major</label>
+                <label className="text-xs font-mono font-bold text-slate-400 font-medium block">Academic Major</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <BookOpen className="w-4 h-4" />
@@ -191,7 +191,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
 
               {}
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Graduation Year</label>
+                <label className="text-xs font-mono font-bold text-slate-400 font-medium block">Graduation Year</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <Calendar className="w-4 h-4" />
@@ -211,7 +211,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
 
             {}
             <div className="space-y-1">
-              <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">University Email Address</label>
+              <label className="text-xs font-mono font-bold text-slate-400 font-medium block">University Email Address</label>
               <div className="relative">
                 <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                   <Mail className="w-4 h-4" />
@@ -230,7 +230,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {}
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Password</label>
+                <label className="text-xs font-mono font-bold text-slate-400 font-medium block">Password</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <Lock className="w-4 h-4" />
@@ -248,7 +248,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
 
               {}
               <div className="space-y-1">
-                <label className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Confirm Password</label>
+                <label className="text-xs font-mono font-bold text-slate-400 font-medium block">Confirm Password</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <Lock className="w-4 h-4" />
@@ -268,7 +268,7 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
+              className="w-full py-3 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
@@ -280,12 +280,12 @@ export default function RegisterPage({ onNavigate, onRegisterSuccess }: Register
               )}
             </button>
 
-            <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800/80">
-              Already possess a SmartDeadline AI credential?{" "}
+            <div className="text-center text-xs text-slate-400 pt-2 border-t border-slate-800">
+              Already possess a Smart Deadline AI credential?{" "}
               <button
                 type="button"
                 onClick={() => onNavigate("login")}
-                className="font-semibold text-indigo-400 hover:text-indigo-300 transition"
+                className="font-semibold text-slate-300 hover:text-indigo-300 transition"
               >
                 Sign In
               </button>

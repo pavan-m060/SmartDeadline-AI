@@ -124,7 +124,7 @@ export default function WeeklyReviewPage({
   // Color mappings for productivity scores
   const getScoreColor = (score: number) => {
     if (score >= 85) return { text: "text-emerald-400", bg: "bg-emerald-500/10", border: "border-emerald-500/20", ring: "stroke-emerald-400" };
-    if (score >= 70) return { text: "text-indigo-400", bg: "bg-indigo-500/10", border: "border-indigo-500/20", ring: "stroke-indigo-400" };
+    if (score >= 70) return { text: "text-slate-300", bg: "bg-brand-purple/10", border: "border-indigo-500/20", ring: "stroke-indigo-400" };
     if (score >= 50) return { text: "text-amber-400", bg: "bg-amber-500/10", border: "border-amber-500/20", ring: "stroke-amber-400" };
     return { text: "text-rose-400", bg: "bg-rose-500/10", border: "border-rose-500/20", ring: "stroke-rose-400" };
   };
@@ -282,23 +282,23 @@ export default function WeeklyReviewPage({
   return (
     <div className="space-y-6">
       {}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 p-6 border border-slate-800 shadow-xl">
-        <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-xl bg-slate-900 border border-slate-800/50 from-indigo-950 via-slate-900 to-slate-950 p-6 border border-slate-800 shadow-sm">
+        <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-brand-purple/10 rounded-full  pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
-              <h2 className="text-xl font-bold text-white tracking-tight">AI Weekly Workspace Review</h2>
+              <Sparkles className="w-5 h-5 text-slate-300" />
+              <h2 className="text-xl font-bold text-slate-100 tracking-tight">AI Weekly Workspace Review</h2>
             </div>
             <p className="text-xs text-slate-400">
-              Compile your weekly performance score, complete study hours, missed goals, and receive customized study schedules modeled by SmartDeadline AI.
+              Compile your weekly performance score, complete study hours, missed goals, and receive customized study schedules modeled by Smart Deadline AI.
             </p>
           </div>
           <button
             type="button"
             disabled={isGenerating}
             onClick={handleGenerateReview}
-            className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
+            className="px-4 py-2.5 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-bold text-xs rounded-xl flex items-center gap-1.5 transition cursor-pointer disabled:opacity-50"
           >
             {isGenerating ? (
               <>
@@ -325,16 +325,16 @@ export default function WeeklyReviewPage({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {}
         <div className="lg:col-span-4 space-y-4">
-          <div className="bg-slate-900/60 border border-slate-850 rounded-2xl p-5 shadow">
-            <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3 mb-4">
+          <div className="bg-slate-900 border border-slate-850 rounded-xl p-5 shadow">
+            <div className="flex items-center gap-2 border-b border-slate-800/50 pb-3 mb-4">
               <History className="w-4.5 h-4.5 text-slate-400" />
-              <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">Review Logs ({reviews.length})</span>
+              <span className="text-xs font-mono font-bold text-slate-100 font-medium">Review Logs ({reviews.length})</span>
             </div>
 
             {isLoading ? (
               <div className="flex flex-col items-center justify-center py-10 gap-2">
-                <Loader2 className="w-5 h-5 animate-spin text-indigo-400" />
-                <p className="text-[10px] text-slate-500 font-mono">Loading review timeline...</p>
+                <Loader2 className="w-5 h-5 animate-spin text-slate-300" />
+                <p className="text-xs text-slate-500 font-mono">Loading review timeline...</p>
               </div>
             ) : reviews.length > 0 ? (
               <div className="space-y-2 max-h-[450px] overflow-auto pr-1">
@@ -349,19 +349,19 @@ export default function WeeklyReviewPage({
                       className={`w-full p-3 rounded-xl border text-left transition duration-200 cursor-pointer flex items-center justify-between ${
                         isSelected 
                           ? "border-indigo-500 bg-indigo-950/20"
-                          : "border-slate-850 bg-slate-950/40 hover:border-slate-800 hover:bg-slate-950"
+                          : "border-slate-850 bg-slate-950 hover:border-slate-800 hover:bg-slate-950"
                       }`}
                     >
                       <div className="truncate max-w-[70%]">
                         <p className="text-xs font-bold text-slate-200 truncate">
                           Week Review
                         </p>
-                        <p className="text-[10px] text-slate-500 mt-0.5 font-mono">
+                        <p className="text-xs text-slate-500 mt-0.5 font-mono">
                           {formatDateRange(r.weekStartDate, r.weekEndDate)}
                         </p>
                       </div>
                       <div className="flex items-center gap-2">
-                        <div className={`px-2 py-0.5 rounded text-[10px] font-mono font-bold ${colors.bg} ${colors.text} border ${colors.border}`}>
+                        <div className={`px-2 py-0.5 rounded text-xs font-mono font-bold ${colors.bg} ${colors.text} border ${colors.border}`}>
                           {r.productivityScore}%
                         </div>
                         <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
@@ -375,7 +375,7 @@ export default function WeeklyReviewPage({
                 <Calendar className="w-8 h-8 text-slate-600 mx-auto" />
                 <div>
                   <p className="text-xs font-semibold text-slate-300">No Weekly Reports Compiled</p>
-                  <p className="text-[10px] text-slate-500 leading-normal max-w-xs mx-auto mt-1">
+                  <p className="text-xs text-slate-500 leading-normal max-w-xs mx-auto mt-1">
                     Compile your performance metrics for the current week to save details to your historical profile timeline.
                   </p>
                 </div>
@@ -384,10 +384,10 @@ export default function WeeklyReviewPage({
           </div>
 
           {}
-          <div className="bg-slate-900/60 border border-slate-850 rounded-2xl p-5 shadow">
-            <div className="flex items-center gap-2 border-b border-slate-800/80 pb-3 mb-4">
-              <Calendar className="w-4.5 h-4.5 text-indigo-400" />
-              <span className="text-xs font-mono font-bold text-white uppercase tracking-wider">Unsaved Week Pacing</span>
+          <div className="bg-slate-900 border border-slate-850 rounded-xl p-5 shadow">
+            <div className="flex items-center gap-2 border-b border-slate-800/50 pb-3 mb-4">
+              <Calendar className="w-4.5 h-4.5 text-slate-300" />
+              <span className="text-xs font-mono font-bold text-slate-100 font-medium">Unsaved Week Pacing</span>
             </div>
             
             <div className="space-y-3 text-xs">
@@ -405,7 +405,7 @@ export default function WeeklyReviewPage({
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">Study Pacing:</span>
-                <span className="font-mono font-semibold text-indigo-400">{previewStats.totalStudyHours} hrs</span>
+                <span className="font-mono font-semibold text-slate-300">{previewStats.totalStudyHours} hrs</span>
               </div>
               <div className="flex items-center justify-between">
                 <span className="text-slate-400">Missed Deadlines:</span>
@@ -419,7 +419,7 @@ export default function WeeklyReviewPage({
                   type="button"
                   disabled={isGenerating}
                   onClick={handleGenerateReview}
-                  className="w-full py-2 bg-indigo-600/10 hover:bg-indigo-600/20 text-indigo-400 hover:text-indigo-300 border border-indigo-500/20 text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
+                  className="w-full py-2 bg-indigo-600/10 hover:bg-indigo-600/20 text-slate-300 hover:text-indigo-300 border border-indigo-500/20 text-xs font-bold rounded-xl transition cursor-pointer flex items-center justify-center gap-1.5"
                 >
                   <Sparkles className="w-3.5 h-3.5" />
                   <span>Generate Report Now</span>
@@ -432,15 +432,15 @@ export default function WeeklyReviewPage({
         {}
         <div className="lg:col-span-8">
           {selectedReview ? (
-            <div className="bg-slate-900/60 border border-slate-850 rounded-2xl p-6 space-y-6 shadow-md relative">
+            <div className="bg-slate-900 border border-slate-850 rounded-xl p-6 space-y-6 shadow-md relative">
               
               {}
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-slate-800/50 pb-5">
                 <div>
-                  <span className="text-[10px] font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/20 uppercase tracking-widest">
+                  <span className="text-xs font-mono font-bold text-slate-300 bg-brand-purple/10 px-2 py-0.5 rounded border border-indigo-500/20 uppercase tracking-widest">
                     AI Analysis Complete
                   </span>
-                  <h3 className="text-base font-bold text-white mt-2">
+                  <h3 className="text-base font-bold text-slate-100 mt-2">
                     Academic Summary Intel Card
                   </h3>
                   <p className="text-xs text-slate-400 font-mono mt-0.5">
@@ -451,50 +451,50 @@ export default function WeeklyReviewPage({
                 <button
                   type="button"
                   onClick={() => handleExportPDF(selectedReview)}
-                  className="px-3.5 py-2 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-white rounded-xl text-xs font-bold flex items-center gap-1.5 self-start sm:self-auto transition cursor-pointer"
+                  className="px-3.5 py-2 bg-slate-950 border border-slate-800 hover:border-slate-700 text-slate-300 hover:text-slate-100 rounded-xl text-xs font-bold flex items-center gap-1.5 self-start sm:self-auto transition cursor-pointer"
                 >
-                  <Download className="w-4 h-4 text-indigo-400" />
+                  <Download className="w-4 h-4 text-slate-300" />
                   <span>Export Report PDF</span>
                 </button>
               </div>
 
               {}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl space-y-1">
-                  <span className="text-[10px] text-slate-500 font-mono block uppercase">Completed</span>
+                <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-1">
+                  <span className="text-xs text-slate-500 font-mono block uppercase">Completed</span>
                   <div className="flex items-center gap-2">
                     <CheckCircle className="w-4.5 h-4.5 text-emerald-400" />
-                    <span className="text-base font-mono font-bold text-white">{selectedReview.completedWorkCount}</span>
+                    <span className="text-base font-mono font-bold text-slate-100">{selectedReview.completedWorkCount}</span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl space-y-1">
-                  <span className="text-[10px] text-slate-500 font-mono block uppercase">Remaining</span>
+                <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-1">
+                  <span className="text-xs text-slate-500 font-mono block uppercase">Remaining</span>
                   <div className="flex items-center gap-2">
-                    <Clock className="w-4.5 h-4.5 text-indigo-400" />
-                    <span className="text-base font-mono font-bold text-white">{selectedReview.pendingWorkCount}</span>
+                    <Clock className="w-4.5 h-4.5 text-slate-300" />
+                    <span className="text-base font-mono font-bold text-slate-100">{selectedReview.pendingWorkCount}</span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl space-y-1">
-                  <span className="text-[10px] text-slate-500 font-mono block uppercase">Missed Deadlines</span>
+                <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-1">
+                  <span className="text-xs text-slate-500 font-mono block uppercase">Missed Deadlines</span>
                   <div className="flex items-center gap-2">
                     <AlertTriangle className={`w-4.5 h-4.5 ${selectedReview.missedDeadlinesCount > 0 ? "text-rose-400" : "text-slate-500"}`} />
-                    <span className="text-base font-mono font-bold text-white">{selectedReview.missedDeadlinesCount}</span>
+                    <span className="text-base font-mono font-bold text-slate-100">{selectedReview.missedDeadlinesCount}</span>
                   </div>
                 </div>
 
-                <div className="p-4 bg-slate-950/40 border border-slate-850 rounded-xl space-y-1">
-                  <span className="text-[10px] text-slate-500 font-mono block uppercase">Study Hours</span>
+                <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-1">
+                  <span className="text-xs text-slate-500 font-mono block uppercase">Study Hours</span>
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4.5 h-4.5 text-indigo-400" />
-                    <span className="text-base font-mono font-bold text-white">{selectedReview.studyHours} hrs</span>
+                    <TrendingUp className="w-4.5 h-4.5 text-slate-300" />
+                    <span className="text-base font-mono font-bold text-slate-100">{selectedReview.studyHours} hrs</span>
                   </div>
                 </div>
               </div>
 
               {}
-              <div className="p-5 bg-slate-950/50 border border-slate-850 rounded-2xl flex flex-col md:flex-row items-center gap-6">
+              <div className="p-5 bg-slate-950 border border-slate-850 rounded-xl flex flex-col md:flex-row items-center gap-6">
                 <div className="relative w-28 h-28 shrink-0 flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90">
                     <circle
@@ -518,7 +518,7 @@ export default function WeeklyReviewPage({
                     />
                   </svg>
                   <div className="absolute flex flex-col items-center justify-center text-center">
-                    <span className="text-2xl font-mono font-black text-white">{selectedReview.productivityScore}%</span>
+                    <span className="text-2xl font-mono font-black text-slate-100">{selectedReview.productivityScore}%</span>
                     <span className="text-[8px] font-mono font-bold text-slate-500 uppercase tracking-widest mt-0.5">Rating</span>
                   </div>
                 </div>
@@ -536,16 +536,16 @@ export default function WeeklyReviewPage({
 
               {}
               <div className="space-y-3">
-                <h4 className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-widest">
+                <h4 className="text-xs font-mono font-bold text-slate-300 uppercase tracking-widest">
                   Performance & Time Management Suggestions
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
                   {selectedReview.improvementSuggestions.map((s, idx) => (
                     <div 
                       key={idx} 
-                      className="p-3.5 bg-slate-950/30 border border-slate-850 rounded-xl flex gap-2.5 items-start text-xs leading-relaxed text-slate-300"
+                      className="p-3.5 bg-slate-950 border border-slate-850 rounded-xl flex gap-2.5 items-start text-xs leading-relaxed text-slate-300"
                     >
-                      <span className="text-indigo-400 font-bold font-mono shrink-0">{idx + 1}.</span>
+                      <span className="text-slate-300 font-bold font-mono shrink-0">{idx + 1}.</span>
                       <p>{s}</p>
                     </div>
                   ))}
@@ -554,7 +554,7 @@ export default function WeeklyReviewPage({
 
               {}
               <div className="space-y-3 pt-2">
-                <h4 className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-widest">
+                <h4 className="text-xs font-mono font-bold text-slate-300 uppercase tracking-widest">
                   Next Week's Recommended Strategic Action Path
                 </h4>
                 <div className="space-y-2.5">
@@ -563,7 +563,7 @@ export default function WeeklyReviewPage({
                       key={idx} 
                       className="p-3.5 bg-indigo-950/10 border border-indigo-900/20 rounded-xl flex items-center gap-3 text-xs text-slate-200 hover:border-indigo-800/40 transition duration-150"
                     >
-                      <CheckSquare className="w-4 h-4 text-indigo-400 shrink-0" />
+                      <CheckSquare className="w-4 h-4 text-slate-300 shrink-0" />
                       <p className="font-medium">{plan}</p>
                     </div>
                   ))}
@@ -573,12 +573,12 @@ export default function WeeklyReviewPage({
             </div>
           ) : (
             
-            <div className="bg-slate-900/60 border border-slate-850 rounded-2xl p-12 text-center space-y-4 flex flex-col items-center justify-center min-h-[450px]">
-              <div className="p-4 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-3xl">
-                <Sparkles className="w-8 h-8 text-indigo-400" />
+            <div className="bg-slate-900 border border-slate-850 rounded-xl p-12 text-center space-y-4 flex flex-col items-center justify-center min-h-[450px]">
+              <div className="p-4 bg-brand-purple/10 border border-indigo-500/20 text-slate-300 rounded-3xl">
+                <Sparkles className="w-8 h-8 text-slate-300" />
               </div>
               <div className="max-w-md space-y-2">
-                <h3 className="text-base font-bold text-white">No Review Document Selected</h3>
+                <h3 className="text-base font-bold text-slate-100">No Review Document Selected</h3>
                 <p className="text-xs text-slate-400 leading-normal">
                   Configure and generate your first Weekly review to load custom performance metrics, strengths assessments, and strategic action calendars.
                 </p>
@@ -586,9 +586,9 @@ export default function WeeklyReviewPage({
               <button
                 type="button"
                 onClick={handleGenerateReview}
-                className="mt-2 px-5 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-xl flex items-center gap-1.5 transition cursor-pointer"
+                className="mt-2 px-5 py-2.5 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-bold text-xs rounded-xl flex items-center gap-1.5 transition cursor-pointer"
               >
-                <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                <Sparkles className="w-3.5 h-3.5 " />
                 <span>Formulate First Report</span>
               </button>
             </div>

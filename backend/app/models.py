@@ -103,6 +103,7 @@ class Assignment(db.Model):
     attachments_json = db.Column(db.Text, nullable=True)  # JSON serialized list of attachments
     study_plan = db.Column(db.Text, nullable=True)  # AI generated study plan markdown
     created_at = db.Column(db.String(100), nullable=False)  # Maps to createdAt
+    reminder_settings_json = db.Column(db.Text, nullable=True) # JSON serialized reminder settings
 
     # Relationship to user
     user = db.relationship('User', backref=db.backref('assignments', lazy=True, cascade='all, delete-orphan'))
@@ -123,6 +124,13 @@ class Assignment(db.Model):
             except Exception:
                 attachments = []
 
+        reminder_settings = None
+        if getattr(self, 'reminder_settings_json', None):
+            try:
+                reminder_settings = json.loads(self.reminder_settings_json)
+            except Exception:
+                reminder_settings = None
+
         return {
             'id': self.id,
             'title': self.title,
@@ -138,6 +146,7 @@ class Assignment(db.Model):
             'milestones': milestones,
             'attachments': attachments,
             'studyPlan': self.study_plan,
+            'reminderSettings': reminder_settings,
             'createdAt': self.created_at
         }
 

@@ -43,10 +43,10 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
   useEffect(() => {
     loadNotifications();
 
-    // Set up real-time updates: fetch new notifications from database silently every 5 seconds
+    // Set up real-time updates: fetch new notifications from database silently every 30 seconds
     const interval = setInterval(() => {
       loadNotifications(true);
-    }, 5000);
+    }, 30000);
 
     return () => clearInterval(interval);
   }, []);
@@ -123,7 +123,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
       }
     } catch (err: any) {
 
-      setError("SmartDeadline AI was unable to generate your motivational pep-talk right now. Please try again in a moment.");
+      setError("Smart Deadline AI was unable to generate your motivational pep-talk right now. Please try again in a moment.");
     } finally {
       setAiGenerating(false);
     }
@@ -155,14 +155,14 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
         };
       case "LOW_PRODUCTIVITY":
         return {
-          icon: <AlertCircle className="w-4 h-4 text-indigo-400" />,
-          bgColor: "bg-indigo-500/10",
+          icon: <AlertCircle className="w-4 h-4 text-slate-300" />,
+          bgColor: "bg-brand-purple/10",
           borderColor: "border-indigo-500/20",
           label: "Productivity Alert"
         };
       case "STUDY_STREAK":
         return {
-          icon: <Flame className="w-4 h-4 text-orange-500 animate-pulse" />,
+          icon: <Flame className="w-4 h-4 text-orange-500 " />,
           bgColor: "bg-orange-500/10",
           borderColor: "border-orange-500/20",
           label: "Study Streak"
@@ -176,21 +176,28 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
         };
       case "ASSIGNMENT_DUE_TOMORROW":
         return {
-          icon: <Clock className="w-4 h-4 text-orange-400 animate-pulse" />,
+          icon: <Clock className="w-4 h-4 text-orange-400 " />,
           bgColor: "bg-orange-500/10",
           borderColor: "border-orange-500/20",
           label: "Due Tomorrow"
         };
       case "PRIORITY_CHANGES":
         return {
-          icon: <Zap className="w-4 h-4 text-indigo-400" />,
-          bgColor: "bg-indigo-500/10",
+          icon: <Zap className="w-4 h-4 text-slate-300" />,
+          bgColor: "bg-brand-purple/10",
           borderColor: "border-indigo-500/20",
           label: "AI Priority Change"
         };
+      case "SMART_REMINDER":
+        return {
+          icon: <Bell className="w-4 h-4 text-pink-400 " />,
+          bgColor: "bg-pink-500/10",
+          borderColor: "border-pink-500/20",
+          label: "Smart Reminder"
+        };
       case "AI_MOTIVATIONAL":
         return {
-          icon: <Sparkles className="w-4 h-4 text-purple-400 animate-bounce" />,
+          icon: <Sparkles className="w-4 h-4 text-purple-400 " />,
           bgColor: "bg-purple-500/10",
           borderColor: "border-purple-500/20",
           label: "AI Pep Talk"
@@ -199,7 +206,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
         return {
           icon: <Bell className="w-4 h-4 text-slate-400" />,
           bgColor: "bg-slate-500/10",
-          borderColor: "border-slate-500/20",
+          borderColor: "border-slate-800",
           label: "System Alert"
         };
     }
@@ -222,8 +229,8 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
       {}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-extrabold text-3xl text-white tracking-tight flex items-center gap-3">
-            <Bell className="w-7 h-7 text-indigo-400" />
+          <h2 className="font-sans font-semibold text-3xl text-slate-100 tracking-tight flex items-center gap-3">
+            <Bell className="w-7 h-7 text-slate-300" />
             Smart Notification Center
           </h2>
           <p className="text-slate-400 text-sm mt-1">
@@ -237,11 +244,11 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
             onClick={handleGenerateAiMotivation}
             disabled={aiGenerating}
             id="generate-ai-motivation-btn"
-            className="flex items-center gap-2 px-4 py-2.5 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:from-purple-800 disabled:to-indigo-800 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-500/20 hover:scale-[1.02] transition cursor-pointer"
+            className="flex items-center gap-2 px-4 py-2.5 bg-slate-900 border border-slate-800/50 from-purple-600 to-indigo-600 hover:from-purple-500 hover:to-indigo-500 disabled:from-purple-800 disabled:to-indigo-800 text-slate-100 rounded-xl text-xs font-semibold shadow-sm shadow-sm hover:scale-[1.02] transition cursor-pointer"
           >
             {aiGenerating ? (
               <>
-                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-white" fill="none" viewBox="0 0 24 24">
+                <svg className="animate-spin -ml-1 mr-2 h-4 w-4 text-slate-100" fill="none" viewBox="0 0 24 24">
                   <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
                   <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
                 </svg>
@@ -268,7 +275,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
 
               <button
                 onClick={handleClearAll}
-                className="flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-900/40 hover:bg-rose-950/20 text-slate-400 hover:text-rose-400 rounded-xl text-xs font-medium border border-slate-800/80 hover:border-rose-900/30 transition cursor-pointer"
+                className="flex items-center gap-1.5 px-3.5 py-2.5 bg-slate-900 hover:bg-rose-950/20 text-slate-400 hover:text-rose-400 rounded-xl text-xs font-medium border border-slate-800 hover:border-rose-900/30 transition cursor-pointer"
               >
                 <Trash2 className="w-3.5 h-3.5" />
                 <span>Clear All</span>
@@ -288,8 +295,8 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
       {}
       <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
         {}
-        <div className="lg:col-span-1 bg-slate-950/40 border border-slate-900 p-4 rounded-2xl space-y-2">
-          <div className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest px-3 mb-3">
+        <div className="lg:col-span-1 bg-slate-950 border border-slate-900 p-4 rounded-xl space-y-2">
+          <div className="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest px-3 mb-3">
             Notification Types
           </div>
 
@@ -297,15 +304,15 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
             onClick={() => setFilter("ALL")}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
               filter === "ALL" 
-                ? "bg-slate-900 text-white shadow-md border-l-2 border-indigo-500" 
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/30"
+                ? "bg-slate-900 text-slate-100 bg-slate-800 text-slate-100 rounded-md" 
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
             }`}
           >
             <div className="flex items-center gap-2">
               <Bell className="w-4 h-4" />
               <span>All Logs</span>
             </div>
-            <span className="text-[10px] font-mono font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
+            <span className="text-xs font-mono font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
               {notifications.length}
             </span>
           </button>
@@ -314,16 +321,16 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
             onClick={() => setFilter("UNREAD")}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
               filter === "UNREAD" 
-                ? "bg-slate-900 text-white shadow-md border-l-2 border-indigo-500" 
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/30"
+                ? "bg-slate-900 text-slate-100 bg-slate-800 text-slate-100 rounded-md" 
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
             }`}
           >
             <div className="flex items-center gap-2">
-              <Clock className="w-4 h-4 text-indigo-400" />
+              <Clock className="w-4 h-4 text-slate-300" />
               <span>Unread Alerts</span>
             </div>
             {unreadCount > 0 && (
-              <span className="text-[10px] font-mono font-bold bg-indigo-500/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">
+              <span className="text-xs font-mono font-bold bg-brand-purple/20 text-indigo-300 px-2 py-0.5 rounded-full border border-indigo-500/30">
                 {unreadCount}
               </span>
             )}
@@ -333,15 +340,15 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
             onClick={() => setFilter("ALERTS")}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
               filter === "ALERTS" 
-                ? "bg-slate-900 text-white shadow-md border-l-2 border-indigo-500" 
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/30"
+                ? "bg-slate-900 text-slate-100 bg-slate-800 text-slate-100 rounded-md" 
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
             }`}
           >
             <div className="flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-amber-400" />
               <span>Task & Exam Alerts</span>
             </div>
-            <span className="text-[10px] font-mono font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
+            <span className="text-xs font-mono font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
               {notifications.filter(n => n.type === 'OVERDUE_ASSIGNMENT' || n.type === 'UPCOMING_DEADLINE' || n.type === 'EXAM_REMINDER').length}
             </span>
           </button>
@@ -350,15 +357,15 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
             onClick={() => setFilter("AI")}
             className={`w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl text-xs font-medium transition ${
               filter === "AI" 
-                ? "bg-slate-900 text-white shadow-md border-l-2 border-indigo-500" 
-                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900/30"
+                ? "bg-slate-900 text-slate-100 bg-slate-800 text-slate-100 rounded-md" 
+                : "text-slate-400 hover:text-slate-200 hover:bg-slate-900"
             }`}
           >
             <div className="flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-purple-400" />
               <span>AI Pep Talks</span>
             </div>
-            <span className="text-[10px] font-mono font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
+            <span className="text-xs font-mono font-bold bg-slate-900 text-slate-400 px-2 py-0.5 rounded-full border border-slate-800">
               {notifications.filter(n => n.type === 'AI_MOTIVATIONAL').length}
             </span>
           </button>
@@ -367,17 +374,17 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
         {}
         <div className="lg:col-span-3 space-y-4">
           {loading && notifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-slate-900/20 border border-slate-900 rounded-3xl space-y-4">
+            <div className="flex flex-col items-center justify-center py-20 bg-slate-900 border border-slate-900 rounded-3xl space-y-4">
               <div className="w-8 h-8 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
               <p className="text-xs text-slate-400 font-mono">Syncing Smart Notification Engine...</p>
             </div>
           ) : filteredNotifications.length === 0 ? (
-            <div className="flex flex-col items-center justify-center py-20 bg-slate-900/20 border border-slate-900/80 rounded-3xl p-8 text-center space-y-4">
+            <div className="flex flex-col items-center justify-center py-20 bg-slate-900 border border-slate-800/50 rounded-3xl p-8 text-center space-y-4">
               <div className="p-4 rounded-full bg-slate-950 border border-slate-900 text-slate-500">
                 <Bell className="w-8 h-8" />
               </div>
               <div>
-                <h3 className="font-semibold text-white text-base">No notifications found</h3>
+                <h3 className="font-semibold text-slate-100 text-base">No notifications found</h3>
                 <p className="text-slate-400 text-xs max-w-sm mt-1 mx-auto">
                   {filter === "UNREAD" 
                     ? "Fantastic work! All of your study alerts and academic notifications are marked as read."
@@ -400,15 +407,15 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, x: -50 }}
                       transition={{ duration: 0.2 }}
-                      className={`group border rounded-2xl p-4 md:p-5 flex gap-4 transition shadow-md relative overflow-hidden ${
+                      className={`group border rounded-xl p-4 md:p-5 flex gap-4 transition shadow-md relative overflow-hidden ${
                         notif.read 
-                          ? "bg-slate-950/25 border-slate-900/80 hover:border-slate-800" 
-                          : "bg-slate-900/40 border-slate-800/80 hover:border-slate-700/80"
+                          ? "bg-slate-950 border-slate-800 hover:border-slate-800" 
+                          : "bg-slate-900 border-slate-800 hover:border-slate-800"
                       }`}
                     >
                       {}
                       {!notif.read && (
-                        <div className="absolute top-0 bottom-0 left-0 w-1 bg-indigo-500 shadow-[0_0_12px_rgba(99,102,241,0.5)]" />
+                        <div className="absolute top-0 bottom-0 left-0 w-1 bg-brand-purple shadow-sm border-slate-800" />
                       )}
 
                       {}
@@ -420,7 +427,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
                       <div className="flex-grow space-y-1">
                         <div className="flex items-center justify-between gap-2">
                           <div className="flex items-center gap-2">
-                            <span className="font-bold text-sm text-white group-hover:text-indigo-400 transition-colors">
+                            <span className="font-bold text-sm text-slate-100 group-hover:text-slate-300 transition-colors">
                               {notif.title}
                             </span>
                             <span className="text-[8px] font-mono font-bold tracking-wider uppercase px-1.5 py-0.5 rounded-md bg-slate-950 border border-slate-800 text-slate-400">
@@ -428,7 +435,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
                             </span>
                           </div>
 
-                          <span className="text-[10px] text-slate-500 font-mono flex-shrink-0">
+                          <span className="text-xs text-slate-500 font-mono flex-shrink-0">
                             {(() => {
                               try {
                                 const d = new Date(notif.createdAt);
@@ -449,7 +456,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
                           {!notif.read && (
                             <button
                               onClick={() => handleMarkAsRead(notif.id)}
-                              className="flex items-center gap-1 text-[10px] font-mono font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-1 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/20 rounded-lg transition cursor-pointer"
+                              className="flex items-center gap-1 text-xs font-mono font-semibold text-emerald-400 hover:text-emerald-300 px-2 py-1 bg-emerald-500/5 hover:bg-emerald-500/10 border border-emerald-500/10 hover:border-emerald-500/20 rounded-lg transition cursor-pointer"
                             >
                               <Check className="w-3" />
                               <span>Mark Read</span>
@@ -458,7 +465,7 @@ export default function NotificationCenter({ onNotificationsUpdated }: Notificat
                           
                           <button
                             onClick={() => handleDeleteNotification(notif.id)}
-                            className="flex items-center gap-1 text-[10px] font-mono font-semibold text-slate-500 hover:text-rose-400 px-2 py-1 bg-slate-900 hover:bg-rose-950/10 border border-slate-800 hover:border-rose-900/20 rounded-lg transition opacity-0 group-hover:opacity-100 cursor-pointer"
+                            className="flex items-center gap-1 text-xs font-mono font-semibold text-slate-500 hover:text-rose-400 px-2 py-1 bg-slate-900 hover:bg-rose-950/10 border border-slate-800 hover:border-rose-900/20 rounded-lg transition opacity-0 group-hover:opacity-100 cursor-pointer"
                           >
                             <Trash2 className="w-3" />
                             <span>Delete</span>

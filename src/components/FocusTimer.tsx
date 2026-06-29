@@ -338,7 +338,7 @@ export default function FocusTimer({
     <div className="space-y-6 max-w-xl mx-auto">
       {}
       <div className="text-center">
-        <h2 className="font-display font-bold text-3xl text-white tracking-tight">Focus Block Timer</h2>
+        <h2 className="font-sans font-bold text-3xl text-slate-100 tracking-tight">Focus Block Timer</h2>
         <p className="text-slate-400 text-sm mt-1">
           Eliminate procrastination with customizable study loops and intelligent task guidance.
         </p>
@@ -357,24 +357,24 @@ export default function FocusTimer({
 
       {}
       <div className="grid grid-cols-2 gap-4">
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-          <div className="flex items-center gap-2 text-indigo-400">
+        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800/50 space-y-2">
+          <div className="flex items-center gap-2 text-slate-300">
             <Award className="w-4 h-4" />
-            <span className="text-[10px] font-mono uppercase tracking-wider font-bold">Today's Focus</span>
+            <span className="text-xs font-mono font-medium font-bold">Today's Focus</span>
           </div>
           <div className="flex justify-between items-baseline">
-            <span className="text-2xl font-bold text-white font-mono">{stats.dailyMinutes} <span className="text-xs text-slate-400 font-sans">mins</span></span>
+            <span className="text-2xl font-bold text-slate-100 font-mono">{stats.dailyMinutes} <span className="text-xs text-slate-400 font-sans">mins</span></span>
             <span className="text-xs text-slate-400">{stats.dailySessions} {stats.dailySessions === 1 ? 'block' : 'blocks'}</span>
           </div>
         </div>
 
-        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800 space-y-2">
-          <div className="flex items-center gap-2 text-indigo-400">
+        <div className="p-4 rounded-xl bg-slate-900 border border-slate-800/50 space-y-2">
+          <div className="flex items-center gap-2 text-slate-300">
             <TrendingUp className="w-4 h-4" />
-            <span className="text-[10px] font-mono uppercase tracking-wider font-bold">Weekly Focus</span>
+            <span className="text-xs font-mono font-medium font-bold">Weekly Focus</span>
           </div>
           <div className="flex justify-between items-baseline">
-            <span className="text-2xl font-bold text-white font-mono">{stats.weeklyMinutes} <span className="text-xs text-slate-400 font-sans">mins</span></span>
+            <span className="text-2xl font-bold text-slate-100 font-mono">{stats.weeklyMinutes} <span className="text-xs text-slate-400 font-sans">mins</span></span>
             <span className="text-xs text-slate-400">{stats.weeklySessions} {stats.weeklySessions === 1 ? 'block' : 'blocks'}</span>
           </div>
         </div>
@@ -382,10 +382,10 @@ export default function FocusTimer({
 
       {}
       {aiRecommendation ? (
-        <div className="p-5 rounded-xl bg-gradient-to-br from-indigo-950/50 to-slate-950/80 border border-indigo-500/30 space-y-3 animate-fadeIn shadow-lg shadow-indigo-500/5">
+        <div className="p-5 rounded-xl bg-slate-900 border border-slate-800/50 from-indigo-950/50 to-slate-950/80 border border-indigo-500/30 space-y-3 animate-fadeIn shadow-sm shadow-indigo-500/5">
           <div className="flex justify-between items-start">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-indigo-400 animate-pulse" />
+              <Sparkles className="w-4 h-4 text-slate-300 " />
               <h3 className="text-xs font-mono font-bold tracking-wider text-indigo-300 uppercase">AI NEXT ACTION RECOMMENDATION</h3>
             </div>
             <button 
@@ -398,7 +398,7 @@ export default function FocusTimer({
 
           <div className="space-y-1">
             <div className="text-xs font-mono text-indigo-200">
-              [{aiRecommendation.course}] <span className="text-white font-sans font-semibold text-sm">{aiRecommendation.recommended_assignment_title}</span>
+              [{aiRecommendation.course}] <span className="text-slate-100 font-sans font-semibold text-sm">{aiRecommendation.recommended_assignment_title}</span>
             </div>
             <p className="text-xs text-slate-300 leading-relaxed italic">
               "{aiRecommendation.reason}"
@@ -413,7 +413,7 @@ export default function FocusTimer({
           <div className="flex gap-2 pt-1">
             <button
               onClick={handleApplyRecommendation}
-              className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded text-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
+              className="flex-1 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-slate-100 font-medium rounded text-xs transition flex items-center justify-center gap-1.5 cursor-pointer"
             >
               <span>Apply Assignment & Set {aiRecommendation.suggested_duration}m Timer</span>
             </button>
@@ -424,7 +424,7 @@ export default function FocusTimer({
           <button
             onClick={() => fetchAIRecommendation()}
             disabled={isFetchingRec}
-            className="text-xs text-indigo-400 hover:text-indigo-300 font-medium font-mono flex items-center gap-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 px-3 py-1.5 rounded-lg border border-indigo-500/20 transition"
+            className="text-xs text-slate-300 hover:text-indigo-300 font-medium font-mono flex items-center gap-1.5 bg-brand-purple/10 hover:bg-brand-purple/20 px-3 py-1.5 rounded-lg border border-indigo-500/20 transition"
           >
             {isFetchingRec ? (
               <>
@@ -442,7 +442,7 @@ export default function FocusTimer({
       )}
 
       {}
-      <div className="p-6 rounded-xl bg-slate-900 border border-slate-800 space-y-6">
+      <div className="p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-6">
         
         {}
         <div className="flex items-center justify-between">
@@ -456,9 +456,9 @@ export default function FocusTimer({
                 key={p.id}
                 onClick={() => handlePresetChange(p.id as any)}
                 disabled={preset === "SPRINT" || isActive}
-                className={`flex-1 text-center py-1.5 text-[10px] font-mono font-bold tracking-wider uppercase transition rounded cursor-pointer ${
+                className={`flex-1 text-center py-1.5 text-xs font-mono font-bold tracking-wider uppercase transition rounded cursor-pointer ${
                   preset === p.id
-                    ? "bg-indigo-600 text-white shadow"
+                    ? "bg-indigo-600 text-slate-100 shadow"
                     : "text-slate-500 hover:text-slate-300 disabled:opacity-30"
                 }`}
               >
@@ -471,7 +471,7 @@ export default function FocusTimer({
             onClick={() => setShowConfig(!showConfig)}
             className={`p-2 rounded-lg border transition ${
               showConfig 
-                ? "bg-slate-800 border-slate-700 text-white" 
+                ? "bg-slate-800 border-slate-700 text-slate-100" 
                 : "bg-slate-950 border-slate-850 text-slate-400 hover:text-slate-200"
             }`}
             title="Configure Timer Durations"
@@ -487,7 +487,7 @@ export default function FocusTimer({
               <span className="text-xs font-mono font-bold text-slate-300">⚙️ TIMING CONFIGURATION</span>
               <button 
                 onClick={resetToClassicPomodoro}
-                className="text-[10px] font-mono text-indigo-400 hover:text-indigo-300"
+                className="text-xs font-mono text-slate-300 hover:text-indigo-300"
               >
                 Reset to Classic (25/5/15)
               </button>
@@ -497,7 +497,7 @@ export default function FocusTimer({
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-slate-400">
                   <span>Study Work Block:</span>
-                  <span className="font-mono text-white font-bold">{customStudyMins} mins</span>
+                  <span className="font-mono text-slate-100 font-bold">{customStudyMins} mins</span>
                 </div>
                 <input
                   type="range"
@@ -513,7 +513,7 @@ export default function FocusTimer({
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-slate-400">
                   <span>Short Break:</span>
-                  <span className="font-mono text-white font-bold">{customBreakMins} mins</span>
+                  <span className="font-mono text-slate-100 font-bold">{customBreakMins} mins</span>
                 </div>
                 <input
                   type="range"
@@ -529,7 +529,7 @@ export default function FocusTimer({
               <div className="space-y-1">
                 <div className="flex justify-between text-xs text-slate-400">
                   <span>Long Break:</span>
-                  <span className="font-mono text-white font-bold">{customLongBreakMins} mins</span>
+                  <span className="font-mono text-slate-100 font-bold">{customLongBreakMins} mins</span>
                 </div>
                 <input
                   type="range"
@@ -547,7 +547,7 @@ export default function FocusTimer({
 
         {}
         <div className="space-y-1.5">
-          <label className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block text-center">Bind Timer to Assignment</label>
+          <label className="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest block text-center">Bind Timer to Assignment</label>
           <select
             value={activeAssignmentId}
             onChange={(e) => onSelectAssignment(e.target.value)}
@@ -589,24 +589,24 @@ export default function FocusTimer({
             {}
             <div className="text-center z-10">
               {preset === "SPRINT" && (
-                <span className="text-[9px] font-mono font-bold text-brand-magenta uppercase bg-magenta-500/10 px-1.5 py-0.5 rounded animate-pulse">
+                <span className="text-[11px] font-mono font-bold text-brand-magenta uppercase bg-magenta-500/10 px-1.5 py-0.5 rounded ">
                   AI SPRINT ACTIVE
                 </span>
               )}
               {preset === "SHORT" && (
-                <span className="text-[9px] font-mono font-bold text-emerald-400 uppercase bg-emerald-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-[11px] font-mono font-bold text-emerald-400 uppercase bg-emerald-500/10 px-1.5 py-0.5 rounded">
                   SHORT BREAK
                 </span>
               )}
               {preset === "LONG" && (
-                <span className="text-[9px] font-mono font-bold text-indigo-300 uppercase bg-indigo-500/10 px-1.5 py-0.5 rounded">
+                <span className="text-[11px] font-mono font-bold text-indigo-300 uppercase bg-brand-purple/10 px-1.5 py-0.5 rounded">
                   LONG BREAK
                 </span>
               )}
-              <div className="text-4xl font-bold font-mono text-white tracking-tight mt-1.5">
+              <div className="text-4xl font-bold font-mono text-slate-100 tracking-tight mt-1.5">
                 {String(minutes).padStart(2, "0")}:{String(seconds).padStart(2, "0")}
               </div>
-              <p className="text-[10px] text-slate-500 font-mono mt-1 uppercase">
+              <p className="text-xs text-slate-500 font-mono mt-1 uppercase">
                 {isActive ? "Ticking Away..." : "Ready"}
               </p>
             </div>
@@ -615,7 +615,7 @@ export default function FocusTimer({
 
         {}
         <div className="text-center space-y-1.5">
-          <p className="text-[10px] font-mono text-slate-500 uppercase tracking-widest">
+          <p className="text-xs font-mono text-slate-500 uppercase tracking-widest">
             Pomodoro Cycle Progress: {completedStudyCount % 4} of 4 sessions
           </p>
           <div className="flex justify-center gap-2">
@@ -627,7 +627,7 @@ export default function FocusTimer({
                   key={step} 
                   className={`w-3 h-3 rounded-full border transition-all ${
                     isFilled 
-                      ? "bg-indigo-500 border-indigo-400 shadow-sm shadow-indigo-500/50" 
+                      ? "bg-brand-purple border-indigo-400 shadow-sm shadow-indigo-500/50" 
                       : "bg-slate-950 border-slate-850"
                   }`}
                   title={step === 4 ? "4th focus session yields a long break" : `Session ${step}`}
@@ -644,7 +644,7 @@ export default function FocusTimer({
             className={`px-6 py-2.5 rounded-lg text-sm font-semibold flex items-center gap-2 transition transform active:scale-95 shadow cursor-pointer ${
               isActive 
                 ? "bg-slate-800 hover:bg-slate-700 text-slate-300 border border-slate-700" 
-                : "bg-indigo-600 hover:bg-indigo-700 text-white shadow-indigo-500/10"
+                : "bg-indigo-600 hover:bg-indigo-700 text-slate-100 shadow-indigo-500/10"
             }`}
           >
             {isActive ? (
@@ -680,13 +680,13 @@ export default function FocusTimer({
         {}
         <div className="p-3.5 rounded-lg bg-slate-950 border border-slate-850 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <Volume2 className="w-4 h-4 text-indigo-400 shrink-0" />
+            <Volume2 className="w-4 h-4 text-slate-300 shrink-0" />
             <span className="text-xs text-slate-400">Background Ambience:</span>
           </div>
           <select
             value={ambientSound}
             onChange={(e) => setAmbientSound(e.target.value)}
-            className="bg-slate-900 border border-slate-800 rounded px-2.5 py-1 text-xs text-slate-300 focus:outline-none cursor-pointer"
+            className="bg-slate-900 border border-slate-800/50 rounded px-2.5 py-1 text-xs text-slate-300 focus:outline-none cursor-pointer"
           >
             {ambientPresets.map((sound) => (
               <option key={sound} value={sound}>{sound}</option>
@@ -695,8 +695,8 @@ export default function FocusTimer({
         </div>
 
         {}
-        <div className="p-3.5 bg-gradient-to-r from-indigo-950/10 to-slate-950/10 rounded-lg border border-indigo-500/5 text-center text-xs text-slate-400 italic">
-          <Sparkles className="w-3.5 h-3.5 text-indigo-400 inline mr-1.5 -mt-0.5 animate-pulse" />
+        <div className="p-3.5 bg-slate-900 border border-slate-800/50 from-indigo-950/10 to-slate-950/10 rounded-lg border border-indigo-500/5 text-center text-xs text-slate-400 italic">
+          <Sparkles className="w-3.5 h-3.5 text-slate-300 inline mr-1.5 -mt-0.5 " />
           {preset === "SPRINT" && startingSprint 
             ? `Your target sprint: ${startingSprint.title}`
             : activeAssignmentObj 

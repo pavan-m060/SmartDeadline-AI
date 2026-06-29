@@ -73,7 +73,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
         <div className="flex justify-center">
           <button 
             onClick={() => onNavigate("landing")}
-            className="flex items-center gap-2 group text-xs font-mono text-slate-500 hover:text-indigo-400 mb-6 transition cursor-pointer"
+            className="flex items-center gap-2 group text-xs font-mono text-slate-500 hover:text-slate-300 mb-6 transition cursor-pointer"
           >
             <ArrowLeft className="w-3.5 h-3.5 group-hover:-translate-x-1 transition" />
             <span>Back to main product site</span>
@@ -81,10 +81,10 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
         </div>
 
         <div className="text-center">
-          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl shadow-lg shadow-indigo-500/20 mb-4">
-            <GraduationCap className="w-6 h-6 text-white" />
+          <div className="inline-flex items-center justify-center w-12 h-12 bg-indigo-600 rounded-xl shadow-sm shadow-sm mb-4">
+            <GraduationCap className="w-6 h-6 text-slate-100" />
           </div>
-          <h2 className="text-3xl font-extrabold text-white tracking-tight font-display">
+          <h2 className="text-2xl font-semibold text-slate-100 tracking-tight font-sans">
             {forgotMode ? "Reset Credentials" : "Sign In to Workspace"}
           </h2>
           <p className="mt-2 text-sm text-slate-400">
@@ -97,7 +97,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
       </div>
 
       <div className="mt-8 sm:mx-auto sm:w-full sm:max-w-md relative z-10 px-4">
-        <div className="bg-slate-900/60 border border-slate-800/80 py-8 px-6 shadow-2xl rounded-2xl backdrop-blur-sm space-y-6">
+        <div className="bg-slate-900 border border-slate-800/50 py-8 px-6 shadow-sm border-slate-800 rounded-xl  space-y-6">
           
           {error && (
             <div className="p-3.5 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-lg text-xs leading-relaxed">
@@ -112,7 +112,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                 <span>Verification Link Broadcasted</span>
               </div>
               <p>
-                We've sent a credential override token to <strong className="text-white">{email}</strong>. Please complete the validation inside that inbox.
+                We've sent a credential override token to <strong className="text-slate-100">{email}</strong>. Please complete the validation inside that inbox.
               </p>
               <button
                 type="button"
@@ -120,7 +120,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                   setForgotMode(false);
                   setForgotSent(false);
                 }}
-                className="text-xs text-indigo-400 font-bold hover:underline"
+                className="text-xs text-slate-300 font-bold hover:underline"
               >
                 Return to Login form
               </button>
@@ -128,7 +128,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
           ) : forgotMode ? (
             <form onSubmit={handleForgotSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label htmlFor="forgot-email" className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">University Email (.edu / school domain)</label>
+                <label htmlFor="forgot-email" className="text-xs font-mono font-bold text-slate-400 font-medium block">University Email (.edu / school domain)</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <Mail className="w-4 h-4" />
@@ -140,7 +140,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                     placeholder="student@university.edu"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-lg pl-10 pr-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -148,7 +148,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -164,7 +164,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                 <button
                   type="button"
                   onClick={() => setForgotMode(false)}
-                  className="text-xs text-slate-400 hover:text-white transition"
+                  className="text-xs text-slate-400 hover:text-slate-100 transition"
                 >
                   Cancel and return to sign in
                 </button>
@@ -173,7 +173,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
           ) : (
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-1">
-                <label htmlFor="login-email" className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">University Email</label>
+                <label htmlFor="login-email" className="text-xs font-mono font-bold text-slate-400 font-medium block">University Email</label>
                 <div className="relative">
                   <span className="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-500">
                     <Mail className="w-4 h-4" />
@@ -185,18 +185,18 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                     placeholder="you@yourcollege.edu"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-lg pl-10 pr-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
 
               <div className="space-y-1">
                 <div className="flex justify-between items-center">
-                  <label htmlFor="login-password" className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-wider block">Password</label>
+                  <label htmlFor="login-password" className="text-xs font-mono font-bold text-slate-400 font-medium block">Password</label>
                   <button
                     type="button"
                     onClick={() => setForgotMode(true)}
-                    className="text-[10px] text-indigo-400 hover:text-indigo-300 font-semibold"
+                    className="text-xs text-slate-300 hover:text-indigo-300 font-semibold"
                   >
                     Forgot Password?
                   </button>
@@ -212,7 +212,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                     placeholder="••••••••"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
-                    className="w-full bg-slate-950/80 border border-slate-800 rounded-lg pl-10 pr-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                    className="w-full bg-slate-950 border border-slate-800 rounded-lg pl-10 pr-3 py-2 text-sm text-slate-200 focus:outline-none focus:ring-1 focus:ring-indigo-500"
                   />
                 </div>
               </div>
@@ -235,7 +235,7 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
               <button
                 type="submit"
                 disabled={loading}
-                className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
+                className="w-full py-2.5 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -243,22 +243,22 @@ export default function LoginPage({ onNavigate, onLoginSuccess }: LoginPageProps
                     <span>Logging in...</span>
                   </>
                 ) : (
-                  <span>Access SmartDeadline AI</span>
+                  <span>Access Smart Deadline AI</span>
                 )}
               </button>
 
               <div className="relative flex py-2 items-center">
                 <div className="flex-grow border-t border-slate-800" />
-                <span className="flex-shrink mx-4 text-[10px] text-slate-500 font-mono">NEW RECRUIT</span>
+                <span className="flex-shrink mx-4 text-xs text-slate-500 font-mono">NEW RECRUIT</span>
                 <div className="flex-grow border-t border-slate-800" />
               </div>
 
               <div className="text-center text-xs">
-                <span className="text-slate-400">Not enrolled in SmartDeadline AI yet? </span>
+                <span className="text-slate-400">Not enrolled in Smart Deadline AI yet? </span>
                 <button
                   type="button"
                   onClick={() => onNavigate("register")}
-                  className="font-semibold text-indigo-400 hover:text-indigo-300 transition"
+                  className="font-semibold text-slate-300 hover:text-indigo-300 transition"
                 >
                   Create edu account
                 </button>

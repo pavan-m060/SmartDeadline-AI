@@ -3,6 +3,7 @@ import { Assignment, StudySession } from "../types";
 import { BarChart3, Clock, CheckCircle2, Calendar, TrendingUp, Flame, Lightbulb, Award, AlertTriangle, Compass, Hourglass, Sparkles, RefreshCw, Check, ListTodo, BookOpen, Activity } from "lucide-react";
 import { BarChart as RechartsBarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, LineChart as RechartsLineChart, Line, AreaChart, Area } from "recharts";
 import { fetchAnalyticsInsights } from "../services/api";
+import { formatDueDate } from "../utils";
 
 interface AnalyticsProps {
   assignments: Assignment[];
@@ -30,7 +31,7 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
     return saved ? JSON.parse(saved) : [];
   });
   const [loadingInsights, setLoadingInsights] = useState<boolean>(false);
-  const [ setInsightsError] = useState<string | null>(null);
+  const [_insightsError, setInsightsError] = useState<string | null>(null);
 
   const handleGpaChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const val = parseFloat(e.target.value);
@@ -412,8 +413,8 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
       {}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="font-display font-extrabold text-3xl text-white tracking-tight flex items-center gap-2.5">
-            <BarChart3 className="w-8 h-8 text-indigo-500" />
+          <h2 className="font-sans font-semibold text-3xl text-slate-100 tracking-tight flex items-center gap-2.5">
+            <BarChart3 className="w-8 h-8 text-slate-400" />
             Productivity Analytics Dashboard
           </h2>
           <p className="text-slate-400 text-sm mt-1 max-w-2xl">
@@ -424,13 +425,13 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
           <button
             onClick={() => loadGeminiInsights(true)}
             disabled={loadingInsights}
-            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-white rounded-xl text-xs font-semibold flex items-center gap-2 transition duration-150 shadow-lg cursor-pointer"
+            className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 text-slate-100 rounded-xl text-xs font-semibold flex items-center gap-2 transition duration-150 shadow-sm cursor-pointer"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${loadingInsights ? "animate-spin" : ""}`} />
             <span>Generate AI Insights</span>
           </button>
-          <div className="flex items-center gap-2 bg-slate-900/60 border border-slate-800 px-3.5 py-2 rounded-xl text-xs text-slate-400 font-mono">
-            <Clock className="w-4 h-4 text-indigo-400 animate-pulse" />
+          <div className="flex items-center gap-2 bg-slate-900 border border-slate-800/50 px-3.5 py-2 rounded-xl text-xs text-slate-400 font-mono">
+            <Clock className="w-4 h-4 text-slate-300 " />
             <span>Sync Live</span>
           </div>
         </div>
@@ -443,31 +444,31 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         <div 
           onMouseEnter={() => setHoveredMetric("weekly")}
           onMouseLeave={() => setHoveredMetric(null)}
-          className={`bg-slate-900/40 backdrop-blur-xl border p-5 rounded-2xl transition-all duration-300 relative overflow-hidden ${
-            hoveredMetric === "weekly" ? "border-indigo-500/80 shadow-[0_0_20px_rgba(99,102,241,0.15)] bg-slate-900/60" : "border-slate-800/80 hover:border-slate-700"
+          className={`bg-slate-900 backdrop- border p-5 rounded-xl transition-all duration-300 relative overflow-hidden ${
+            hoveredMetric === "weekly" ? "border-indigo-500/80 shadow-sm border-slate-800 bg-slate-900" : "border-slate-800 hover:border-slate-700"
           }`}
         >
           <div className="flex items-start justify-between">
-            <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-xl">
+            <div className="p-3 bg-brand-purple/10 border border-indigo-500/20 text-slate-300 rounded-xl">
               <Clock className="w-5.5 h-5.5" />
             </div>
             {stats.weeklyHoursDelta > 0 ? (
-              <span className="text-[10px] bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="text-xs bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                 +{stats.weeklyHoursDelta}h vs prev
               </span>
             ) : stats.weeklyHoursDelta < 0 ? (
-              <span className="text-[10px] bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
+              <span className="text-xs bg-rose-500/10 border border-rose-500/20 text-rose-400 font-mono font-bold px-2 py-0.5 rounded-full flex items-center gap-1">
                 {stats.weeklyHoursDelta}h vs prev
               </span>
             ) : (
-              <span className="text-[10px] bg-slate-850 border border-slate-800 text-slate-400 font-mono px-2 py-0.5 rounded-full">
+              <span className="text-xs bg-slate-850 border border-slate-800 text-slate-400 font-mono px-2 py-0.5 rounded-full">
                 Consistent
               </span>
             )}
           </div>
           <div className="mt-4">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Study Hours This Week</span>
-            <div className="text-3.5xl font-bold text-white font-mono mt-1">{stats.weeklyHours} <span className="text-xs font-sans font-normal text-slate-500">hrs</span></div>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Study Hours This Week</span>
+            <div className="text-3.5xl font-bold text-slate-100 font-mono mt-1">{stats.weeklyHours} <span className="text-xs font-sans font-normal text-slate-500">hrs</span></div>
             <p className="text-[11px] text-slate-400 mt-2">Focused study blocks logged in the last 7 days</p>
           </div>
         </div>
@@ -476,21 +477,21 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         <div 
           onMouseEnter={() => setHoveredMetric("monthly")}
           onMouseLeave={() => setHoveredMetric(null)}
-          className={`bg-slate-900/40 backdrop-blur-xl border p-5 rounded-2xl transition-all duration-300 relative overflow-hidden ${
-            hoveredMetric === "monthly" ? "border-purple-500/80 shadow-[0_0_20px_rgba(168,85,247,0.15)] bg-slate-900/60" : "border-slate-800/80 hover:border-slate-700"
+          className={`bg-slate-900 backdrop- border p-5 rounded-xl transition-all duration-300 relative overflow-hidden ${
+            hoveredMetric === "monthly" ? "border-purple-500/80 shadow-sm border-slate-800 bg-slate-900" : "border-slate-800 hover:border-slate-700"
           }`}
         >
           <div className="flex items-start justify-between">
             <div className="p-3 bg-purple-500/10 border border-purple-500/20 text-purple-400 rounded-xl">
               <Calendar className="w-5.5 h-5.5" />
             </div>
-            <span className="text-[10px] bg-purple-500/10 border border-purple-500/20 text-purple-300 font-mono font-bold px-2.5 py-0.5 rounded-full">
+            <span className="text-xs bg-purple-500/10 border border-purple-500/20 text-purple-300 font-mono font-bold px-2.5 py-0.5 rounded-full">
               Current Month
             </span>
           </div>
           <div className="mt-4">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Study Hours This Month</span>
-            <div className="text-3.5xl font-bold text-white font-mono mt-1">{stats.monthlyHours} <span className="text-xs font-sans font-normal text-slate-500">hrs</span></div>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Study Hours This Month</span>
+            <div className="text-3.5xl font-bold text-slate-100 font-mono mt-1">{stats.monthlyHours} <span className="text-xs font-sans font-normal text-slate-500">hrs</span></div>
             <p className="text-[11px] text-slate-400 mt-2">Cumulative study time in active calendar month</p>
           </div>
         </div>
@@ -499,21 +500,21 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         <div 
           onMouseEnter={() => setHoveredMetric("completed")}
           onMouseLeave={() => setHoveredMetric(null)}
-          className={`bg-slate-900/40 backdrop-blur-xl border p-5 rounded-2xl transition-all duration-300 relative overflow-hidden ${
-            hoveredMetric === "completed" ? "border-emerald-500/80 shadow-[0_0_20px_rgba(16,185,129,0.15)] bg-slate-900/60" : "border-slate-800/80 hover:border-slate-700"
+          className={`bg-slate-900 backdrop- border p-5 rounded-xl transition-all duration-300 relative overflow-hidden ${
+            hoveredMetric === "completed" ? "border-emerald-500/80 shadow-sm border-slate-800 bg-slate-900" : "border-slate-800 hover:border-slate-700"
           }`}
         >
           <div className="flex items-start justify-between">
             <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-xl">
               <CheckCircle2 className="w-5.5 h-5.5" />
             </div>
-            <span className="text-[10px] bg-slate-850 text-slate-300 font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-800">
+            <span className="text-xs bg-slate-850 text-slate-300 font-mono font-bold px-2.5 py-0.5 rounded-full border border-slate-800">
               {stats.completedCount} / {stats.totalTasks} Done
             </span>
           </div>
           <div className="mt-4">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Assignments Completed</span>
-            <div className="text-3.5xl font-bold text-white font-mono mt-1">{stats.completedCount} <span className="text-xs font-sans font-normal text-slate-500">tasks</span></div>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Assignments Completed</span>
+            <div className="text-3.5xl font-bold text-slate-100 font-mono mt-1">{stats.completedCount} <span className="text-xs font-sans font-normal text-slate-500">tasks</span></div>
             <p className="text-[11px] text-slate-400 mt-2">Total number of academic items marked completed</p>
           </div>
         </div>
@@ -522,21 +523,21 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         <div 
           onMouseEnter={() => setHoveredMetric("rate")}
           onMouseLeave={() => setHoveredMetric(null)}
-          className={`bg-slate-900/40 backdrop-blur-xl border p-5 rounded-2xl transition-all duration-300 relative overflow-hidden ${
-            hoveredMetric === "rate" ? "border-pink-500/80 shadow-[0_0_20px_rgba(236,72,153,0.15)] bg-slate-900/60" : "border-slate-800/80 hover:border-slate-700"
+          className={`bg-slate-900 backdrop- border p-5 rounded-xl transition-all duration-300 relative overflow-hidden ${
+            hoveredMetric === "rate" ? "border-pink-500/80 shadow-sm border-slate-800 bg-slate-900" : "border-slate-800 hover:border-slate-700"
           }`}
         >
           <div className="flex items-start justify-between">
             <div className="p-3 bg-pink-500/10 border border-pink-500/20 text-pink-400 rounded-xl">
               <TrendingUp className="w-5.5 h-5.5" />
             </div>
-            <div className="w-8 h-8 rounded-full border-2 border-slate-800 flex items-center justify-center text-[10px] font-mono font-bold text-pink-400 bg-pink-500/5">
+            <div className="w-8 h-8 rounded-full border-2 border-slate-800 flex items-center justify-center text-xs font-mono font-bold text-pink-400 bg-pink-500/5">
               {stats.completionRate}%
             </div>
           </div>
           <div className="mt-4">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Completion Percentage</span>
-            <div className="text-3.5xl font-bold text-white font-mono mt-1">{stats.completionRate}%</div>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Completion Percentage</span>
+            <div className="text-3.5xl font-bold text-slate-100 font-mono mt-1">{stats.completionRate}%</div>
             <p className="text-[11px] text-slate-400 mt-2">Efficiency ratio of completed vs. total items</p>
           </div>
         </div>
@@ -547,13 +548,13 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
       <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
         
         {}
-        <div className="bg-slate-900/30 border border-slate-800/70 p-5 rounded-2xl hover:border-slate-700 transition flex items-center gap-4">
+        <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl hover:border-slate-700 transition flex items-center gap-4">
           <div className="p-3 bg-blue-500/10 border border-blue-500/20 text-blue-400 rounded-xl shrink-0">
             <Activity className="w-5.5 h-5.5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Average Daily Focus</span>
-            <div className="text-2xl font-bold text-white font-mono mt-0.5">
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Average Daily Focus</span>
+            <div className="text-2xl font-bold text-slate-100 font-mono mt-0.5">
               {stats.avgDailyFocusMins > 0 ? `${stats.avgDailyFocusMins} mins` : "N/A"}
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5">Focus time per active study session day</p>
@@ -561,13 +562,13 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         </div>
 
         {}
-        <div className="bg-slate-900/30 border border-slate-800/70 p-5 rounded-2xl hover:border-slate-700 transition flex items-center gap-4">
+        <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl hover:border-slate-700 transition flex items-center gap-4">
           <div className="p-3 bg-cyan-500/10 border border-cyan-500/20 text-cyan-400 rounded-xl shrink-0">
             <ListTodo className="w-5.5 h-5.5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Upcoming Deadlines</span>
-            <div className="text-2xl font-bold text-white font-mono mt-0.5">
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Upcoming Deadlines</span>
+            <div className="text-2xl font-bold text-slate-100 font-mono mt-0.5">
               {stats.upcomingDeadlines.length} <span className="text-xs font-sans font-normal text-slate-500">active</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5">Pending academic assignments due</p>
@@ -575,17 +576,17 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         </div>
 
         {}
-        <div className={`p-5 rounded-2xl hover:border-slate-700 transition flex items-center gap-4 border ${
-          stats.lateSubmissions.length > 0 ? "bg-rose-950/10 border-rose-900/50" : "bg-slate-900/30 border-slate-800/70"
+        <div className={`p-5 rounded-xl hover:border-slate-700 transition flex items-center gap-4 border ${
+          stats.lateSubmissions.length > 0 ? "bg-rose-950/10 border-rose-900/50" : "bg-slate-900 border-slate-800"
         }`}>
           <div className={`p-3 rounded-xl shrink-0 border ${
-            stats.lateSubmissions.length > 0 ? "bg-rose-500/10 border-rose-500/20 text-rose-400 animate-pulse" : "bg-slate-800 border-slate-750 text-slate-400"
+            stats.lateSubmissions.length > 0 ? "bg-rose-500/10 border-rose-500/20 text-rose-400 " : "bg-slate-800 border-slate-750 text-slate-400"
           }`}>
             <AlertTriangle className="w-5.5 h-5.5" />
           </div>
           <div>
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider block">Late Submissions</span>
-            <div className={`text-2xl font-bold font-mono mt-0.5 ${stats.lateSubmissions.length > 0 ? "text-rose-400" : "text-white"}`}>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium block">Late Submissions</span>
+            <div className={`text-2xl font-bold font-mono mt-0.5 ${stats.lateSubmissions.length > 0 ? "text-rose-400" : "text-slate-100"}`}>
               {stats.lateSubmissions.length} <span className="text-xs font-sans font-normal text-slate-500">overdue</span>
             </div>
             <p className="text-[11px] text-slate-400 mt-0.5">
@@ -595,13 +596,13 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         </div>
 
         {}
-        <div className="bg-slate-900/40 border border-slate-800/70 p-5 rounded-2xl hover:border-slate-700 transition flex flex-col justify-between space-y-2">
+        <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl hover:border-slate-700 transition flex flex-col justify-between space-y-2">
           <div className="flex items-center justify-between">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider flex items-center gap-1.5">
-              <Award className="w-3.5 h-3.5 text-indigo-400" />
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium flex items-center gap-1.5">
+              <Award className="w-3.5 h-3.5 text-slate-300" />
               Current GPA Target
             </span>
-            <span className="text-xs font-mono font-extrabold text-indigo-400 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded">
+            <span className="text-xs font-mono font-semibold text-slate-300 px-2 py-0.5 bg-brand-purple/10 border border-indigo-500/20 rounded">
               {gpaTarget.toFixed(2)}
             </span>
           </div>
@@ -617,7 +618,7 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
               className="flex-1 accent-indigo-500 bg-slate-950 h-1 rounded-lg appearance-none cursor-pointer"
             />
           </div>
-          <p className="text-[9px] text-slate-400">Drag to specify your scholarly GPA target.</p>
+          <p className="text-[11px] text-slate-400">Drag to specify your scholarly GPA target.</p>
         </div>
 
       </div>
@@ -626,14 +627,14 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {}
-        <div className="xl:col-span-1 bg-slate-900/40 backdrop-blur-md border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+        <div className="xl:col-span-1 bg-slate-900 backdrop- border border-slate-800 p-6 rounded-xl shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-white font-display flex items-center gap-2">
-                <BarChart3 className="w-4.5 h-4.5 text-indigo-400" />
+              <h3 className="text-sm font-semibold text-slate-100 font-sans flex items-center gap-2">
+                <BarChart3 className="w-4.5 h-4.5 text-slate-300" />
                 Weekly Productivity Graph
               </h3>
-              <span className="text-[9px] font-mono text-indigo-400 uppercase tracking-widest bg-indigo-500/10 border border-indigo-500/20 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-mono text-slate-300 uppercase tracking-widest bg-brand-purple/10 border border-indigo-500/20 px-2 py-0.5 rounded">
                 Focus Hours
               </span>
             </div>
@@ -671,14 +672,14 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         </div>
 
         {}
-        <div className="xl:col-span-1 bg-slate-900/40 backdrop-blur-md border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+        <div className="xl:col-span-1 bg-slate-900 backdrop- border border-slate-800 p-6 rounded-xl shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-white font-display flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-100 font-sans flex items-center gap-2">
                 <TrendingUp className="w-4.5 h-4.5 text-purple-400" />
                 Monthly Productivity Graph
               </h3>
-              <span className="text-[9px] font-mono text-purple-400 uppercase tracking-widest bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-mono text-purple-400 uppercase tracking-widest bg-purple-500/10 border border-purple-500/20 px-2 py-0.5 rounded">
                 Index Trend
               </span>
             </div>
@@ -701,14 +702,14 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         </div>
 
         {}
-        <div className="xl:col-span-1 bg-slate-900/40 backdrop-blur-md border border-slate-800 p-6 rounded-2xl shadow-xl flex flex-col justify-between">
+        <div className="xl:col-span-1 bg-slate-900 backdrop- border border-slate-800 p-6 rounded-xl shadow-sm flex flex-col justify-between">
           <div>
             <div className="flex items-center justify-between mb-2">
-              <h3 className="text-sm font-semibold text-white font-display flex items-center gap-2">
+              <h3 className="text-sm font-semibold text-slate-100 font-sans flex items-center gap-2">
                 <CheckCircle2 className="w-4.5 h-4.5 text-emerald-400" />
                 Task Completion Trends
               </h3>
-              <span className="text-[9px] font-mono text-emerald-400 uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
+              <span className="text-[11px] font-mono text-emerald-400 uppercase tracking-widest bg-emerald-500/10 border border-emerald-500/20 px-2 py-0.5 rounded">
                 Tasks Added vs Done
               </span>
             </div>
@@ -746,10 +747,10 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         
         {}
-        <div className="lg:col-span-7 bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between">
+        <div className="lg:col-span-7 bg-slate-900 border border-slate-800/50 rounded-xl p-6 flex flex-col justify-between">
           <div className="space-y-1 mb-4">
-            <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider flex items-center gap-2">
-              <BookOpen className="w-4 h-4 text-indigo-400" />
+            <h3 className="text-sm font-bold text-slate-100 font-sans font-medium flex items-center gap-2">
+              <BookOpen className="w-4 h-4 text-slate-300" />
               Upcoming Academic Deadlines
             </h3>
             <p className="text-xs text-slate-400">All pending deadlines scheduled on or after current time.</p>
@@ -762,13 +763,13 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
               </div>
             ) : (
               stats.upcomingDeadlines.map((a) => (
-                <div key={a.id} className="p-3 bg-slate-950/60 border border-slate-800/60 rounded-xl flex items-center justify-between hover:border-indigo-500/30 transition">
+                <div key={a.id} className="p-3 bg-slate-950 border border-slate-800 rounded-xl flex items-center justify-between hover:border-indigo-500/30 transition">
                   <div className="space-y-1 min-w-0 flex-1 pr-3">
                     <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-bold text-indigo-400 px-2 py-0.5 bg-indigo-500/10 border border-indigo-500/20 rounded">
+                      <span className="text-xs font-bold text-slate-300 px-2 py-0.5 bg-brand-purple/10 border border-indigo-500/20 rounded">
                         {a.course}
                       </span>
-                      <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded ${
+                      <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded ${
                         a.priority === 'URGENT' ? 'text-rose-400 bg-rose-500/10 border border-rose-500/20' :
                         a.priority === 'HIGH' ? 'text-orange-400 bg-orange-500/10 border border-orange-500/20' :
                         'text-slate-400 bg-slate-800'
@@ -776,11 +777,11 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
                         {a.priority}
                       </span>
                     </div>
-                    <h4 className="text-xs font-semibold text-white truncate">{a.title}</h4>
+                    <h4 className="text-xs font-semibold text-slate-100 truncate">{a.title}</h4>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="text-[11px] font-mono text-slate-400 block">Due: {a.dueDate}</span>
-                    <span className="text-[10px] text-indigo-400 font-semibold">
+                    <span className="text-[11px] font-mono text-slate-400 block">Due: {formatDueDate(a.dueDate)}</span>
+                    <span className="text-xs text-slate-300 font-semibold">
                       {Math.ceil((new Date(a.dueDate).getTime() - new Date("2026-06-28").getTime()) / (1000 * 3600 * 24)) <= 0 ? "Due Today" : 
                        `In ${Math.ceil((new Date(a.dueDate).getTime() - new Date("2026-06-28").getTime()) / (1000 * 3600 * 24))} days`}
                     </span>
@@ -792,9 +793,9 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
         </div>
 
         {}
-        <div className="lg:col-span-5 bg-slate-900/30 border border-slate-800/80 rounded-2xl p-6 flex flex-col justify-between">
+        <div className="lg:col-span-5 bg-slate-900 border border-slate-800/50 rounded-xl p-6 flex flex-col justify-between">
           <div className="space-y-1 mb-4">
-            <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider flex items-center gap-2">
+            <h3 className="text-sm font-bold text-slate-100 font-sans font-medium flex items-center gap-2">
               <AlertTriangle className="w-4 h-4 text-rose-400" />
               Late Submissions & Warnings
             </h3>
@@ -812,15 +813,15 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
                 <div key={a.id} className="p-3 bg-rose-950/10 border border-rose-900/40 rounded-xl flex items-center justify-between hover:bg-rose-950/20 transition">
                   <div className="space-y-1 min-w-0 flex-1 pr-3">
                     <div className="flex items-center gap-1.5">
-                      <span className="text-[10px] font-bold text-rose-400 px-1.5 py-0.5 bg-rose-500/10 rounded">
+                      <span className="text-xs font-bold text-rose-400 px-1.5 py-0.5 bg-rose-500/10 rounded">
                         {a.course}
                       </span>
                     </div>
                     <h4 className="text-xs font-semibold text-rose-200 truncate">{a.title}</h4>
                   </div>
                   <div className="text-right shrink-0">
-                    <span className="text-[10px] font-mono text-rose-400 block font-bold">LATE</span>
-                    <span className="text-[10px] text-slate-400">Due: {a.dueDate}</span>
+                    <span className="text-xs font-mono text-rose-400 block font-bold">LATE</span>
+                    <span className="text-xs text-slate-400">Due: {formatDueDate(a.dueDate)}</span>
                   </div>
                 </div>
               ))
@@ -831,20 +832,20 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
       </div>
 
       {}
-      <div className="bg-slate-900/20 backdrop-blur border border-slate-800/60 rounded-2xl p-6 shadow-xl relative overflow-hidden">
+      <div className="bg-slate-900 backdrop-blur border border-slate-800 rounded-xl p-6 shadow-sm relative overflow-hidden">
         
         {}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+        
         
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-1">
           <div className="flex items-center gap-2">
-            <Sparkles className="w-5.5 h-5.5 text-indigo-400 animate-pulse" />
-            <h3 className="text-base font-bold text-white font-display">
+            <Sparkles className="w-5.5 h-5.5 text-slate-300 " />
+            <h3 className="text-base font-bold text-slate-100 font-sans">
               AI Coach Insights & Recommendations
             </h3>
           </div>
-          <span className="text-[9px] font-mono text-slate-500 uppercase tracking-widest bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
-            Powered by SmartDeadline AI
+          <span className="text-[11px] font-mono text-slate-500 uppercase tracking-widest bg-slate-950 px-2 py-0.5 rounded border border-slate-800">
+            Powered by Smart Deadline AI
           </span>
         </div>
         <p className="text-xs text-slate-400 mb-6">
@@ -855,7 +856,7 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
             {[1, 2, 3].map((n) => (
-              <div key={n} className="p-4.5 rounded-xl border border-slate-800 bg-slate-950/30 space-y-3 animate-pulse">
+              <div key={n} className="p-4 rounded-xl border border-slate-800 bg-slate-950 space-y-3 ">
                 <div className="flex items-center gap-2.5">
                   <div className="w-8 h-8 rounded-lg bg-slate-800" />
                   <div className="h-4 bg-slate-800 rounded w-1/2" />
@@ -873,7 +874,7 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
             {activeInsights.map((insight, idx) => (
               <div 
                 key={idx} 
-                className={`p-4.5 rounded-xl border flex flex-col justify-between bg-slate-900/40 hover:bg-slate-900/60 transition duration-300 ${
+                className={`p-4 rounded-xl border flex flex-col justify-between bg-slate-900 hover:bg-slate-900 transition duration-300 ${
                   insight.color === "rose" ? "border-rose-950/40 hover:border-rose-900/50" :
                   insight.color === "emerald" ? "border-emerald-950/40 hover:border-emerald-900/50" :
                   insight.color === "amber" ? "border-amber-950/40 hover:border-amber-900/50" :
@@ -890,7 +891,7 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
                       insight.color === "amber" ? "bg-amber-500/10 border-amber-500/20 text-amber-400" :
                       insight.color === "purple" ? "bg-purple-500/10 border-purple-500/20 text-purple-400" :
                       insight.color === "cyan" ? "bg-cyan-500/10 border-cyan-500/20 text-cyan-400" :
-                      "bg-indigo-500/10 border-indigo-500/20 text-indigo-400"
+                      "bg-brand-purple/10 border-indigo-500/20 text-slate-300"
                     }`}>
                       {insight.color === "rose" ? <AlertTriangle className="w-4 h-4" /> :
                        insight.color === "emerald" ? <Award className="w-4 h-4" /> :
@@ -898,7 +899,7 @@ export default function Analytics({ assignments, studySessions }: AnalyticsProps
                        insight.color === "purple" ? <Compass className="w-4 h-4" /> :
                        <Lightbulb className="w-4 h-4" />}
                     </div>
-                    <h4 className="text-xs font-extrabold text-white tracking-tight uppercase">{insight.title}</h4>
+                    <h4 className="text-xs font-semibold text-slate-100 tracking-tight uppercase">{insight.title}</h4>
                   </div>
                   <p className="text-xs text-slate-400 leading-relaxed font-sans">{insight.desc}</p>
                 </div>

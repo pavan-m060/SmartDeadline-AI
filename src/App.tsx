@@ -26,7 +26,7 @@ import { motion, AnimatePresence } from "motion/react";
 import NotificationCenter from "./components/NotificationCenter";
 import { useToast } from "./components/Toast";
 import GlobalSearch from "./components/GlobalSearch";
-import { getToken, clearToken, fetchAssignmentsAndSessions, createAssignment, updateAssignmentOnServer, deleteAssignmentFromServer, logStudySessionOnServer, updateProfile as apiUpdateProfile, fetchNotifications, generateComprehensiveStudyPlan, fetchComprehensiveStudyPlan } from "./services/api";
+import { getToken, clearToken, fetchAssignmentsAndSessions, createAssignment, updateAssignmentOnServer, deleteAssignmentFromServer, logStudySessionOnServer, updateProfile as apiUpdateProfile, fetchNotifications, generateComprehensiveStudyPlan, fetchComprehensiveStudyPlan, generateSmartReminderMessage, createSmartReminderNotification } from "./services/api";
 
 // --- Seed Data ---
 const SEED_ASSIGNMENTS: Assignment[] = [
@@ -224,7 +224,120 @@ export default function App() {
       };
       getUnread();
     }
-  }, [currentScreen, assignments, currentTab]);
+  }, [currentScreen]);
+
+  // Smart Reminder Engine
+  useEffect(() => {
+    if (currentScreen !== "app" || assignments.length === 0) return;
+
+    // Ask for browser notification permission if we haven't already
+    if ("Notification" in window && Notification.permission === "default") {
+      Notification.requestPermission();
+    }
+
+    const checkReminders = async () => {
+      const now = Date.now();
+      const assignmentsToTrigger: { assignment: Assignment, timeStr: string }[] = [];
+
+      // First identify which assignments need to trigger
+      for (const a of assignments) {
+        if (a.status === 'COMPLETED' || !a.reminderSettings?.enabled || a.reminderSettings.triggered) {
+          continue;
+        }
+
+        const deadline = new Date(a.dueDate);
+        const timeUntilDue = deadline.getTime() - now;
+        const offsetMs = a.reminderSettings.timeOffset * 60 * 1000;
+
+        if (timeUntilDue > 0 && timeUntilDue <= offsetMs) {
+          const timeStr = a.reminderSettings.timeOffset < 60 
+            ? `${a.reminderSettings.timeOffset} minutes` 
+            : a.reminderSettings.timeOffset === 60 
+            ? `1 hour` 
+            : a.reminderSettings.timeOffset === 1440
+            ? `1 day`
+            : `${Math.round(a.reminderSettings.timeOffset / 60)} hours`;
+
+          assignmentsToTrigger.push({ assignment: a, timeStr });
+        }
+      }
+
+      if (assignmentsToTrigger.length === 0) return;
+
+      // Update state synchronously to mark them as triggered
+      setAssignments(prevAssignments => {
+        let updatedAny = false;
+        const nextAssignments = prevAssignments.map(a => {
+          if (assignmentsToTrigger.find(t => t.assignment.id === a.id)) {
+            updatedAny = true;
+            return {
+              ...a,
+              reminderSettings: {
+                ...a.reminderSettings,
+                triggered: true
+              }
+            };
+          }
+          return a;
+        });
+
+        if (updatedAny) {
+          localStorage.setItem("smartdeadline_assignments", JSON.stringify(nextAssignments));
+          return nextAssignments;
+        }
+        return prevAssignments;
+      });
+
+      // Fire off notifications for the triggered assignments
+      for (const { assignment, timeStr } of assignmentsToTrigger) {
+        try {
+          const aiRes = await generateSmartReminderMessage(assignment.title, timeStr);
+          const message = aiRes.message;
+
+          if ("Notification" in window && Notification.permission === "granted") {
+            new Notification(`Reminder: ${assignment.title}`, {
+              body: message,
+              icon: "/favicon.ico"
+            });
+          }
+
+          try {
+            const audio = new Audio("https://actions.google.com/sounds/v1/alarms/beep_short.ogg");
+            audio.volume = 0.5;
+            audio.play().catch(() => {});
+          } catch(e) {}
+
+          await createSmartReminderNotification(
+            `Reminder: ${assignment.title}`,
+            message,
+            assignment.id
+          );
+          
+          showToast(`Smart Reminder for ${assignment.title}`, "info");
+
+          if (getToken()) {
+            const updatedAssignment = {
+              ...assignment,
+              reminderSettings: {
+                ...assignment.reminderSettings,
+                triggered: true,
+                enabled: assignment.reminderSettings!.enabled,
+                timeOffset: assignment.reminderSettings!.timeOffset
+              }
+            };
+            await updateAssignmentOnServer(updatedAssignment).catch(() => {});
+          }
+        } catch(err) {
+          console.error("Failed to process reminder for", assignment.title, err);
+        }
+      }
+    };
+
+    const interval = setInterval(checkReminders, 15000); // Check every 15 seconds
+    checkReminders(); // check immediately
+
+    return () => clearInterval(interval);
+  }, [assignments, currentScreen, showToast]);
 
   
   // States for handling form dialogs
@@ -324,7 +437,7 @@ export default function App() {
   // Global shortcut Ctrl+K listener for search
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
+      if ((e.ctrlKey || e.metaKey) && (e.key || '').toLowerCase() === "k") {
         e.preventDefault();
         setIsSearchOpen((prev) => !prev);
       }
@@ -470,7 +583,8 @@ export default function App() {
         weight: formData.weight,
         estimatedHours: formData.estimatedHours,
         description: formData.description,
-        attachments: formData.attachments || []
+        attachments: formData.attachments || [],
+        reminderSettings: formData.reminderSettings
       };
       updatedList = assignments.map((a) => (a.id === editingAssignment.id ? affected : a));
       setAssignments(updatedList);
@@ -481,11 +595,11 @@ export default function App() {
       }
     } else {
       // Creating
-      const newId = `assignment-${Date.now()}`;
+      const newId = `assignment-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
       
       // Map suggested milestones if created via parser
       const initialMilestones = (formData.suggestedMilestones || []).map((title: string, idx: number) => ({
-        id: `milestone-${Date.now()}-${idx}`,
+        id: `milestone-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${idx}`,
         title,
         completed: false
       }));
@@ -504,6 +618,7 @@ export default function App() {
         description: formData.description,
         milestones: initialMilestones,
         attachments: formData.attachments || [],
+        reminderSettings: formData.reminderSettings,
         createdAt: new Date().toISOString()
       };
       updatedList = [...assignments, affected];
@@ -614,7 +729,7 @@ export default function App() {
     const updated = assignments.map((a) => {
       if (a.id === assignmentId) {
         const newMilestone = {
-          id: `milestone-${Date.now()}`,
+          id: `milestone-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
           title,
           completed: false
         };
@@ -634,7 +749,7 @@ export default function App() {
   // Log completed focus session minutes
   const handleLogStudySession = async (assignmentId: string, minutes: number, notes?: string) => {
     const newSession: StudySession = {
-      id: `session-${Date.now()}`,
+      id: `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       assignmentId,
       durationMinutes: minutes,
       date: new Date().toISOString(),
@@ -830,7 +945,7 @@ export default function App() {
     if (!action || !action.type) return;
 
     if (action.type === "NAVIGATE" && action.payload?.tab) {
-      setCurrentTab(action.payload.tab.toLowerCase());
+      setCurrentTab((action.payload.tab || "").toLowerCase());
     } else if (action.type === "ADD_ASSIGNMENT" && action.payload) {
       const { title, course, dueDate, type, priority } = action.payload;
       if (title && dueDate) {

@@ -80,7 +80,7 @@ def register():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while registering user", "details": str(e)}), 500
+        return jsonify({"error": "Database error while registering user", "details": str(e)}), 400
 
     # Generate JWT authentication access token
     access_token = create_access_token(identity=str(new_user.id))
@@ -170,7 +170,7 @@ def update_profile():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while updating profile"}), 500
+        return jsonify({"error": "Database error while updating profile"}), 400
 
     return jsonify({"message": "Profile updated", "user": user.to_dict()}), 200
 
@@ -199,7 +199,7 @@ def change_password():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while updating password"}), 500
+        return jsonify({"error": "Database error while updating password"}), 400
         
     return jsonify({"message": "Password changed successfully"}), 200
 
@@ -218,7 +218,7 @@ def delete_account():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while deleting account"}), 500
+        return jsonify({"error": "Database error while deleting account"}), 400
         
     return jsonify({"message": "Account successfully deleted"}), 200
 
@@ -272,7 +272,8 @@ def create_assignment():
         milestones_json=json.dumps(data.get('milestones', [])),
         attachments_json=json.dumps(data.get('attachments', [])),
         study_plan=data.get('studyPlan', ''),
-        created_at=data.get('createdAt', '')
+        created_at=data.get('createdAt', ''),
+        reminder_settings_json=json.dumps(data.get('reminderSettings')) if data.get('reminderSettings') else None
     )
 
     try:
@@ -280,7 +281,7 @@ def create_assignment():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while creating assignment", "details": str(e)}), 500
+        return jsonify({"error": "Database error while creating assignment", "details": str(e)}), 400
 
     return jsonify({"message": "Assignment created", "assignment": new_assignment.to_dict()}), 201
 
@@ -325,12 +326,14 @@ def update_assignment(assignment_id):
         assignment.attachments_json = json.dumps(data['attachments'])
     if 'studyPlan' in data:
         assignment.study_plan = data['studyPlan']
+    if 'reminderSettings' in data:
+        assignment.reminder_settings_json = json.dumps(data['reminderSettings']) if data['reminderSettings'] else None
 
     try:
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while updating assignment", "details": str(e)}), 500
+        return jsonify({"error": "Database error while updating assignment", "details": str(e)}), 400
 
     return jsonify({"message": "Assignment updated", "assignment": assignment.to_dict()}), 200
 
@@ -349,7 +352,7 @@ def delete_assignment(assignment_id):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while deleting assignment"}), 500
+        return jsonify({"error": "Database error while deleting assignment"}), 400
 
     return jsonify({"message": "Assignment deleted"}), 200
 
@@ -382,7 +385,7 @@ def log_study_session():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while logging study session", "details": str(e)}), 500
+        return jsonify({"error": "Database error while logging study session", "details": str(e)}), 400
 
     return jsonify({"message": "Study session logged", "studySession": new_session.to_dict()}), 201
 
@@ -665,7 +668,7 @@ def mark_notification_read(notif_id):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error", "details": str(e)}), 500
+        return jsonify({"error": "Database error", "details": str(e)}), 400
     return jsonify({"message": "Notification marked as read", "notification": notif.to_dict()}), 200
 
 
@@ -680,7 +683,7 @@ def mark_all_notifications_read():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error", "details": str(e)}), 500
+        return jsonify({"error": "Database error", "details": str(e)}), 400
     return jsonify({"message": "All notifications marked as read"}), 200
 
 
@@ -696,7 +699,7 @@ def delete_notification(notif_id):
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error", "details": str(e)}), 500
+        return jsonify({"error": "Database error", "details": str(e)}), 400
     return jsonify({"message": "Notification deleted"}), 200
 
 
@@ -709,8 +712,35 @@ def clear_all_notifications():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error", "details": str(e)}), 500
+        return jsonify({"error": "Database error", "details": str(e)}), 400
     return jsonify({"message": "All notifications cleared"}), 200
+
+@auth_bp.route('/notifications/smart-reminder', methods=['POST'])
+@jwt_required()
+def create_smart_reminder_notification():
+    current_user_id = get_jwt_identity()
+    data = request.get_json()
+    if not data or 'title' not in data or 'message' not in data:
+        return jsonify({"error": "Missing title or message"}), 400
+
+    notif = Notification(
+        id=str(uuid.uuid4()),
+        user_id=current_user_id,
+        type='SMART_REMINDER',
+        title=data['title'],
+        message=data['message'],
+        read=False,
+        created_at=datetime.now().isoformat(),
+        assignment_id=data.get('assignment_id')
+    )
+    db.session.add(notif)
+    try:
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({"error": "Database error", "details": str(e)}), 400
+    
+    return jsonify(notif.to_dict()), 201
 
 
 @auth_bp.route('/notifications/generate-motivation', methods=['POST'])
@@ -776,7 +806,7 @@ def trigger_ai_motivation():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Failed to save AI notification", "details": str(e)}), 500
+        return jsonify({"error": "Failed to save AI notification", "details": str(e)}), 400
         
     return jsonify(new_notif.to_dict()), 201
 
@@ -827,7 +857,7 @@ def create_weekly_review():
         db.session.commit()
     except Exception as e:
         db.session.rollback()
-        return jsonify({"error": "Database error while saving weekly review", "details": str(e)}), 500
+        return jsonify({"error": "Database error while saving weekly review", "details": str(e)}), 400
 
     return jsonify(new_review.to_dict()), 201
 

@@ -16,15 +16,23 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
   const [error, setError] = useState<string | null>(null);
 
   // Manual form states
+  const initialDateStr = initialAssignment?.dueDate || "2026-07-03T23:59";
+  const [initialDatePart, initialTimePart] = initialDateStr.includes("T") 
+    ? initialDateStr.split("T") 
+    : [initialDateStr, "23:59"];
+
   const [title, setTitle] = useState(initialAssignment?.title || "");
   const [course, setCourse] = useState(initialAssignment?.course || "");
-  const [dueDate, setDueDate] = useState(initialAssignment?.dueDate || "2026-07-03");
+  const [dueDate, setDueDate] = useState(initialDatePart);
+  const [dueTime, setDueTime] = useState(initialTimePart.substring(0, 5)); // HH:MM
   const [priority, setPriority] = useState<Priority>(initialAssignment?.priority || "MEDIUM");
   const [difficulty, setDifficulty] = useState<Difficulty>(initialAssignment?.difficulty || "MEDIUM");
   const [weight, setWeight] = useState<number>(initialAssignment?.weight || 10);
   const [estimatedHours, setEstimatedHours] = useState<number>(initialAssignment?.estimatedHours || 10);
   const [description, setDescription] = useState(initialAssignment?.description || "");
   const [attachments, setAttachments] = useState<Attachment[]>(initialAssignment?.attachments || []);
+  const [reminderEnabled, setReminderEnabled] = useState(initialAssignment?.reminderSettings?.enabled || false);
+  const [reminderOffset, setReminderOffset] = useState<number>(initialAssignment?.reminderSettings?.timeOffset || 60);
 
   // Syllabus parsing raw text
   const [syllabusText, setSyllabusText] = useState("");
@@ -46,7 +54,14 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
       // Auto-populate parsed values
       setTitle(result.title || "");
       setCourse(result.course || "");
-      setDueDate(result.dueDate || "");
+      if (result.dueDate) {
+        const parsedDateStr = result.dueDate;
+        const [parsedDate, parsedTime] = parsedDateStr.includes("T") 
+          ? parsedDateStr.split("T") 
+          : [parsedDateStr, "23:59"];
+        setDueDate(parsedDate);
+        setDueTime(parsedTime.substring(0, 5));
+      }
       setPriority(result.priority || "MEDIUM");
       setWeight(result.weight || 10);
       setEstimatedHours(result.estimatedHours || 10);
@@ -65,21 +80,28 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
 
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!title.trim() || !course.trim() || !dueDate) {
-      setError("Assignment Title, Subject, and Deadline are mandatory.");
+    if (!title.trim() || !course.trim() || !dueDate || !dueTime) {
+      setError("Assignment Title, Subject, Deadline Date, and Deadline Time are mandatory.");
       return;
     }
+
+    const fullDueDate = `${dueDate}T${dueTime}`;
 
     onSave({
       title,
       course,
-      dueDate,
+      dueDate: fullDueDate,
       priority,
       difficulty,
       weight,
       estimatedHours,
       description,
       attachments,
+      reminderSettings: {
+        enabled: reminderEnabled,
+        timeOffset: reminderOffset,
+        customTime: ![5, 15, 30, 60, 1440].includes(reminderOffset)
+      },
       // Pass milestones if we were parsing a syllabus
       suggestedMilestones: initialAssignment ? undefined : [
         "Read criteria and create initial outline",
@@ -90,11 +112,11 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800 rounded-xl overflow-hidden shadow-2xl">
+    <div className="max-w-2xl mx-auto bg-slate-900 border border-slate-800/50 rounded-xl overflow-hidden shadow-sm border-slate-800">
       {}
-      <div className="p-6 border-b border-slate-800 flex items-center justify-between">
+      <div className="p-6 border-b border-slate-800/50 flex items-center justify-between">
         <div>
-          <h3 className="font-display font-bold text-xl text-white">
+          <h3 className="font-sans font-bold text-xl text-slate-100">
             {initialAssignment ? "Edit Assignment" : "Add Assignment"}
           </h3>
           <p className="text-slate-400 text-xs mt-1">
@@ -111,12 +133,12 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
 
       {}
       {!initialAssignment && (
-        <div className="flex border-b border-slate-800 px-6 bg-slate-950/40">
+        <div className="flex border-b border-slate-800/50 px-6 bg-slate-950">
           <button
             onClick={() => setActiveTab("manual")}
             className={`py-3.5 px-4 text-xs font-semibold tracking-wide border-b-2 transition font-mono cursor-pointer ${
               activeTab === "manual"
-                ? "border-indigo-500 text-indigo-400"
+                ? "border-indigo-500 text-slate-300"
                 : "border-transparent text-slate-500 hover:text-slate-300"
             }`}
           >
@@ -126,11 +148,11 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
             onClick={() => setActiveTab("syllabus")}
             className={`py-3.5 px-4 text-xs font-semibold tracking-wide border-b-2 transition flex items-center gap-1.5 font-mono cursor-pointer ${
               activeTab === "syllabus"
-                ? "border-indigo-500 text-indigo-400"
+                ? "border-indigo-500 text-slate-300"
                 : "border-transparent text-slate-500 hover:text-slate-300"
             }`}
           >
-            <Sparkles className="w-3.5 h-3.5 text-indigo-400" />
+            <Sparkles className="w-3.5 h-3.5 text-slate-300" />
             <span>AI SYLLABUS PARSER</span>
           </button>
         </div>
@@ -155,11 +177,11 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
           
           <div className="space-y-4">
             <div className="space-y-1.5">
-              <label className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider">Paste Syllabus Snippet or Assignment Prompt</label>
+              <label className="text-xs font-mono font-bold text-slate-400 font-medium">Paste Syllabus Snippet or Assignment Prompt</label>
               <textarea
                 value={syllabusText}
                 onChange={(e) => setSyllabusText(e.target.value)}
-                placeholder="Paste assignment description, syllabus timeline, grading guidelines, or class email here... Let SmartDeadline AI extract the parameters."
+                placeholder="Paste assignment description, syllabus timeline, grading guidelines, or class email here... Let Smart Deadline AI extract the parameters."
                 rows={10}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-sans"
               />
@@ -168,12 +190,12 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
             <button
               onClick={handleParseSyllabus}
               disabled={loading}
-              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
+              className="w-full py-3 bg-indigo-600 hover:bg-indigo-700 text-slate-100 font-semibold rounded-lg text-sm flex items-center justify-center gap-2 transition disabled:opacity-50 cursor-pointer"
             >
               {loading ? (
                 <>
                   <Loader2 className="w-4.5 h-4.5 animate-spin" />
-                  <span>Parsing syllabus with SmartDeadline AI...</span>
+                  <span>Parsing syllabus with Smart Deadline AI...</span>
                 </>
               ) : (
                 <>
@@ -186,9 +208,9 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
         ) : (
           
           <form onSubmit={handleSubmit} className="space-y-5">
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Subject / Course</label>
+            <div className="grid grid-cols-1 sm:grid-cols-12 gap-4">
+              <div className="space-y-1.5 sm:col-span-6">
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Subject / Course</label>
                 <input
                   type="text"
                   required
@@ -199,8 +221,8 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
                 />
               </div>
 
-              <div className="space-y-1.5">
-                <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Deadline (Due Date)</label>
+              <div className="space-y-1.5 sm:col-span-3">
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Deadline (Due Date)</label>
                 <input
                   type="date"
                   required
@@ -209,10 +231,21 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
                   className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
                 />
               </div>
+
+              <div className="space-y-1.5 sm:col-span-3">
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Deadline Time</label>
+                <input
+                  type="time"
+                  required
+                  value={dueTime}
+                  onChange={(e) => setDueTime(e.target.value)}
+                  className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                />
+              </div>
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Assignment Title</label>
+              <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Assignment Title</label>
               <input
                 type="text"
                 required
@@ -225,7 +258,7 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
 
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
               <div className="space-y-1.5">
-                <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Priority Level</label>
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Priority Level</label>
                 <select
                   value={priority}
                   onChange={(e) => setPriority(e.target.value as Priority)}
@@ -239,7 +272,7 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Difficulty</label>
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Difficulty</label>
                 <select
                   value={difficulty}
                   onChange={(e) => setDifficulty(e.target.value as Difficulty)}
@@ -252,7 +285,7 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Grade Weight (%)</label>
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Grade Weight (%)</label>
                 <input
                   type="number"
                   min={1}
@@ -264,7 +297,7 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
               </div>
 
               <div className="space-y-1.5">
-                <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Est. Hours</label>
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Est. Hours</label>
                 <input
                   type="number"
                   min={1}
@@ -277,14 +310,65 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
             </div>
 
             <div className="space-y-1.5">
-              <label className="text-xs font-mono font-semibold text-slate-400 uppercase tracking-wider">Description & Core Brief</label>
+              <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Description & Core Brief</label>
               <textarea
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Include assignment details, grading rubrics, or notes to help SmartDeadline AI customize the generated study schedule."
+                placeholder="Include assignment details, grading rubrics, or notes to help Smart Deadline AI customize the generated study schedule."
                 rows={4}
                 className="w-full bg-slate-950 border border-slate-800 rounded-lg p-3 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500"
               />
+            </div>
+
+            {/* Smart Reminder Settings */}
+            <div className="pt-2 border-t border-slate-800">
+              <div className="flex items-center justify-between mb-2">
+                <label className="text-xs font-mono font-semibold text-slate-400 font-medium">Smart Reminder</label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="checkbox"
+                    id="reminder-enable"
+                    checked={reminderEnabled}
+                    onChange={(e) => setReminderEnabled(e.target.checked)}
+                    className="w-4 h-4 rounded border-slate-700 bg-slate-900 text-slate-400 focus:ring-indigo-500 focus:ring-offset-slate-950"
+                  />
+                  <label htmlFor="reminder-enable" className="text-sm text-slate-300 select-none cursor-pointer">Enable</label>
+                </div>
+              </div>
+              
+              {reminderEnabled && (
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <select
+                    value={[5, 15, 30, 60, 1440].includes(reminderOffset) ? reminderOffset : 'custom'}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      if (val !== 'custom') setReminderOffset(Number(val));
+                    }}
+                    className="bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 flex-1"
+                  >
+                    <option value={5}>5 minutes before</option>
+                    <option value={15}>15 minutes before</option>
+                    <option value={30}>30 minutes before</option>
+                    <option value={60}>1 hour before</option>
+                    <option value={1440}>1 day before</option>
+                    <option value="custom">Custom time...</option>
+                  </select>
+                  
+                  {![5, 15, 30, 60, 1440].includes(reminderOffset) && (
+                    <div className="flex items-center gap-2 flex-1">
+                      <input
+                        type="number"
+                        min={1}
+                        value={reminderOffset}
+                        onChange={(e) => setReminderOffset(Number(e.target.value))}
+                        className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-300 focus:outline-none focus:ring-1 focus:ring-indigo-500 font-mono"
+                        placeholder="Minutes"
+                      />
+                      <span className="text-sm text-slate-400">min</span>
+                    </div>
+                  )}
+                </div>
+              )}
             </div>
 
             {}
@@ -299,7 +383,7 @@ export default function AssignmentForm({ onSave, onCancel, initialAssignment }: 
             <div className="pt-4 flex gap-3">
               <button
                 type="submit"
-                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-semibold rounded-lg text-sm transition-all cursor-pointer"
+                className="flex-1 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-slate-100 font-semibold rounded-lg text-sm transition-all cursor-pointer"
               >
                 {initialAssignment ? "Save Changes" : "Save Assignment"}
               </button>

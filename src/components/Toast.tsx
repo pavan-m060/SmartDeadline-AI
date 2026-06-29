@@ -60,7 +60,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
             let icon = <CheckCircle2 className="w-5 h-5 text-emerald-400 shrink-0" />;
             let borderClass = "border-emerald-500/20";
             let shadowClass = "shadow-emerald-500/5";
-            const bgClass = "bg-slate-900/90";
+            const bgClass = "bg-slate-900";
 
             if (toast.type === "error") {
               icon = <AlertCircle className="w-5 h-5 text-rose-400 shrink-0" />;
@@ -71,7 +71,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
               borderClass = "border-amber-500/20";
               shadowClass = "shadow-amber-500/5";
             } else if (toast.type === "info") {
-              icon = <Info className="w-5 h-5 text-indigo-400 shrink-0" />;
+              icon = <Info className="w-5 h-5 text-slate-300 shrink-0" />;
               borderClass = "border-indigo-500/20";
               shadowClass = "shadow-indigo-500/5";
             }
@@ -83,7 +83,7 @@ export function ToastProvider({ children }: ToastProviderProps) {
                 animate={{ opacity: 1, y: 0, scale: 1 }}
                 exit={{ opacity: 0, y: -10, scale: 0.95 }}
                 transition={{ type: "spring", damping: 25, stiffness: 350 }}
-                className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border ${borderClass} ${bgClass} shadow-xl ${shadowClass} backdrop-blur-md`}
+                className={`pointer-events-auto flex items-start gap-3 p-4 rounded-xl border ${borderClass} ${bgClass} shadow-sm ${shadowClass} backdrop-`}
               >
                 {icon}
                 <div className="flex-1 text-xs font-medium text-slate-100 leading-normal select-none">

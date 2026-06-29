@@ -37,20 +37,20 @@ async function request<T>(
   });
 
   if (!response.ok) {
-    let errorData = {};
+    let errorData: any;
     try {
       errorData = await response.json();
-    } catch (e) {
+    } catch (_e) {
       errorData = { error: `Invalid JSON from ${url}. Status: ${response.status}` };
     }
-    const message = (errorData as any).error || `HTTP error! Status: ${response.status}`;
+    const message = errorData?.error || `HTTP error! Status: ${response.status}`;
     throw new Error(message);
   }
 
   try {
     return (await response.json()) as T;
-  } catch (e) {
-    throw new Error(`Failed to parse JSON from ${url}. Status: ${response.status}. Response was HTML or invalid.`);
+  } catch (_e) {
+    throw new Error(`Failed to parse JSON from ${url}. Status: ${response.status}. Response was HTML or invalid.`, { cause: _e });
   }
 }
 
@@ -190,7 +190,7 @@ export async function logStudySessionOnServer(session: StudySession): Promise<St
 
 // --- AI Endpoints (Flask App) ---
 export async function generateStudyPlan(assignment: Assignment): Promise<string> {  if (!getToken()) {
-    return "Register or sign in to generate academic study plans using SmartDeadline AI.";
+    return "Register or sign in to generate academic study plans using Smart Deadline AI.";
   }
   // Use the Flask backend /api/ai/study-plan
   const data = await request<{ study_plan?: string; plan?: string; reply?: string }>("/api/gemini/generate-plan", {
@@ -445,7 +445,7 @@ export async function aiChat(
   studySessions: StudySession[]
 ): Promise<{ text: string }> {
   if (!getToken()) {
-    return { text: "Hello! I'm your SmartDeadline AI Co-Pilot. To have real interactive coaching conversations and get plan revisions, please register or log in!" };
+    return { text: "Hello! I'm your Smart Deadline AI Co-Pilot. To have real interactive coaching conversations and get plan revisions, please register or log in!" };
   }
   return request<{ text: string }>("/api/ai/chat", {
     method: "POST",
@@ -538,7 +538,7 @@ export async function generateCopilotPlan(
         explanation: "mock risk analysis."
       },
       completion_probability: 95,
-      motivation: "Please register or log in to generate customized co-pilot plans with SmartDeadline AI!"
+      motivation: "Please register or log in to generate customized co-pilot plans with Smart Deadline AI!"
     };
   }
   return request<CopilotPlanResult>("/api/ai/copilot", {
@@ -583,6 +583,22 @@ export async function deleteNotificationFromServer(id: string): Promise<{ messag
   }
   return request<{ message: string }>(`/api/auth/notifications/${id}`, {
     method: "DELETE",
+  });
+}
+
+export async function generateSmartReminderMessage(title: string, timeRemaining: string): Promise<{ message: string }> {
+  if (!getToken()) return { message: `Reminder: Your assignment '${title}' is due in ${timeRemaining}!` };
+  return request<{ message: string }>("/api/ai/generate-smart-reminder", {
+    method: "POST",
+    body: JSON.stringify({ title, timeRemaining }),
+  });
+}
+
+export async function createSmartReminderNotification(title: string, message: string, assignment_id?: string): Promise<Notification> {
+  if (!getToken()) return {} as Notification;
+  return request<Notification>("/api/auth/notifications/smart-reminder", {
+    method: "POST",
+    body: JSON.stringify({ title, message, assignment_id }),
   });
 }
 
@@ -704,7 +720,7 @@ export async function runAIPrediction(
       stressLevel: assignment.difficulty === "HARD" ? "Elevated (6/10)" : "Relaxed (2/10)",
       productivityScore: 78,
       confidenceScore: 92,
-      analysis: "prediction. Register/login to generate real-time AI forecasting modeled by SmartDeadline AI.",
+      analysis: "prediction. Register/login to generate real-time AI forecasting modeled by Smart Deadline AI.",
       interventions: [
         "Register for an account to save prediction historical logs.",
         "Allocate at least 1.5 hours/day to secure completion.",
@@ -791,7 +807,7 @@ export async function saveWeeklyReview(review: Omit<WeeklyReview, "id">): Promis
     const reviews: WeeklyReview[] = local ? JSON.parse(local) : [];
     const newReview: WeeklyReview = {
       ...review,
-      id: `review-${Date.now()}`
+      id: `review-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
     };
     reviews.push(newReview);
     localStorage.setItem("weekly_reviews", JSON.stringify(reviews));

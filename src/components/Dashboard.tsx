@@ -5,6 +5,8 @@ import { motion } from "motion/react";
 import { fetchNotifications, markNotificationAsRead, fetchNextTaskRecommendation, RecommendationResult } from "../services/api";
 import { NotificationSkeleton } from "./Skeleton";
 
+import { formatDueDate } from "../utils";
+
 interface DashboardProps {
   assignments: Assignment[];
   studySessions: StudySession[];
@@ -129,7 +131,7 @@ export default function Dashboard({
         await onAddAssignment({
           title: quickTitle,
           course: quickCourse,
-          dueDate: quickDueDate,
+          dueDate: quickDueDate.includes("T") ? quickDueDate : `${quickDueDate}T23:59`,
           priority: quickPriority,
           difficulty: "MEDIUM",
           weight: 10,
@@ -256,7 +258,7 @@ export default function Dashboard({
       {}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="font-display font-extrabold text-3xl text-white tracking-tight">
+          <h2 className="font-sans font-semibold text-3xl text-slate-100 tracking-tight">
             Academic Performance Dashboard
           </h2>
           <p className="text-slate-400 text-sm mt-1">
@@ -270,15 +272,15 @@ export default function Dashboard({
             onClick={() => onNavigateToTab("syllabus-scanner")}
             className="flex items-center gap-1.5 px-3.5 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-xs font-semibold border border-slate-800 hover:border-slate-700 transition cursor-pointer"
           >
-            <BookOpen className="w-3.5 h-3.5 text-indigo-400" />
+            <BookOpen className="w-3.5 h-3.5 text-slate-300" />
             <span>Scan Syllabus</span>
           </button>
           
           <button
             onClick={() => onNavigateToTab("study-planner")}
-            className="flex items-center gap-1.5 px-3.5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-xs font-semibold shadow-lg shadow-indigo-500/20 transition cursor-pointer"
+            className="flex items-center gap-1.5 px-3.5 py-2 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 rounded-xl text-xs font-semibold shadow-sm shadow-sm transition cursor-pointer"
           >
-            <Sparkles className="w-3.5 h-3.5 text-white animate-pulse" />
+            <Sparkles className="w-3.5 h-3.5 text-slate-100 " />
             <span>AI Study Planner</span>
           </button>
         </div>
@@ -288,89 +290,89 @@ export default function Dashboard({
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
         
         {}
-        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900/60 border border-slate-800/80 p-4.5 rounded-2xl flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-indigo-500/5 rounded-full blur-lg" />
+        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900 border border-slate-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-slate-800 transition-colors shadow-sm  relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-brand-purple/5 rounded-full " />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Assignments</span>
-            <Bookmark className="w-4 h-4 text-indigo-400" />
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium">Assignments</span>
+            <Bookmark className="w-4 h-4 text-slate-300" />
           </div>
           <div>
-            <div className="text-2xl font-extrabold font-mono text-white tracking-tight">{assignments.length}</div>
-            <p className="text-[9px] text-slate-400 mt-1">Total track list</p>
+            <div className="text-2xl font-semibold text-slate-100">{assignments.length}</div>
+            <p className="text-[11px] text-slate-400 mt-1">Total track list</p>
           </div>
         </motion.div>
 
         {}
-        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900/60 border border-slate-800/80 p-4.5 rounded-2xl flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full blur-lg" />
+        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900 border border-slate-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-slate-800 transition-colors shadow-sm  relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-amber-500/5 rounded-full " />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Pending</span>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium">Pending</span>
             <ListTodo className="w-4 h-4 text-amber-400" />
           </div>
           <div>
-            <div className="text-2xl font-extrabold font-mono text-white tracking-tight">
+            <div className="text-2xl font-semibold text-slate-100">
               {assignments.filter(a => a.status !== 'COMPLETED').length}
             </div>
-            <p className="text-[9px] text-slate-400 mt-1">Remaining active</p>
+            <p className="text-[11px] text-slate-400 mt-1">Remaining active</p>
           </div>
         </motion.div>
 
         {}
-        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900/60 border border-slate-800/80 p-4.5 rounded-2xl flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full blur-lg" />
+        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900 border border-slate-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-slate-800 transition-colors shadow-sm  relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-emerald-500/5 rounded-full " />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Completed</span>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium">Completed</span>
             <CheckSquare className="w-4 h-4 text-emerald-400" />
           </div>
           <div>
-            <div className="text-2xl font-extrabold font-mono text-emerald-400 tracking-tight">{completedTasks.length}</div>
-            <p className="text-[9px] text-slate-400 mt-1">Finished syllabus items</p>
+            <div className="text-2xl font-semibold text-emerald-400">{completedTasks.length}</div>
+            <p className="text-[11px] text-slate-400 mt-1">Finished syllabus items</p>
           </div>
         </motion.div>
 
         {}
-        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900/60 border border-slate-800/80 p-4.5 rounded-2xl flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-sky-500/5 rounded-full blur-lg" />
+        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900 border border-slate-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-slate-800 transition-colors shadow-sm  relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-sky-500/5 rounded-full " />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Study Hours</span>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium">Study Hours</span>
             <Clock className="w-4 h-4 text-sky-400" />
           </div>
           <div>
-            <div className="text-2xl font-extrabold font-mono text-white tracking-tight">{stats.totalHours.toFixed(1)}h</div>
-            <p className="text-[9px] text-slate-400 mt-1">Focused duration</p>
+            <div className="text-2xl font-semibold text-slate-100">{stats.totalHours.toFixed(1)}h</div>
+            <p className="text-[11px] text-slate-400 mt-1">Focused duration</p>
           </div>
         </motion.div>
 
         {}
-        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900/60 border border-slate-800/80 p-4.5 rounded-2xl flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500/5 rounded-full blur-lg" />
+        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900 border border-slate-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-slate-800 transition-colors shadow-sm  relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-orange-500/5 rounded-full " />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Streak</span>
-            <Flame className={`w-4 h-4 ${stats.streak > 0 ? "text-orange-500 animate-pulse" : "text-slate-500"}`} />
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium">Streak</span>
+            <Flame className={`w-4 h-4 ${stats.streak > 0 ? "text-orange-500 " : "text-slate-500"}`} />
           </div>
           <div>
-            <div className="text-2xl font-extrabold font-mono text-white tracking-tight flex items-center gap-1">
+            <div className="text-2xl font-semibold text-slate-100 flex items-center gap-1">
               {stats.streak} <span className="text-xs text-slate-400 font-sans">days</span>
             </div>
-            <p className="text-[9px] text-slate-400 mt-1 truncate">
+            <p className="text-[11px] text-slate-400 mt-1 truncate">
               {stats.streak > 0 ? "🔥 Keep it burning!" : "Log a focus block"}
             </p>
           </div>
         </motion.div>
 
         {}
-        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900/60 border border-slate-800/80 p-4.5 rounded-2xl flex flex-col justify-between hover:border-slate-700/80 transition-colors shadow-lg backdrop-blur-sm relative overflow-hidden group">
-          <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full blur-lg" />
+        <motion.div whileHover={{ scale: 1.02, y: -2 }} className="bg-slate-900 border border-slate-800/50 p-4 rounded-xl flex flex-col justify-between hover:border-slate-800 transition-colors shadow-sm  relative overflow-hidden group">
+          <div className="absolute top-0 right-0 w-16 h-16 bg-purple-500/5 rounded-full " />
           <div className="flex items-center justify-between mb-2">
-            <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-wider">Prod. Score</span>
+            <span className="text-xs font-mono font-bold text-slate-500 font-medium">Prod. Score</span>
             <TrendingUp className="w-4 h-4 text-purple-400" />
           </div>
           <div>
             <div className="flex items-baseline gap-1">
-              <div className="text-2xl font-extrabold font-mono text-purple-400 tracking-tight">{productivityScore}</div>
-              <span className="text-[10px] text-slate-500 font-mono">/100</span>
+              <div className="text-2xl font-semibold text-indigo-400">{productivityScore}</div>
+              <span className="text-xs text-slate-500 font-mono">/100</span>
             </div>
-            <p className="text-[9px] text-slate-400 mt-1">Calculated efficiency</p>
+            <p className="text-[11px] text-slate-400 mt-1">Calculated efficiency</p>
           </div>
         </motion.div>
       </div>
@@ -382,16 +384,16 @@ export default function Dashboard({
         <div className="lg:col-span-2 space-y-6">
 
           {}
-          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm space-y-4">
+          <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl shadow-sm  space-y-4">
             <div className="flex justify-between items-center pb-2 border-b border-slate-850">
               <div className="flex items-center gap-2">
-                <CalendarDays className="w-5 h-5 text-indigo-400" />
+                <CalendarDays className="w-5 h-5 text-slate-300" />
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">Today's Schedule</h3>
+                  <h3 className="text-base font-bold text-slate-100 font-sans">Today's Schedule</h3>
                   <p className="text-xs text-slate-400">Your agenda and activities for today ({todayStr})</p>
                 </div>
               </div>
-              <span className="text-[10px] font-mono font-bold bg-indigo-500/10 text-indigo-300 px-2 py-0.5 rounded">
+              <span className="text-xs font-mono font-bold bg-brand-purple/10 text-indigo-300 px-2 py-0.5 rounded">
                 {totalMinutesToday}m Focused Today
               </span>
             </div>
@@ -399,28 +401,28 @@ export default function Dashboard({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
               {}
               <div className="space-y-2">
-                <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-mono font-bold text-slate-400 font-medium flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-rose-500" />
                   Due/Pending Today
                 </h4>
                 
                 {assignmentsDueToday.length === 0 ? (
-                  <div className="p-4 rounded-xl bg-slate-950/20 border border-slate-850 text-center text-xs text-slate-500 italic">
+                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-850 text-center text-xs text-slate-500 italic">
                     ✅ No major deadlines due today!
                   </div>
                 ) : (
                   <div className="space-y-2">
                     {assignmentsDueToday.map(assignment => (
-                      <div key={assignment.id} className="p-3 bg-slate-950/40 border border-rose-500/10 rounded-xl flex justify-between items-center">
+                      <div key={assignment.id} className="p-3 bg-slate-950 border border-rose-500/10 rounded-xl flex justify-between items-center">
                         <div className="min-w-0 pr-2">
-                          <span className="text-[9px] font-mono font-bold text-rose-400 bg-rose-500/5 px-1.5 py-0.5 rounded border border-rose-500/10 uppercase">
+                          <span className="text-[11px] font-mono font-bold text-rose-400 bg-rose-500/5 px-1.5 py-0.5 rounded border border-rose-500/10 uppercase">
                             {assignment.course}
                           </span>
-                          <p className="text-xs font-bold text-white mt-1 truncate">{assignment.title}</p>
+                          <p className="text-xs font-bold text-slate-100 mt-1 truncate">{assignment.title}</p>
                         </div>
                         <button
                           onClick={() => onSelectAssignmentForTimer(assignment.id)}
-                          className="px-2.5 py-1 bg-rose-950/30 hover:bg-rose-900/40 border border-rose-500/20 hover:border-rose-500/40 rounded text-[10px] font-bold text-rose-300 transition shrink-0"
+                          className="px-2.5 py-1 bg-rose-950/30 hover:bg-rose-900/40 border border-rose-500/20 hover:border-rose-500/40 rounded text-xs font-bold text-rose-300 transition shrink-0"
                         >
                           Focus Now
                         </button>
@@ -432,17 +434,17 @@ export default function Dashboard({
 
               {}
               <div className="space-y-2">
-                <h4 className="text-xs font-mono font-bold text-slate-400 uppercase tracking-wider flex items-center gap-1.5">
+                <h4 className="text-xs font-mono font-bold text-slate-400 font-medium flex items-center gap-1.5">
                   <span className="w-1.5 h-1.5 rounded-full bg-emerald-500" />
                   Logged Sessions Today
                 </h4>
 
                 {studySessionsToday.length === 0 ? (
-                  <div className="p-4 rounded-xl bg-slate-950/20 border border-slate-850 text-center text-xs text-slate-400">
+                  <div className="p-4 rounded-xl bg-slate-950 border border-slate-850 text-center text-xs text-slate-400">
                     <p className="italic text-slate-500">No focus blocks recorded today yet.</p>
                     <button 
                       onClick={() => onNavigateToTab("focus-timer")}
-                      className="text-[10px] text-indigo-400 hover:text-indigo-300 font-bold mt-1.5 underline"
+                      className="text-xs text-slate-300 hover:text-indigo-300 font-bold mt-1.5 underline"
                     >
                       Launch timer and study
                     </button>
@@ -452,17 +454,17 @@ export default function Dashboard({
                     {studySessionsToday.map(session => {
                       const boundAssignment = assignments.find(a => a.id === session.assignmentId);
                       return (
-                        <div key={session.id} className="p-2.5 bg-slate-950/40 border border-slate-850 rounded-xl flex items-center justify-between">
+                        <div key={session.id} className="p-2.5 bg-slate-950 border border-slate-850 rounded-xl flex items-center justify-between">
                           <div className="min-w-0 pr-2">
-                            <span className="text-[9px] font-mono text-slate-500 uppercase">
+                            <span className="text-[11px] font-mono text-slate-500 uppercase">
                               {boundAssignment ? boundAssignment.course : "General Study"}
                             </span>
                             <p className="text-xs font-semibold text-slate-200 truncate">
                               {boundAssignment ? boundAssignment.title : "Self-driven study block"}
                             </p>
-                            {session.notes && <p className="text-[9px] text-slate-500 italic truncate mt-0.5">"{session.notes}"</p>}
+                            {session.notes && <p className="text-[11px] text-slate-500 italic truncate mt-0.5">"{session.notes}"</p>}
                           </div>
-                          <span className="text-[10px] font-mono font-bold text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 shrink-0">
+                          <span className="text-xs font-mono font-bold text-emerald-400 bg-emerald-500/5 px-2 py-0.5 rounded border border-emerald-500/10 shrink-0">
                             +{session.durationMinutes}m
                           </span>
                         </div>
@@ -475,15 +477,15 @@ export default function Dashboard({
           </div>
 
           {}
-          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl shadow-sm ">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="text-base font-bold text-white font-display">Upcoming Deadlines</h3>
+                <h3 className="text-base font-bold text-slate-100 font-sans">Upcoming Deadlines</h3>
                 <p className="text-xs text-slate-400">Pending tasks prioritized chronologically</p>
               </div>
               <button 
                 onClick={() => onNavigateToTab("assignments")}
-                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition"
+                className="text-xs font-semibold text-slate-300 hover:text-indigo-300 flex items-center gap-1 transition"
               >
                 <span>View All</span>
                 <ArrowUpRight className="w-3.5 h-3.5" />
@@ -503,29 +505,29 @@ export default function Dashboard({
                   return (
                     <div 
                       key={item.id}
-                      className="p-4 bg-slate-950/40 border border-slate-800 hover:border-slate-700/80 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition"
+                      className="p-4 bg-slate-950 border border-slate-800 hover:border-slate-800 rounded-xl flex flex-col sm:flex-row sm:items-center justify-between gap-4 transition"
                     >
                       <div className="space-y-1">
                         <div className="flex items-center gap-2">
-                          <span className="text-[10px] font-semibold text-indigo-400 bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/10 uppercase tracking-wide">
+                          <span className="text-xs font-semibold text-slate-300 bg-brand-purple/10 px-2 py-0.5 rounded border border-indigo-500/10 uppercase tracking-wide">
                             {item.course}
                           </span>
-                          <span className={`text-[10px] font-bold px-1.5 py-0.5 rounded border ${
+                          <span className={`text-xs font-bold px-1.5 py-0.5 rounded border ${
                             item.priority === 'URGENT' ? "text-rose-400 bg-rose-500/10 border-rose-500/20" :
                             item.priority === 'HIGH' ? "text-amber-400 bg-amber-500/10 border-amber-500/20" :
-                            "text-slate-400 bg-slate-500/10 border-slate-500/20"
+                            "text-slate-400 bg-slate-500/10 border-slate-800"
                           }`}>
                             {item.priority}
                           </span>
                         </div>
-                        <h4 className="text-sm font-semibold text-white mt-1">{item.title}</h4>
+                        <h4 className="text-sm font-semibold text-slate-100 mt-1">{item.title}</h4>
                       </div>
 
-                      <div className="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800/80">
+                      <div className="flex items-center justify-between sm:justify-end gap-4 border-t sm:border-t-0 pt-2 sm:pt-0 border-slate-800">
                         <div className="text-left sm:text-right">
                           <div className={`text-xs font-semibold ${
                             daysLeft < 0 ? "text-rose-400" :
-                            daysLeft <= 2 ? "text-amber-400 animate-pulse" :
+                            daysLeft <= 2 ? "text-amber-400 " :
                             "text-slate-300"
                           }`}>
                             {daysLeft < 0 ? "Overdue" :
@@ -533,11 +535,11 @@ export default function Dashboard({
                              daysLeft === 1 ? "Due Tomorrow" :
                              `Due in {daysLeft} days`}
                           </div>
-                          <span className="text-[10px] text-slate-500 font-mono">{item.dueDate}</span>
+                          <span className="text-xs text-slate-500 font-mono">{formatDueDate(item.dueDate)}</span>
                         </div>
                         <button
                           onClick={() => onSelectAssignmentForTimer(item.id)}
-                          className="p-2 bg-slate-900 hover:bg-indigo-600/20 text-slate-400 hover:text-indigo-400 rounded-lg border border-slate-800 hover:border-indigo-500/30 transition cursor-pointer"
+                          className="p-2 bg-slate-900 hover:bg-indigo-600/20 text-slate-400 hover:text-slate-300 rounded-lg border border-slate-800 hover:border-indigo-500/30 transition cursor-pointer"
                           title="Launch Focus Block Timer"
                         >
                           <Play className="w-3.5 h-3.5 fill-current" />
@@ -551,15 +553,15 @@ export default function Dashboard({
           </div>
 
           {}
-          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm">
+          <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl shadow-sm ">
             <div className="flex justify-between items-center mb-4">
               <div>
-                <h3 className="text-base font-bold text-white font-display">Recent Assignments</h3>
+                <h3 className="text-base font-bold text-slate-100 font-sans">Recent Assignments</h3>
                 <p className="text-xs text-slate-400">Latest additions to your curriculum catalog</p>
               </div>
               <button 
                 onClick={() => onNavigateToTab("assignments")}
-                className="text-xs font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-1 transition"
+                className="text-xs font-semibold text-slate-300 hover:text-indigo-300 flex items-center gap-1 transition"
               >
                 <span>Manage Coursework</span>
                 <ChevronRight className="w-3.5 h-3.5" />
@@ -575,15 +577,15 @@ export default function Dashboard({
                 {recentAssignments.map((assignment) => (
                   <div 
                     key={assignment.id} 
-                    className="p-4 bg-slate-950/40 border border-slate-850 hover:border-slate-800 rounded-xl space-y-2 transition flex flex-col justify-between"
+                    className="p-4 bg-slate-950 border border-slate-850 hover:border-slate-800 rounded-xl space-y-2 transition flex flex-col justify-between"
                   >
                     <div>
                       <div className="flex justify-between items-start gap-2">
-                        <span className="text-[9px] font-mono font-bold text-slate-400 uppercase tracking-wide truncate max-w-[120px]">
+                        <span className="text-[11px] font-mono font-bold text-slate-400 uppercase tracking-wide truncate max-w-[120px]">
                           {assignment.course}
                         </span>
                         
-                        <span className={`text-[9px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase shrink-0 ${
+                        <span className={`text-[11px] font-mono font-bold px-1.5 py-0.5 rounded border uppercase shrink-0 ${
                           assignment.status === 'COMPLETED' ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' :
                           assignment.status === 'REVIEW' ? 'text-purple-400 bg-purple-500/10 border-purple-500/20' :
                           assignment.status === 'IN_PROGRESS' ? 'text-sky-400 bg-sky-500/10 border-sky-500/20' :
@@ -593,13 +595,13 @@ export default function Dashboard({
                         </span>
                       </div>
 
-                      <h4 className="text-xs font-bold text-white mt-1 line-clamp-1">{assignment.title}</h4>
+                      <h4 className="text-xs font-bold text-slate-100 mt-1 line-clamp-1">{assignment.title}</h4>
                       <p className="text-[11px] text-slate-400 line-clamp-2 mt-1">{assignment.description || "No description provided."}</p>
                     </div>
 
-                    <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-[10px] font-mono text-slate-500">
-                      <span>Due: {assignment.dueDate}</span>
-                      <span className="text-indigo-400 font-semibold">{assignment.estimatedHours} hrs est.</span>
+                    <div className="pt-2 border-t border-slate-900 flex items-center justify-between text-xs font-mono text-slate-500">
+                      <span>Due: {formatDueDate(assignment.dueDate)}</span>
+                      <span className="text-slate-300 font-semibold">{assignment.estimatedHours} hrs est.</span>
                     </div>
                   </div>
                 ))}
@@ -608,22 +610,22 @@ export default function Dashboard({
           </div>
 
           {}
-          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm space-y-6">
+          <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl shadow-sm  space-y-6">
             <div>
-              <h3 className="text-base font-bold text-white font-display">Focus Progress Tracking</h3>
+              <h3 className="text-base font-bold text-slate-100 font-sans">Focus Progress Tracking</h3>
               <p className="text-xs text-slate-400">Consolidated analytics based on historical session intervals</p>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {}
-              <div className="p-4 bg-slate-950/50 border border-slate-850 rounded-2xl space-y-3.5">
+              <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-3.5">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-1.5">
-                    <Calendar className="w-4 h-4 text-indigo-400" />
-                    <span className="text-xs font-bold text-white font-display">Weekly Progress</span>
+                    <Calendar className="w-4 h-4 text-slate-300" />
+                    <span className="text-xs font-bold text-slate-100 font-sans">Weekly Progress</span>
                   </div>
-                  <span className="text-xs font-mono font-extrabold text-indigo-400">
+                  <span className="text-xs font-mono font-semibold text-slate-300">
                     {weeklyStudyMinutes}/{weeklyGoalMinutes} mins
                   </span>
                 </div>
@@ -631,36 +633,36 @@ export default function Dashboard({
                 <div className="space-y-1">
                   <div className="w-full bg-slate-900 h-2.5 rounded-full overflow-hidden border border-slate-800">
                     <div 
-                      className="bg-indigo-500 h-full rounded-full transition-all duration-500"
+                      className="bg-brand-purple h-full rounded-full transition-all duration-500"
                       style={{ width: `${weeklyProgressPercentage}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[10px] font-mono text-slate-500">
+                  <div className="flex justify-between text-xs font-mono text-slate-500">
                     <span>{weeklyProgressPercentage}% of goal met</span>
                     <span>Goal: 5 hrs</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-900 text-center">
-                  <div className="p-2 bg-slate-900/40 rounded-xl">
-                    <span className="text-[10px] text-slate-400 block font-mono">COMPLETED</span>
-                    <span className="text-sm font-bold text-white font-mono">{weeklyCompletedTasks} tasks</span>
+                  <div className="p-2 bg-slate-900 rounded-xl">
+                    <span className="text-xs text-slate-400 block font-mono">COMPLETED</span>
+                    <span className="text-sm font-bold text-slate-100 font-mono">{weeklyCompletedTasks} tasks</span>
                   </div>
-                  <div className="p-2 bg-slate-900/40 rounded-xl">
-                    <span className="text-[10px] text-slate-400 block font-mono">HOURS</span>
-                    <span className="text-sm font-bold text-indigo-400 font-mono">{(weeklyStudyMinutes/60).toFixed(1)} hrs</span>
+                  <div className="p-2 bg-slate-900 rounded-xl">
+                    <span className="text-xs text-slate-400 block font-mono">HOURS</span>
+                    <span className="text-sm font-bold text-slate-300 font-mono">{(weeklyStudyMinutes/60).toFixed(1)} hrs</span>
                   </div>
                 </div>
               </div>
 
               {}
-              <div className="p-4 bg-slate-950/50 border border-slate-850 rounded-2xl space-y-3.5">
+              <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-3.5">
                 <div className="flex justify-between items-center">
                   <div className="flex items-center gap-1.5">
                     <Target className="w-4 h-4 text-purple-400" />
-                    <span className="text-xs font-bold text-white font-display">Monthly Progress</span>
+                    <span className="text-xs font-bold text-slate-100 font-sans">Monthly Progress</span>
                   </div>
-                  <span className="text-xs font-mono font-extrabold text-purple-400">
+                  <span className="text-xs font-mono font-semibold text-purple-400">
                     {monthlyStudyMinutes}/{monthlyGoalMinutes} mins
                   </span>
                 </div>
@@ -672,19 +674,19 @@ export default function Dashboard({
                       style={{ width: `${monthlyProgressPercentage}%` }}
                     />
                   </div>
-                  <div className="flex justify-between text-[10px] font-mono text-slate-500">
+                  <div className="flex justify-between text-xs font-mono text-slate-500">
                     <span>{monthlyProgressPercentage}% of goal met</span>
                     <span>Goal: 20 hrs</span>
                   </div>
                 </div>
 
                 <div className="grid grid-cols-2 gap-2 pt-1 border-t border-slate-900 text-center">
-                  <div className="p-2 bg-slate-900/40 rounded-xl">
-                    <span className="text-[10px] text-slate-400 block font-mono">COMPLETED</span>
-                    <span className="text-sm font-bold text-white font-mono">{monthlyCompletedTasks} tasks</span>
+                  <div className="p-2 bg-slate-900 rounded-xl">
+                    <span className="text-xs text-slate-400 block font-mono">COMPLETED</span>
+                    <span className="text-sm font-bold text-slate-100 font-mono">{monthlyCompletedTasks} tasks</span>
                   </div>
-                  <div className="p-2 bg-slate-900/40 rounded-xl">
-                    <span className="text-[10px] text-slate-400 block font-mono">HOURS</span>
+                  <div className="p-2 bg-slate-900 rounded-xl">
+                    <span className="text-xs text-slate-400 block font-mono">HOURS</span>
                     <span className="text-sm font-bold text-purple-400 font-mono">{(monthlyStudyMinutes/60).toFixed(1)} hrs</span>
                   </div>
                 </div>
@@ -693,21 +695,21 @@ export default function Dashboard({
             </div>
 
             {}
-            <div className="p-4 bg-indigo-950/20 border border-indigo-500/10 rounded-2xl flex items-center justify-between gap-4">
+            <div className="p-4 bg-indigo-950/20 border border-indigo-500/10 rounded-xl flex items-center justify-between gap-4">
               <div className="flex items-center gap-3">
-                <div className="p-2 rounded-xl bg-indigo-500/10 text-indigo-400 shrink-0">
+                <div className="p-2 rounded-xl bg-brand-purple/10 text-slate-300 shrink-0">
                   <Trophy className="w-5 h-5" />
                 </div>
                 <div>
-                  <span className="text-xs font-bold text-white font-display block">Total Achievements</span>
-                  <span className="text-[10px] text-indigo-300">Successfully completed {completedTasks.length} curriculum obligations!</span>
+                  <span className="text-xs font-bold text-slate-100 font-sans block">Total Achievements</span>
+                  <span className="text-xs text-indigo-300">Successfully completed {completedTasks.length} curriculum obligations!</span>
                 </div>
               </div>
 
               {completedTasks.length > 0 && (
                 <div className="hidden sm:flex items-center gap-1.5 max-w-xs overflow-hidden">
                   {completedTasks.slice(0, 2).map(task => (
-                    <div key={task.id} className="px-2.5 py-1 bg-slate-950/60 border border-slate-800 rounded-lg text-[10px] font-mono text-slate-400 truncate" title={task.title}>
+                    <div key={task.id} className="px-2.5 py-1 bg-slate-950 border border-slate-800 rounded-lg text-xs font-mono text-slate-400 truncate" title={task.title}>
                       ✓ {task.title}
                     </div>
                   ))}
@@ -723,35 +725,35 @@ export default function Dashboard({
         <div className="space-y-6">
 
           {}
-          <div className="bg-gradient-to-br from-indigo-950/40 via-purple-950/30 to-slate-900/60 border border-indigo-500/30 p-6 rounded-2xl shadow-2xl relative overflow-hidden flex flex-col justify-between">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+          <div className="bg-slate-900 border border-slate-800/50 from-indigo-950/40 via-purple-950/30 to-slate-900/60 border border-indigo-500/30 p-6 rounded-xl shadow-sm border-slate-800 relative overflow-hidden flex flex-col justify-between">
+            
             
             <div className="space-y-4">
               <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-indigo-500/20 border border-indigo-500/30 flex items-center justify-center text-indigo-400">
-                  <Sparkles className="w-4 h-4 animate-pulse" />
+                <div className="w-8 h-8 rounded-xl bg-brand-purple/20 border border-indigo-500/30 flex items-center justify-center text-slate-300">
+                  <Sparkles className="w-4 h-4 " />
                 </div>
                 <div>
-                  <h3 className="text-base font-bold text-white font-display">AI Recommendations</h3>
-                  <p className="text-[10px] font-mono text-indigo-400 uppercase tracking-wider font-semibold">AI Study Coach</p>
+                  <h3 className="text-base font-bold text-slate-100 font-sans">AI Recommendations</h3>
+                  <p className="text-xs font-mono text-slate-300 font-medium font-semibold">AI Study Coach</p>
                 </div>
               </div>
 
               {loadingRec ? (
-                <div className="py-12 text-center space-y-3 bg-slate-950/40 border border-slate-850 rounded-xl">
+                <div className="py-12 text-center space-y-3 bg-slate-950 border border-slate-850 rounded-xl">
                   <div className="w-6 h-6 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin mx-auto" />
                   <span className="text-xs text-slate-400 block font-mono">Analyzing syllabus and workload...</span>
                 </div>
               ) : aiRec ? (
                 <div className="space-y-4">
-                  <div className="p-4 bg-slate-950/60 border border-slate-800/80 rounded-xl space-y-2">
-                    <span className="text-[9px] font-mono font-bold text-indigo-300 bg-indigo-500/10 px-1.5 py-0.5 rounded border border-indigo-500/10 uppercase">
+                  <div className="p-4 bg-slate-950 border border-slate-800 rounded-xl space-y-2">
+                    <span className="text-[11px] font-mono font-bold text-indigo-300 bg-brand-purple/10 px-1.5 py-0.5 rounded border border-indigo-500/10 uppercase">
                       Recommended: {aiRec.course}
                     </span>
-                    <h4 className="text-xs font-bold text-white">{aiRec.recommended_assignment_title}</h4>
+                    <h4 className="text-xs font-bold text-slate-100">{aiRec.recommended_assignment_title}</h4>
                     <p className="text-xs text-slate-300 leading-relaxed italic mt-1">"{aiRec.reason}"</p>
                     {aiRec.message && (
-                      <p className="text-[10px] text-slate-400 pt-1 border-t border-slate-900 mt-2 leading-relaxed">
+                      <p className="text-xs text-slate-400 pt-1 border-t border-slate-900 mt-2 leading-relaxed">
                         💡 {aiRec.message}
                       </p>
                     )}
@@ -760,7 +762,7 @@ export default function Dashboard({
                   <div className="pt-2">
                     <button
                       onClick={handleApplyAiRecommendation}
-                      className="w-full py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white font-semibold rounded-xl text-xs transition cursor-pointer text-center flex items-center justify-center gap-2"
+                      className="w-full py-2.5 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold rounded-xl text-xs transition cursor-pointer text-center flex items-center justify-center gap-2"
                     >
                       <span>Focus on Suggested Task ({aiRec.suggested_duration}m)</span>
                       <ArrowRight className="w-3.5 h-3.5" />
@@ -776,12 +778,12 @@ export default function Dashboard({
           </div>
 
           {}
-          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm space-y-4">
+          <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl shadow-sm  space-y-4">
             <div className="flex items-center gap-2 pb-2 border-b border-slate-850">
               <PlusCircle className="w-4 h-4 text-emerald-400" />
               <div>
-                <h3 className="text-xs font-bold text-white uppercase tracking-wider font-mono">Quick Add Assignment</h3>
-                <p className="text-[10px] text-slate-500">Add to your live schedule instantly</p>
+                <h3 className="text-xs font-bold text-slate-100 font-medium font-mono">Quick Add Assignment</h3>
+                <p className="text-xs text-slate-500">Add to your live schedule instantly</p>
               </div>
             </div>
 
@@ -794,36 +796,36 @@ export default function Dashboard({
 
             <form onSubmit={handleQuickAddSubmit} className="space-y-3">
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-slate-400 uppercase">Assignment Title</label>
+                <label className="text-xs font-mono text-slate-400 uppercase">Assignment Title</label>
                 <input 
                   type="text" 
                   value={quickTitle}
                   onChange={(e) => setQuickTitle(e.target.value)}
                   placeholder="e.g., Final Research Proposal"
-                  className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-white rounded-lg px-3 py-2 outline-none transition"
+                  className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-slate-100 rounded-lg px-3 py-2 outline-none transition"
                   required
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono text-slate-400 uppercase">Course Code</label>
+                  <label className="text-xs font-mono text-slate-400 uppercase">Course Code</label>
                   <input 
                     type="text" 
                     value={quickCourse}
                     onChange={(e) => setQuickCourse(e.target.value)}
                     placeholder="e.g., CS-101"
-                    className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-white rounded-lg px-3 py-2 outline-none transition"
+                    className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-slate-100 rounded-lg px-3 py-2 outline-none transition"
                     required
                   />
                 </div>
 
                 <div className="space-y-1">
-                  <label className="text-[10px] font-mono text-slate-400 uppercase">Priority</label>
+                  <label className="text-xs font-mono text-slate-400 uppercase">Priority</label>
                   <select 
                     value={quickPriority}
                     onChange={(e) => setQuickPriority(e.target.value as any)}
-                    className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-white rounded-lg px-3 py-1.8 outline-none transition cursor-pointer"
+                    className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-slate-100 rounded-lg px-3 py-1.8 outline-none transition cursor-pointer"
                   >
                     <option value="LOW">Low</option>
                     <option value="MEDIUM">Medium</option>
@@ -834,12 +836,12 @@ export default function Dashboard({
               </div>
 
               <div className="space-y-1">
-                <label className="text-[10px] font-mono text-slate-400 uppercase">Due Date</label>
+                <label className="text-xs font-mono text-slate-400 uppercase">Due Date</label>
                 <input 
                   type="date" 
                   value={quickDueDate}
                   onChange={(e) => setQuickDueDate(e.target.value)}
-                  className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-white rounded-lg px-3 py-1.8 outline-none transition cursor-pointer"
+                  className="w-full text-xs bg-slate-950 border border-slate-850 hover:border-slate-800 focus:border-indigo-500 text-slate-100 rounded-lg px-3 py-1.8 outline-none transition cursor-pointer"
                   required
                 />
               </div>
@@ -847,7 +849,7 @@ export default function Dashboard({
               <button
                 type="submit"
                 disabled={quickSubmitting}
-                className="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-white rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer"
+                className="w-full mt-2 py-2 bg-emerald-600 hover:bg-emerald-500 text-slate-100 rounded-lg text-xs font-semibold transition flex items-center justify-center gap-1.5 cursor-pointer"
               >
                 {quickSubmitting ? (
                   <div className="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -862,23 +864,23 @@ export default function Dashboard({
           </div>
 
           {}
-          <div className="bg-slate-900/60 border border-slate-800/80 p-6 rounded-2xl shadow-xl backdrop-blur-sm relative overflow-hidden" id="dashboard-notifications-card">
-            <div className="absolute top-0 right-0 w-24 h-24 bg-indigo-500/5 rounded-full blur-xl pointer-events-none" />
+          <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl shadow-sm  relative overflow-hidden" id="dashboard-notifications-card">
+            
             
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-2">
-                <div className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-indigo-400">
+                <div className="p-1.5 rounded-lg bg-slate-950 border border-slate-800 text-slate-300">
                   <Bell className="w-4 h-4" />
                 </div>
                 <div>
-                  <h3 className="text-xs font-extrabold text-white font-display">Live Notifications</h3>
-                  <p className="text-[9px] text-slate-400">Intelligent system logs</p>
+                  <h3 className="text-xs font-semibold text-slate-100 font-sans">Live Notifications</h3>
+                  <p className="text-[11px] text-slate-400">Intelligent system logs</p>
                 </div>
               </div>
               
               <button 
                 onClick={() => onNavigateToTab("notifications")}
-                className="text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-0.5 transition cursor-pointer"
+                className="text-xs font-semibold text-slate-300 hover:text-indigo-300 flex items-center gap-0.5 transition cursor-pointer"
                 id="view-all-notifications-btn"
               >
                 <span>Full Center</span>
@@ -899,18 +901,18 @@ export default function Dashboard({
                     key={notif.id}
                     className={`p-3 rounded-xl border flex items-start gap-2 transition relative ${
                       notif.read 
-                        ? "bg-slate-950/20 border-slate-900/60" 
-                        : "bg-slate-950/50 border-slate-800/80"
+                        ? "bg-slate-950 border-slate-800" 
+                        : "bg-slate-950 border-slate-800"
                     }`}
                   >
                     {!notif.read && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 flex-shrink-0 animate-pulse" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 flex-shrink-0 " />
                     )}
                     <div className="flex-grow min-w-0">
                       <div className="flex items-baseline justify-between gap-1.5">
-                        <span className="text-[11px] font-bold text-white truncate">{notif.title}</span>
+                        <span className="text-[11px] font-bold text-slate-100 truncate">{notif.title}</span>
                       </div>
-                      <p className="text-[10px] text-slate-400 line-clamp-2 mt-0.5 leading-relaxed">{notif.message}</p>
+                      <p className="text-xs text-slate-400 line-clamp-2 mt-0.5 leading-relaxed">{notif.message}</p>
                     </div>
                     {!notif.read && (
                       <button 
@@ -918,7 +920,7 @@ export default function Dashboard({
                           e.stopPropagation();
                           handleMarkAsReadLocal(notif.id);
                         }}
-                        className="p-1 rounded bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 border border-indigo-500/10 transition flex-shrink-0 cursor-pointer"
+                        className="p-1 rounded bg-brand-purple/10 hover:bg-brand-purple/20 text-slate-300 hover:text-indigo-300 border border-indigo-500/10 transition flex-shrink-0 cursor-pointer"
                         title="Mark Read"
                       >
                         <Check className="w-2.5 h-2.5" />

@@ -22,6 +22,13 @@ export interface Attachment {
   uploadDate?: string; // ISO date string or formatted date
 }
 
+export interface ReminderSettings {
+  enabled: boolean;
+  timeOffset: number; // minutes before due date
+  customTime?: boolean;
+  triggered?: boolean;
+}
+
 export interface Assignment {
   id: string;
   title: string;
@@ -37,6 +44,7 @@ export interface Assignment {
   milestones: Milestone[];
   attachments?: Attachment[];
   studyPlan?: string; // AI generated markdown study plan
+  reminderSettings?: ReminderSettings;
   createdAt: string;
 }
 
@@ -123,7 +131,8 @@ export type NotificationType =
   | 'AI_MOTIVATIONAL'
   | 'MISSED_STUDY_SESSION'
   | 'ASSIGNMENT_DUE_TOMORROW'
-  | 'PRIORITY_CHANGES';
+  | 'PRIORITY_CHANGES'
+  | 'SMART_REMINDER';
 
 export interface Notification {
   id: string;

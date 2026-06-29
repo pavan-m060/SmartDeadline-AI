@@ -4,6 +4,7 @@ import { Upload, FileText, Sparkles, CheckCircle2, AlertCircle, Loader2, ArrowRi
 import { extractSyllabusText, extractSyllabusManual, parseSyllabusOnly, saveImportedTasks } from "../services/api";
 import { Assignment, UserProfile, ExtractedTask, Priority, Difficulty } from "../types";
 import { useToast } from "./Toast";
+import { formatDueDate } from "../utils";
 
 interface SyllabusScannerProps {
   onImportComplete: () => Promise<void> | void;
@@ -20,7 +21,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
   
   // File upload states
   const [dragActive, setDragActive] = useState<boolean>(false);
-  const [ setSelectedFile] = useState<File | null>(null);
+  const [_selectedFile, setSelectedFile] = useState<File | null>(null);
   const [uploadProgress, setUploadProgress] = useState<number>(0);
   const [isExtracting, setIsExtracting] = useState<boolean>(false);
   
@@ -64,7 +65,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
     if (e.dataTransfer.files && e.dataTransfer.files[0]) {
       const file = e.dataTransfer.files[0];
-      const ext = file.name.split(".").pop()?.toLowerCase();
+      const ext = (file.name || '').split(".").pop()?.toLowerCase();
       if (ext === "pdf" || ext === "docx" || ext === "doc" || ext === "txt") {
         setSelectedFile(file);
         handleUploadAndExtract(file);
@@ -181,7 +182,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
       showToast("Syllabus processed! Please review and customize your tasks.", "success");
     } catch (err: any) {
       setStep("extracted");
-      setAiError(err.message || "SmartDeadline AI was unable to structure tasks from this syllabus. Please verify document formatting and try again.");
+      setAiError(err.message || "Smart Deadline AI was unable to structure tasks from this syllabus. Please verify document formatting and try again.");
       showToast(err.message || "AI structuring failed", "error");
     }
   };
@@ -297,12 +298,12 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
   return (
     <div className="flex-1 p-8 overflow-y-auto max-w-5xl mx-auto space-y-8" id="syllabus-scanner-page">
       {}
-      <div className="flex items-center justify-between border-b border-slate-800 pb-6">
+      <div className="flex items-center justify-between border-b border-slate-800/50 pb-6">
         <div>
-          <span className="text-xs text-indigo-400 font-mono font-bold tracking-widest uppercase flex items-center gap-1.5 mb-1">
+          <span className="text-xs text-slate-300 font-mono font-bold tracking-widest uppercase flex items-center gap-1.5 mb-1">
             <Sparkles className="w-3.5 h-3.5" /> AI Syllabus Scanner
           </span>
-          <h2 className="text-2xl font-display font-bold text-white tracking-tight">Syllabus Scanner & Task Importer</h2>
+          <h2 className="text-2xl font-sans font-bold text-slate-100 tracking-tight">Syllabus Scanner & Task Importer</h2>
           <p className="text-sm text-slate-400 mt-1">
             Upload your course syllabus PDF, DOCX, or paste the text. Our AI will automatically identify academic deliverables and schedule them for you.
           </p>
@@ -319,13 +320,13 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             className="space-y-6"
           >
             {}
-            <div className="flex border-b border-slate-800 bg-slate-900/50 p-1.5 rounded-lg max-w-md">
+            <div className="flex border-b border-slate-800/50 bg-slate-900 p-1.5 rounded-lg max-w-md">
               <button
                 onClick={() => setActiveTab("upload")}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
                   activeTab === "upload"
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-indigo-600 text-slate-100 shadow-md shadow-indigo-600/10"
+                    : "text-slate-400 hover:text-slate-100"
                 }`}
               >
                 Upload Syllabus Document
@@ -334,8 +335,8 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                 onClick={() => setActiveTab("paste")}
                 className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
                   activeTab === "paste"
-                    ? "bg-indigo-600 text-white shadow-md shadow-indigo-600/10"
-                    : "text-slate-400 hover:text-white"
+                    ? "bg-indigo-600 text-slate-100 shadow-md shadow-indigo-600/10"
+                    : "text-slate-400 hover:text-slate-100"
                 }`}
               >
                 Paste Plain Text
@@ -360,10 +361,10 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                 onDragLeave={handleDrag}
                 onDrop={handleDrop}
                 onClick={() => fileInputRef.current?.click()}
-                className={`border-2 border-dashed rounded-2xl p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 ${
+                className={`border-2 border-dashed rounded-xl p-12 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-300 ${
                   dragActive
-                    ? "border-indigo-500 bg-indigo-500/10 scale-[0.99]"
-                    : "border-slate-800 bg-slate-900/25 hover:border-slate-700 hover:bg-slate-900/40"
+                    ? "border-indigo-500 bg-brand-purple/10 scale-[0.99]"
+                    : "border-slate-800 bg-slate-900 hover:border-slate-700 hover:bg-slate-900"
                 }`}
               >
                 <input
@@ -376,32 +377,32 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
                 {isExtracting ? (
                   <div className="space-y-4 w-full max-w-sm">
-                    <Loader2 className="w-12 h-12 text-indigo-400 animate-spin mx-auto" />
+                    <Loader2 className="w-12 h-12 text-slate-300 animate-spin mx-auto" />
                     <div>
-                      <h4 className="text-sm font-semibold text-white">Extracting Syllabus Content</h4>
+                      <h4 className="text-sm font-semibold text-slate-100">Extracting Syllabus Content</h4>
                       <p className="text-xs text-slate-400 mt-1">Reading files and decoding course objectives...</p>
                     </div>
                     {}
                     <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden">
                       <div 
-                        className="h-full bg-indigo-500 transition-all duration-300"
+                        className="h-full bg-brand-purple transition-all duration-300"
                         style={{ width: `${uploadProgress}%` }}
                       />
                     </div>
-                    <span className="text-[10px] text-slate-500 font-mono font-bold uppercase">{uploadProgress}% COMPLETE</span>
+                    <span className="text-xs text-slate-500 font-mono font-bold uppercase">{uploadProgress}% COMPLETE</span>
                   </div>
                 ) : (
                   <div className="space-y-4">
-                    <div className="w-16 h-16 rounded-2xl bg-slate-900 border border-slate-800 flex items-center justify-center mx-auto text-indigo-400 shadow-md">
+                    <div className="w-16 h-16 rounded-xl bg-slate-900 border border-slate-800/50 flex items-center justify-center mx-auto text-slate-300 shadow-md">
                       <Upload className="w-7 h-7" />
                     </div>
                     <div>
-                      <h3 className="text-lg font-bold text-white font-display">Drag & Drop Syllabus File</h3>
+                      <h3 className="text-lg font-bold text-slate-100 font-sans">Drag & Drop Syllabus File</h3>
                       <p className="text-sm text-slate-400 mt-1 max-w-md mx-auto">
                         Supports PDF, Word Documents (DOCX), or plain text (.txt) files. Max size 15MB.
                       </p>
                     </div>
-                    <button className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-white font-medium text-xs rounded-lg transition border border-slate-700 shadow-inner">
+                    <button className="px-5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-100 font-medium text-xs rounded-lg transition border border-slate-700 shadow-inner">
                       Browse Files
                     </button>
                   </div>
@@ -410,26 +411,26 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             ) : (
               
               <div className="space-y-4">
-                <div className="bg-slate-900/40 border border-slate-800 rounded-xl overflow-hidden p-4">
-                  <div className="flex items-center justify-between border-b border-slate-800/60 pb-3 mb-4">
+                <div className="bg-slate-900 border border-slate-800/50 rounded-xl overflow-hidden p-4">
+                  <div className="flex items-center justify-between border-b border-slate-800/50 pb-3 mb-4">
                     <span className="text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                      <FileText className="w-4 h-4 text-indigo-400" /> Syllabus Content
+                      <FileText className="w-4 h-4 text-slate-300" /> Syllabus Content
                     </span>
-                    <span className="text-[10px] text-slate-500 font-mono">{pastedText.length} characters</span>
+                    <span className="text-xs text-slate-500 font-mono">{pastedText.length} characters</span>
                   </div>
                   <textarea
                     value={pastedText}
                     onChange={(e) => setPastedText(e.target.value)}
                     placeholder="Paste the course grading breakdown, schedule of assignments, or calendar contents directly here..."
                     rows={12}
-                    className="w-full bg-slate-950/60 text-slate-200 border-none outline-none text-sm placeholder-slate-600 focus:ring-0 resize-y font-mono"
+                    className="w-full bg-slate-950 text-slate-200 border-none outline-none text-sm placeholder-slate-600 focus:ring-0 resize-y font-mono"
                   />
                 </div>
                 <div className="flex justify-end">
                   <button
                     onClick={handleManualSubmit}
                     disabled={isExtracting}
-                    className="flex items-center gap-2 px-6 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-medium text-sm rounded-lg transition shadow-lg shadow-indigo-600/15 cursor-pointer disabled:opacity-50"
+                    className="flex items-center gap-2 px-6 py-3 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-medium text-sm rounded-lg transition shadow-sm shadow-indigo-600/15 cursor-pointer disabled:opacity-50"
                   >
                     {isExtracting ? (
                       <>
@@ -459,17 +460,17 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
           >
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center text-indigo-400 shrink-0">
+                <div className="w-10 h-10 rounded-xl bg-brand-purple/10 border border-indigo-500/15 flex items-center justify-center text-slate-300 shrink-0">
                   <FileText className="w-5 h-5" />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white font-display">Syllabus Text Loaded</h3>
+                  <h3 className="text-lg font-bold text-slate-100 font-sans">Syllabus Text Loaded</h3>
                   <p className="text-xs text-slate-400">Successfully extracted from: <strong className="text-slate-300">{extractedSource}</strong></p>
                 </div>
               </div>
               <button
                 onClick={resetScanner}
-                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-400 hover:text-white text-xs font-medium rounded-lg transition"
+                className="flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 border border-slate-800/50 hover:bg-slate-800 text-slate-400 hover:text-slate-100 text-xs font-medium rounded-lg transition"
               >
                 <Trash2 className="w-3.5 h-3.5" /> Re-upload
               </button>
@@ -485,7 +486,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             {}
             <div className="space-y-2">
               <label className="text-xs font-semibold text-slate-400">Extracted Text Content (Pre-AI Review)</label>
-              <div className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-6 h-96 overflow-y-auto text-slate-300 text-xs font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
+              <div className="bg-slate-950 border border-slate-800 rounded-xl p-6 h-96 overflow-y-auto text-slate-300 text-xs font-mono whitespace-pre-wrap leading-relaxed shadow-inner">
                 {extractedText}
               </div>
             </div>
@@ -494,9 +495,9 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             <div className="flex justify-end pt-2">
               <button
                 onClick={() => setIsConfirming(true)}
-                className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white font-semibold text-sm rounded-xl transition shadow-lg shadow-indigo-600/20 hover:scale-[1.01] cursor-pointer"
+                className="flex items-center gap-2 px-8 py-3.5 bg-slate-900 border border-slate-800/50 from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-slate-100 font-semibold text-sm rounded-xl transition shadow-sm shadow-indigo-600/20 hover:scale-[1.01] cursor-pointer"
               >
-                <Sparkles className="w-4 h-4 animate-pulse" />
+                <Sparkles className="w-4 h-4 " />
                 <span>Process & Generate Tasks with AI</span>
               </button>
             </div>
@@ -513,12 +514,12 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
           >
             <div className="relative w-24 h-24 flex items-center justify-center">
               <div className="absolute inset-0 rounded-full border-4 border-indigo-500/10 border-t-indigo-500 animate-spin" />
-              <div className="w-16 h-16 rounded-full bg-indigo-500/10 flex items-center justify-center text-indigo-400">
-                <Sparkles className="w-8 h-8 animate-pulse" />
+              <div className="w-16 h-16 rounded-full bg-brand-purple/10 flex items-center justify-center text-slate-300">
+                <Sparkles className="w-8 h-8 " />
               </div>
             </div>
             <div className="space-y-2 max-w-md">
-              <h3 className="text-xl font-display font-bold text-white">AI Academic Co-Pilot is Scanning</h3>
+              <h3 className="text-xl font-sans font-bold text-slate-100">AI Academic Co-Pilot is Scanning</h3>
               <p className="text-sm text-slate-400 leading-relaxed">
                 Analyzing course dates, weights, requirements, and mapping optimal priority levels. Auto-scheduling academic milestones into database...
               </p>
@@ -535,14 +536,14 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             className="space-y-8"
           >
             {}
-            <div className="p-5 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-start gap-4">
-              <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center text-indigo-400 shrink-0">
-                <Sparkles className="w-5 h-5 animate-pulse" />
+            <div className="p-5 bg-brand-purple/10 border border-indigo-500/20 rounded-xl flex items-start gap-4">
+              <div className="w-10 h-10 rounded-xl bg-brand-purple/10 border border-indigo-500/15 flex items-center justify-center text-slate-300 shrink-0">
+                <Sparkles className="w-5 h-5 " />
               </div>
               <div className="space-y-1">
-                <h3 className="text-base font-bold text-white font-display">Review Extracted Course Details</h3>
+                <h3 className="text-base font-bold text-slate-100 font-sans">Review Extracted Course Details</h3>
                 <p className="text-xs text-slate-300 leading-relaxed">
-                  SmartDeadline AI successfully parsed your syllabus! Review and customize the course info, study schedule, or add/edit tasks below before final import.
+                  Smart Deadline AI successfully parsed your syllabus! Review and customize the course info, study schedule, or add/edit tasks below before final import.
                 </p>
               </div>
             </div>
@@ -550,30 +551,30 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             {}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {}
-              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h4 className="text-xs font-mono font-bold tracking-widest text-indigo-400 uppercase flex items-center gap-1.5 mb-2">
+              <div className="bg-slate-900 border border-slate-800/50 rounded-xl p-6 space-y-4">
+                <h4 className="text-xs font-mono font-bold tracking-widest text-slate-300 uppercase flex items-center gap-1.5 mb-2">
                   <GraduationCap className="w-4 h-4" /> Course Metadata
                 </h4>
                 
                 <div className="space-y-3">
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Course Name</label>
+                    <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Course Name</label>
                     <input
                       type="text"
                       value={parsedCourseName}
                       onChange={(e) => setParsedCourseName(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition font-sans"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 transition font-sans"
                       placeholder="e.g. CS 101: Intro to Computer Science"
                     />
                   </div>
                   
                   <div>
-                    <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Instructor / Professor</label>
+                    <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Instructor / Professor</label>
                     <input
                       type="text"
                       value={parsedInstructor}
                       onChange={(e) => setParsedInstructor(e.target.value)}
-                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-white focus:outline-none focus:border-indigo-500 transition font-sans"
+                      className="w-full bg-slate-950 border border-slate-800 rounded-lg px-3 py-2 text-sm text-slate-100 focus:outline-none focus:border-indigo-500 transition font-sans"
                       placeholder="e.g. Dr. Jane Doe"
                     />
                   </div>
@@ -581,12 +582,12 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
               </div>
 
               {}
-              <div className="bg-slate-900/60 border border-slate-800 rounded-2xl p-6 space-y-4">
-                <h4 className="text-xs font-mono font-bold tracking-widest text-indigo-400 uppercase flex items-center gap-1.5 mb-2">
+              <div className="bg-slate-900 border border-slate-800/50 rounded-xl p-6 space-y-4">
+                <h4 className="text-xs font-mono font-bold tracking-widest text-slate-300 uppercase flex items-center gap-1.5 mb-2">
                   <Clock className="w-4 h-4" /> Recommended Study Schedule
                 </h4>
                 <div>
-                  <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">AI Suggested Study Guidelines</label>
+                  <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">AI Suggested Study Guidelines</label>
                   <textarea
                     value={parsedRecommendedSchedule}
                     onChange={(e) => setParsedRecommendedSchedule(e.target.value)}
@@ -602,12 +603,12 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-bold text-white font-display">Academic Tasks & Deliverables</h4>
+                  <h4 className="text-sm font-bold text-slate-100 font-sans">Academic Tasks & Deliverables</h4>
                   <p className="text-xs text-slate-400">Review, modify due dates, weights, or add milestones for each task.</p>
                 </div>
                 <button
                   onClick={addTask}
-                  className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-400 hover:text-indigo-300 border border-indigo-500/20 rounded-lg text-xs font-semibold transition cursor-pointer"
+                  className="flex items-center gap-1.5 px-3 py-1.5 bg-brand-purple/10 hover:bg-brand-purple/20 text-slate-300 hover:text-indigo-300 border border-indigo-500/20 rounded-lg text-xs font-semibold transition cursor-pointer"
                 >
                   <Plus className="w-3.5 h-3.5" />
                   <span>Add Deliverable</span>
@@ -615,7 +616,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
               </div>
 
               {parsedTasks.length === 0 ? (
-                <div className="p-8 text-center bg-slate-900/20 border border-slate-800/60 rounded-2xl text-slate-500 text-sm">
+                <div className="p-8 text-center bg-slate-900 border border-slate-800/50 rounded-xl text-slate-500 text-sm">
                   No tasks found. Click "Add Deliverable" to add one manually.
                 </div>
               ) : (
@@ -630,7 +631,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                         key={idx}
                         className={`bg-slate-950 border transition rounded-xl overflow-hidden ${
                           isExpanded 
-                            ? "border-indigo-500 shadow-lg shadow-indigo-500/5" 
+                            ? "border-indigo-500 shadow-sm shadow-indigo-500/5" 
                             : isCrucial 
                             ? "border-amber-500/40 hover:border-amber-500/60" 
                             : "border-slate-800 hover:border-slate-700"
@@ -652,22 +653,22 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                               ) : task.type === "QUIZ" ? (
                                 <span className="w-7 h-7 rounded-lg bg-violet-500/10 border border-violet-500/20 flex items-center justify-center text-violet-400 text-xs font-bold font-mono">QZ</span>
                               ) : (
-                                <span className="w-7 h-7 rounded-lg bg-indigo-500/10 border border-indigo-500/20 flex items-center justify-center text-indigo-400 text-xs font-bold font-mono">AS</span>
+                                <span className="w-7 h-7 rounded-lg bg-brand-purple/10 border border-indigo-500/20 flex items-center justify-center text-slate-300 text-xs font-bold font-mono">AS</span>
                               )}
                             </div>
                             
                             <div className="space-y-1">
                               <div className="flex flex-wrap items-center gap-1.5">
-                                <span className="text-[10px] text-slate-300 font-mono bg-slate-900 border border-slate-800 px-1.5 py-0.5 rounded">
+                                <span className="text-xs text-slate-300 font-mono bg-slate-900 border border-slate-800/50 px-1.5 py-0.5 rounded">
                                   {task.course || parsedCourseName || "Course"}
                                 </span>
                                 {isCrucial && (
-                                  <span className="text-[9px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full font-mono font-bold flex items-center gap-1">
+                                  <span className="text-[11px] text-amber-400 bg-amber-500/10 border border-amber-500/20 px-1.5 py-0.5 rounded-full font-mono font-bold flex items-center gap-1">
                                     <AlertTriangle className="w-2.5 h-2.5" /> CRITICAL DEADLINE
                                   </span>
                                 )}
                               </div>
-                              <h5 className="font-bold text-sm text-white flex items-center gap-2">
+                              <h5 className="font-bold text-sm text-slate-100 flex items-center gap-2">
                                 {task.title || "Untitled Deliverable"}
                               </h5>
                               <p className="text-xs text-slate-400 line-clamp-1">{task.description || "No description provided."}</p>
@@ -676,15 +677,15 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
                           <div className="flex items-center justify-between md:justify-end gap-6 border-t md:border-t-0 border-slate-900 pt-3 md:pt-0">
                             <div className="text-left md:text-right">
-                              <span className="text-[9px] text-slate-500 block font-mono font-semibold">DUE DATE</span>
+                              <span className="text-[11px] text-slate-500 block font-mono font-semibold">DUE DATE</span>
                               <span className="text-xs font-mono text-slate-200 font-bold flex items-center gap-1 mt-0.5">
-                                <Calendar className="w-3.5 h-3.5 text-slate-500" /> {task.dueDate}
+                                <Calendar className="w-3.5 h-3.5 text-slate-500" /> {formatDueDate(task.dueDate)}
                               </span>
                             </div>
 
                             <div className="text-left md:text-right min-w-16">
-                              <span className="text-[9px] text-slate-500 block font-mono font-semibold">WEIGHT</span>
-                              <span className="text-xs font-mono text-indigo-400 font-bold block mt-0.5">
+                              <span className="text-[11px] text-slate-500 block font-mono font-semibold">WEIGHT</span>
+                              <span className="text-xs font-mono text-slate-300 font-bold block mt-0.5">
                                 {task.weight}%
                               </span>
                             </div>
@@ -695,7 +696,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                                   e.stopPropagation();
                                   setExpandedTaskIdx(isExpanded ? null : idx);
                                 }}
-                                className="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-slate-400 hover:text-white transition cursor-pointer"
+                                className="p-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 rounded-lg text-slate-400 hover:text-slate-100 transition cursor-pointer"
                               >
                                 <Edit3 className="w-3.5 h-3.5" />
                               </button>
@@ -717,24 +718,24 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
                         {}
                         {isExpanded && (
-                          <div className="p-5 border-t border-slate-900 bg-slate-950/60 space-y-4">
+                          <div className="p-5 border-t border-slate-900 bg-slate-950 space-y-4">
                             <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                               <div className="md:col-span-2">
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Title</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Title</label>
                                 <input
                                   type="text"
                                   value={task.title}
                                   onChange={(e) => handleTaskChange(idx, "title", e.target.value)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                 />
                               </div>
                               
                               <div>
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Deliverable Type</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Deliverable Type</label>
                                 <select
                                   value={task.type}
                                   onChange={(e) => handleTaskChange(idx, "type", e.target.value)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                 >
                                   <option value="ASSIGNMENT">Assignment</option>
                                   <option value="EXAM">Exam</option>
@@ -744,44 +745,44 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                               </div>
 
                               <div>
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Course Code</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Course Code</label>
                                 <input
                                   type="text"
                                   value={task.course}
                                   onChange={(e) => handleTaskChange(idx, "course", e.target.value)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                 />
                               </div>
                             </div>
 
                             <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                               <div>
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Due Date (YYYY-MM-DD)</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Due Date (YYYY-MM-DD)</label>
                                 <input
                                   type="text"
                                   value={task.dueDate}
                                   onChange={(e) => handleTaskChange(idx, "dueDate", e.target.value)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs font-mono text-white focus:outline-none focus:border-indigo-500"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-3 py-1.5 text-xs font-mono text-slate-100 focus:outline-none focus:border-indigo-500"
                                   placeholder="YYYY-MM-DD"
                                 />
                               </div>
 
                               <div>
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Grade Weight (%)</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Grade Weight (%)</label>
                                 <input
                                   type="number"
                                   value={task.weight || 0}
                                   onChange={(e) => handleTaskChange(idx, "weight", parseInt(e.target.value) || 0)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-3 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                 />
                               </div>
 
                               <div>
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Priority</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Priority</label>
                                 <select
                                   value={task.priority}
                                   onChange={(e) => handleTaskChange(idx, "priority", e.target.value as Priority)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                 >
                                   <option value="LOW">Low</option>
                                   <option value="MEDIUM">Medium</option>
@@ -791,11 +792,11 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                               </div>
 
                               <div>
-                                <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Difficulty</label>
+                                <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Difficulty</label>
                                 <select
                                   value={task.difficulty}
                                   onChange={(e) => handleTaskChange(idx, "difficulty", e.target.value as Difficulty)}
-                                  className="w-full bg-slate-900 border border-slate-800 rounded-lg px-2.5 py-1.5 text-xs text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                  className="w-full bg-slate-900 border border-slate-800/50 rounded-lg px-2.5 py-1.5 text-xs text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                 >
                                   <option value="EASY">Easy</option>
                                   <option value="MEDIUM">Medium</option>
@@ -808,26 +809,26 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                               {}
                               <div className="md:col-span-2 space-y-3">
                                 <div>
-                                  <label className="text-[10px] font-semibold text-slate-400 font-mono uppercase block mb-1">Description / Details</label>
+                                  <label className="text-xs font-semibold text-slate-400 font-mono uppercase block mb-1">Description / Details</label>
                                   <textarea
                                     value={task.description}
                                     onChange={(e) => handleTaskChange(idx, "description", e.target.value)}
                                     rows={3}
-                                    className="w-full bg-slate-900 border border-slate-800 rounded-lg p-2.5 text-xs text-slate-200 leading-relaxed focus:outline-none focus:border-indigo-500 font-sans"
+                                    className="w-full bg-slate-900 border border-slate-800/50 rounded-lg p-2.5 text-xs text-slate-200 leading-relaxed focus:outline-none focus:border-indigo-500 font-sans"
                                     placeholder="Deliverable description or textbook chapters..."
                                   />
                                 </div>
                               </div>
 
                               {}
-                              <div className="bg-slate-900/40 border border-slate-800/80 rounded-xl p-4 space-y-3">
+                              <div className="bg-slate-900 border border-slate-800/50 rounded-xl p-4 space-y-3">
                                 <div className="flex items-center justify-between">
-                                  <span className="text-[10px] font-semibold text-slate-400 font-mono uppercase flex items-center gap-1">
-                                    <Sparkles className="w-3 h-3 text-indigo-400" /> Milestones
+                                  <span className="text-xs font-semibold text-slate-400 font-mono uppercase flex items-center gap-1">
+                                    <Sparkles className="w-3 h-3 text-slate-300" /> Milestones
                                   </span>
                                   <button
                                     onClick={() => addMilestone(idx)}
-                                    className="text-[10px] font-bold text-indigo-400 hover:text-indigo-300 transition flex items-center gap-0.5 cursor-pointer font-sans"
+                                    className="text-xs font-bold text-slate-300 hover:text-indigo-300 transition flex items-center gap-0.5 cursor-pointer font-sans"
                                   >
                                     <Plus className="w-2.5 h-2.5" /> Add
                                   </button>
@@ -835,16 +836,16 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
                                 <div className="space-y-1.5 max-h-40 overflow-y-auto pr-1">
                                   {task.milestones.length === 0 ? (
-                                    <span className="text-[10px] text-slate-500 italic block font-sans">No milestones added.</span>
+                                    <span className="text-xs text-slate-500 italic block font-sans">No milestones added.</span>
                                   ) : (
                                     task.milestones.map((milestone, mIdx) => (
                                       <div key={mIdx} className="flex items-center gap-1.5">
-                                        <span className="text-[9px] text-slate-500 font-mono">{mIdx + 1}.</span>
+                                        <span className="text-[11px] text-slate-500 font-mono">{mIdx + 1}.</span>
                                         <input
                                           type="text"
                                           value={milestone}
                                           onChange={(e) => handleMilestoneChange(idx, mIdx, e.target.value)}
-                                          className="flex-1 min-w-0 bg-slate-900 border border-slate-800 rounded px-2 py-1 text-[11px] text-white focus:outline-none focus:border-indigo-500 font-sans"
+                                          className="flex-1 min-w-0 bg-slate-900 border border-slate-800/50 rounded px-2 py-1 text-[11px] text-slate-100 focus:outline-none focus:border-indigo-500 font-sans"
                                         />
                                         <button
                                           onClick={() => removeMilestone(idx, mIdx)}
@@ -871,13 +872,13 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             <div className="flex justify-between items-center border-t border-slate-900 pt-6 font-sans">
               <button
                 onClick={resetScanner}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-semibold rounded-lg transition"
+                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-100 text-xs font-semibold rounded-lg transition"
               >
                 Start Over
               </button>
               <button
                 onClick={handleSaveImportedTasks}
-                className="flex items-center gap-2 px-8 py-3.5 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-emerald-600/20 hover:scale-[1.01] cursor-pointer"
+                className="flex items-center gap-2 px-8 py-3.5 bg-slate-900 border border-slate-800/50 from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-slate-100 font-bold text-sm rounded-xl transition shadow-sm shadow-emerald-600/20 hover:scale-[1.01] cursor-pointer"
               >
                 <span>Confirm & Import to Workspace</span>
                 <ArrowRight className="w-4 h-4" />
@@ -901,7 +902,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
               </div>
             </div>
             <div className="space-y-2 max-w-md">
-              <h3 className="text-xl font-display font-bold text-white">Scheduling Academic Plan...</h3>
+              <h3 className="text-xl font-sans font-bold text-slate-100">Scheduling Academic Plan...</h3>
               <p className="text-sm text-slate-400 leading-relaxed font-sans">
                 Importing tasks, creating dynamic study schedules, and auto-populating sub-milestones safely into your database.
               </p>
@@ -917,12 +918,12 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             exit={{ opacity: 0 }}
             className="space-y-6"
           >
-            <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl flex items-start gap-4">
+            <div className="p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-xl flex items-start gap-4">
               <div className="w-12 h-12 rounded-xl bg-emerald-500/10 border border-emerald-500/15 flex items-center justify-center text-emerald-400 shrink-0">
                 <CheckCircle2 className="w-6 h-6" />
               </div>
               <div className="space-y-1">
-                <h3 className="text-lg font-bold text-white font-display">Tasks Successfully Generated</h3>
+                <h3 className="text-lg font-bold text-slate-100 font-sans">Tasks Successfully Generated</h3>
                 <p className="text-sm text-slate-300">
                   AI has successfully parsed the syllabus, generated optimal deadlines and milestones, and saved <strong className="text-emerald-400 font-mono">{importedTasks.length} tasks</strong> directly to your database.
                 </p>
@@ -930,8 +931,8 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             </div>
 
             {}
-            <div className="bg-slate-900/40 border border-slate-800 rounded-xl p-6 space-y-3">
-              <h4 className="text-xs font-mono font-bold tracking-widest text-indigo-400 uppercase flex items-center gap-1.5">
+            <div className="bg-slate-900 border border-slate-800/50 rounded-xl p-6 space-y-3">
+              <h4 className="text-xs font-mono font-bold tracking-widest text-slate-300 uppercase flex items-center gap-1.5">
                 <BookOpen className="w-3.5 h-3.5" /> Course Overview Summary
               </h4>
               <p className="text-slate-200 text-sm leading-relaxed whitespace-pre-line italic">
@@ -941,16 +942,16 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
             {}
             <div className="space-y-3">
-              <h4 className="text-xs font-semibold text-slate-400 font-mono uppercase tracking-wider">Generated Academic Schedule ({importedTasks.length} Tasks)</h4>
+              <h4 className="text-xs font-semibold text-slate-400 font-mono font-medium">Generated Academic Schedule ({importedTasks.length} Tasks)</h4>
               <div className="space-y-3.5 max-h-96 overflow-y-auto pr-1">
                 {importedTasks.map((task) => (
-                  <div key={task.id} className="bg-slate-950 border border-slate-800/80 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-700/60 transition">
+                  <div key={task.id} className="bg-slate-950 border border-slate-800 rounded-xl p-4 flex flex-col md:flex-row md:items-center justify-between gap-4 hover:border-slate-800 transition">
                     <div className="space-y-1">
                       <div className="flex items-center gap-2">
-                        <span className="text-[10px] text-indigo-400 bg-indigo-500/10 border border-indigo-500/15 px-2 py-0.5 rounded-full font-mono font-bold">
+                        <span className="text-xs text-slate-300 bg-brand-purple/10 border border-indigo-500/15 px-2 py-0.5 rounded-full font-mono font-bold">
                           {task.course}
                         </span>
-                        <span className={`text-[9px] px-2 py-0.5 rounded-full font-mono font-bold border ${
+                        <span className={`text-[11px] px-2 py-0.5 rounded-full font-mono font-bold border ${
                           task.priority === "URGENT" 
                             ? "bg-rose-500/10 text-rose-400 border-rose-500/15" 
                             : task.priority === "HIGH" 
@@ -960,20 +961,20 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                           {task.priority} PRIORITY
                         </span>
                       </div>
-                      <h5 className="font-bold text-sm text-white">{task.title}</h5>
+                      <h5 className="font-bold text-sm text-slate-100">{task.title}</h5>
                       <p className="text-xs text-slate-400 line-clamp-1">{task.description}</p>
                     </div>
 
                     <div className="flex items-center gap-6 shrink-0 border-t md:border-t-0 border-slate-900 pt-3 md:pt-0">
                       <div className="text-right">
-                        <span className="text-[10px] text-slate-500 block">DUE DATE</span>
+                        <span className="text-xs text-slate-500 block">DUE DATE</span>
                         <span className="text-xs font-mono text-slate-200 font-bold flex items-center gap-1 mt-0.5 justify-end">
-                          <Calendar className="w-3.5 h-3.5 text-slate-500" /> {task.dueDate}
+                          <Calendar className="w-3.5 h-3.5 text-slate-500" /> {formatDueDate(task.dueDate)}
                         </span>
                       </div>
                       <div className="text-right min-w-16">
-                        <span className="text-[10px] text-slate-500 block">WEIGHT</span>
-                        <span className="text-xs font-mono text-indigo-400 font-bold block mt-0.5">
+                        <span className="text-xs text-slate-500 block">WEIGHT</span>
+                        <span className="text-xs font-mono text-slate-300 font-bold block mt-0.5">
                           {task.weight}% of Grade
                         </span>
                       </div>
@@ -987,7 +988,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
             <div className="flex justify-between items-center border-t border-slate-900 pt-6">
               <button
                 onClick={resetScanner}
-                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-white text-xs font-semibold rounded-lg transition"
+                className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 border border-slate-800 text-slate-400 hover:text-slate-100 text-xs font-semibold rounded-lg transition"
               >
                 Scan Another Syllabus
               </button>
@@ -996,7 +997,7 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                   await onImportComplete();
                   setCurrentTab("dashboard");
                 }}
-                className="flex items-center gap-2 px-8 py-3 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-sm rounded-xl transition shadow-lg shadow-indigo-600/20 cursor-pointer"
+                className="flex items-center gap-2 px-8 py-3 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-bold text-sm rounded-xl transition shadow-sm shadow-indigo-600/20 cursor-pointer"
               >
                 <span>Go to Dashboard</span>
                 <Check className="w-4 h-4" />
@@ -1009,19 +1010,19 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
       {}
       <AnimatePresence>
         {isConfirming && (
-          <div className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+          <div className="fixed inset-0 bg-slate-950  flex items-center justify-center z-50 p-4">
             <motion.div
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
               exit={{ opacity: 0, scale: 0.95 }}
-              className="bg-slate-900 border border-slate-800/80 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl"
+              className="bg-slate-900 border border-slate-800/50 rounded-xl w-full max-w-md overflow-hidden shadow-sm border-slate-800"
             >
-              <div className="p-6 border-b border-slate-800 flex items-start gap-4">
-                <div className="w-10 h-10 rounded-xl bg-indigo-500/10 border border-indigo-500/15 flex items-center justify-center text-indigo-400 shrink-0">
-                  <Sparkles className="w-5 h-5 animate-pulse" />
+              <div className="p-6 border-b border-slate-800/50 flex items-start gap-4">
+                <div className="w-10 h-10 rounded-xl bg-brand-purple/10 border border-indigo-500/15 flex items-center justify-center text-slate-300 shrink-0">
+                  <Sparkles className="w-5 h-5 " />
                 </div>
                 <div>
-                  <h3 className="text-lg font-bold text-white font-display">Create Tasks Automatically?</h3>
+                  <h3 className="text-lg font-bold text-slate-100 font-sans">Create Tasks Automatically?</h3>
                   <p className="text-xs text-indigo-300 font-mono font-medium mt-1 uppercase tracking-widest flex items-center gap-1">
                     <Zap className="w-3 h-3 fill-indigo-400 stroke-none" /> AI Orchestrator
                   </p>
@@ -1030,9 +1031,9 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
 
               <div className="p-6 space-y-4">
                 <p className="text-sm text-slate-300 leading-relaxed">
-                  SmartDeadline AI will extract assignments, exams, projects, weights, estimated study hours, and schedule sequential milestones automatically.
+                  Smart Deadline AI will extract assignments, exams, projects, weights, estimated study hours, and schedule sequential milestones automatically.
                 </p>
-                <div className="p-3 bg-slate-950/60 rounded-xl border border-slate-800 flex items-start gap-3">
+                <div className="p-3 bg-slate-950 rounded-xl border border-slate-800 flex items-start gap-3">
                   <AlertCircle className="w-5 h-5 text-amber-500 shrink-0 mt-0.5" />
                   <p className="text-xs text-slate-400 leading-relaxed">
                     Identified course deliverables will be inserted immediately into your workspace calendar. This operation cannot be bulk-reversed.
@@ -1040,16 +1041,16 @@ export default function SyllabusScanner({ onImportComplete, setCurrentTab }: Syl
                 </div>
               </div>
 
-              <div className="bg-slate-950/40 p-4 border-t border-slate-800 flex gap-3 justify-end">
+              <div className="bg-slate-950 p-4 border-t border-slate-800 flex gap-3 justify-end">
                 <button
                   onClick={() => setIsConfirming(false)}
-                  className="px-4 py-2 hover:bg-slate-800 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition cursor-pointer"
+                  className="px-4 py-2 hover:bg-slate-800 rounded-lg text-xs font-semibold text-slate-400 hover:text-slate-100 transition cursor-pointer"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={handleProcessWithGemini}
-                  className="flex items-center gap-1.5 px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs rounded-lg transition shadow-md shadow-indigo-600/10 cursor-pointer"
+                  className="flex items-center gap-1.5 px-5 py-2 bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-bold text-xs rounded-lg transition shadow-md shadow-indigo-600/10 cursor-pointer"
                 >
                   <span>Proceed & Import</span>
                   <ArrowRight className="w-3.5 h-3.5" />

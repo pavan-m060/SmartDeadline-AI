@@ -90,7 +90,7 @@ export default function StudyPlanner({
 
       if (suggestedMilestones.length > 0) {
         const generated = suggestedMilestones.slice(0, 4).map((mTitle, idx) => ({
-          id: `milestone-ai-${Date.now()}-${idx}`,
+          id: `milestone-ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}-${idx}`,
           title: mTitle,
           completed: false
         }));
@@ -526,10 +526,10 @@ export default function StudyPlanner({
   return (
     <div className="space-y-6 max-w-6xl mx-auto" id="study-planner-container">
       {}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800 pb-5">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-slate-800/50 pb-5">
         <div>
-          <h2 className="font-display font-bold text-3xl text-white tracking-tight flex items-center gap-2">
-            <Sparkles className="w-7 h-7 text-indigo-400" />
+          <h2 className="font-sans font-bold text-3xl text-slate-100 tracking-tight flex items-center gap-2">
+            <Sparkles className="w-7 h-7 text-slate-300" />
             <span>AI Master Study Planner</span>
           </h2>
           <p className="text-slate-400 text-sm mt-1">
@@ -543,7 +543,7 @@ export default function StudyPlanner({
             onClick={() => setActiveSubTab("master")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
               activeSubTab === "master"
-                ? "bg-indigo-600 text-white shadow-md"
+                ? "bg-indigo-600 text-slate-100 shadow-md"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -553,7 +553,7 @@ export default function StudyPlanner({
             onClick={() => setActiveSubTab("legacy")}
             className={`px-4 py-1.5 rounded-lg text-xs font-semibold transition cursor-pointer ${
               activeSubTab === "legacy"
-                ? "bg-indigo-600 text-white shadow-md"
+                ? "bg-indigo-600 text-slate-100 shadow-md"
                 : "text-slate-400 hover:text-slate-200"
             }`}
           >
@@ -564,7 +564,7 @@ export default function StudyPlanner({
 
       {}
       {isRecalculatingPlan && (
-        <div className="p-3 bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 rounded-xl text-xs flex items-center gap-2.5 animate-pulse font-mono">
+        <div className="p-3 bg-brand-purple/10 border border-indigo-500/20 text-slate-300 rounded-xl text-xs flex items-center gap-2.5  font-mono">
           <RefreshCw className="w-4 h-4 animate-spin shrink-0" />
           <span>Auto-optimizing Master Schedule... Adapting plans to recent task updates.</span>
         </div>
@@ -581,20 +581,20 @@ export default function StudyPlanner({
       {activeSubTab === "master" && (
         <div className="space-y-6">
           {}
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-md">
+          <div className="p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4 shadow-md">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
-                <Sparkles className="w-5 h-5 text-indigo-400" />
-                <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">AI Planner Personalization</h3>
+                <Sparkles className="w-5 h-5 text-slate-300" />
+                <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">AI Planner Personalization</h3>
               </div>
-              <span className="text-[10px] font-mono text-slate-500 uppercase">Custom Parameters</span>
+              <span className="text-xs font-mono text-slate-500 uppercase">Custom Parameters</span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
               {}
               <div className="space-y-1.5">
                 <label className="block text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Hourglass className="w-3.5 h-3.5 text-indigo-400" />
+                  <Hourglass className="w-3.5 h-3.5 text-slate-300" />
                   <span>Weekly Available Hours</span>
                 </label>
                 <div className="flex items-center gap-3">
@@ -607,17 +607,17 @@ export default function StudyPlanner({
                     onChange={(e) => setAvailableHours(Number(e.target.value))}
                     className="flex-1 accent-indigo-500 bg-slate-950 h-1.5 rounded-lg appearance-none cursor-pointer"
                   />
-                  <span className="text-xs font-mono font-bold text-white px-2 py-1 bg-slate-950 border border-slate-800 rounded-md min-w-[50px] text-center">
+                  <span className="text-xs font-mono font-bold text-slate-100 px-2 py-1 bg-slate-950 border border-slate-800 rounded-md min-w-[50px] text-center">
                     {availableHours}h
                   </span>
                 </div>
-                <p className="text-[10px] text-slate-400">Total study capacity allocated per week.</p>
+                <p className="text-xs text-slate-400">Total study capacity allocated per week.</p>
               </div>
 
               {}
               <div className="space-y-1.5">
                 <label className="block text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Clock className="w-3.5 h-3.5 text-indigo-400" />
+                  <Clock className="w-3.5 h-3.5 text-slate-300" />
                   <span>Preferred Session Duration</span>
                 </label>
                 <select
@@ -632,13 +632,13 @@ export default function StudyPlanner({
                   <option value="90">90 minutes (Extended focus)</option>
                   <option value="120">120 minutes (Extreme deep work)</option>
                 </select>
-                <p className="text-[10px] text-slate-400">Target duration of individual focus sprints.</p>
+                <p className="text-xs text-slate-400">Target duration of individual focus sprints.</p>
               </div>
 
               {}
               <div className="space-y-1.5">
                 <label className="block text-xs font-semibold text-slate-300 flex items-center gap-1.5">
-                  <Coffee className="w-3.5 h-3.5 text-indigo-400" />
+                  <Coffee className="w-3.5 h-3.5 text-slate-300" />
                   <span>Preferred Break Duration</span>
                 </label>
                 <select
@@ -652,7 +652,7 @@ export default function StudyPlanner({
                   <option value="20">20 minutes (Relaxed rest)</option>
                   <option value="30">30 minutes (Extended rest)</option>
                 </select>
-                <p className="text-[10px] text-slate-400">Rest gap between consecutive focus sprints.</p>
+                <p className="text-xs text-slate-400">Rest gap between consecutive focus sprints.</p>
               </div>
             </div>
 
@@ -660,7 +660,7 @@ export default function StudyPlanner({
               <button
                 onClick={() => onForceRecalculate({ availableHours, sessionLength, breakInterval })}
                 disabled={isRecalculatingPlan || activeAssignments.length === 0}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600/50 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg transition duration-150 cursor-pointer"
+                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:bg-indigo-600/50 text-slate-100 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition duration-150 cursor-pointer"
               >
                 {isRecalculatingPlan ? (
                   <>
@@ -682,14 +682,14 @@ export default function StudyPlanner({
           ) : masterStudyPlan ? (
             <>
               {}
-              <div className="p-6 rounded-2xl bg-gradient-to-br from-indigo-950/20 via-slate-900 to-slate-900 border border-indigo-500/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-xl relative overflow-hidden">
-                <div className="absolute top-0 right-0 w-36 h-36 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+              <div className="p-6 rounded-xl bg-slate-900 border border-slate-800/50 from-indigo-950/20 via-slate-900 to-slate-900 border border-indigo-500/10 flex flex-col md:flex-row items-start md:items-center justify-between gap-6 shadow-sm relative overflow-hidden">
+                
                 
                 <div className="space-y-2 max-w-3xl">
-                  <span className="px-2 py-0.5 rounded bg-indigo-500/10 border border-indigo-500/20 text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-wide">
+                  <span className="px-2 py-0.5 rounded bg-brand-purple/10 border border-indigo-500/20 text-xs font-mono font-bold text-slate-300 uppercase tracking-wide">
                     Executive Strategy
                   </span>
-                  <p className="text-slate-200 text-sm leading-relaxed font-display">
+                  <p className="text-slate-200 text-sm leading-relaxed font-sans">
                     {masterStudyPlan.overall_summary || "Cohesive study plan formulation based on priority vectors and cognitive rest allocation."}
                   </p>
                 </div>
@@ -698,7 +698,7 @@ export default function StudyPlanner({
                   <button
                     onClick={() => onForceRecalculate({ availableHours, sessionLength, breakInterval })}
                     disabled={isRecalculatingPlan}
-                    className="p-2.5 bg-slate-950 border border-slate-800 text-slate-300 hover:text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-40 cursor-pointer"
+                    className="p-2.5 bg-slate-950 border border-slate-800 text-slate-300 hover:text-slate-100 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition disabled:opacity-40 cursor-pointer"
                     title="Force manual recalculation"
                   >
                     <RefreshCw className={`w-4 h-4 ${isRecalculatingPlan ? 'animate-spin' : ''}`} />
@@ -706,7 +706,7 @@ export default function StudyPlanner({
                   
                   <button
                     onClick={handleExportPDF}
-                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white rounded-xl text-xs font-semibold flex items-center gap-2 shadow-lg transition cursor-pointer"
+                    className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-slate-100 rounded-xl text-xs font-semibold flex items-center gap-2 shadow-sm transition cursor-pointer"
                   >
                     <Download className="w-4 h-4" />
                     <span>Export PDF</span>
@@ -716,12 +716,12 @@ export default function StudyPlanner({
 
               {}
               {masterStudyPlan.estimated_study_hours && (
-                <div className="p-5 rounded-2xl bg-slate-950 border border-slate-800/80 flex flex-col md:flex-row items-center gap-4 shadow-md">
-                  <div className="flex items-center gap-3.5 bg-indigo-500/10 border border-indigo-500/15 px-4 py-3 rounded-xl shrink-0 w-full md:w-auto justify-center md:justify-start">
-                    <Hourglass className="w-5 h-5 text-indigo-400" />
+                <div className="p-5 rounded-xl bg-slate-950 border border-slate-800 flex flex-col md:flex-row items-center gap-4 shadow-md">
+                  <div className="flex items-center gap-3.5 bg-brand-purple/10 border border-indigo-500/15 px-4 py-3 rounded-xl shrink-0 w-full md:w-auto justify-center md:justify-start">
+                    <Hourglass className="w-5 h-5 text-slate-300" />
                     <div>
-                      <p className="text-[9px] font-mono text-slate-400 uppercase tracking-wider">Total Estimated Hours</p>
-                      <p className="text-lg font-bold text-white font-mono">{masterStudyPlan.estimated_study_hours.total_needed || 0} hrs</p>
+                      <p className="text-[11px] font-mono text-slate-400 font-medium">Total Estimated Hours</p>
+                      <p className="text-lg font-bold text-slate-100 font-mono">{masterStudyPlan.estimated_study_hours.total_needed || 0} hrs</p>
                     </div>
                   </div>
                   <div className="text-slate-300 text-xs leading-relaxed font-sans text-center md:text-left">
@@ -733,10 +733,10 @@ export default function StudyPlanner({
               {}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {}
-                <div className="lg:col-span-5 p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-4">
+                <div className="lg:col-span-5 p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4">
                   <div className="flex items-center gap-2">
-                    <TrendingUp className="w-4 h-4 text-indigo-400" />
-                    <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">Subject Allocation</h3>
+                    <TrendingUp className="w-4 h-4 text-slate-300" />
+                    <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">Subject Allocation</h3>
                   </div>
                   
                   {masterStudyPlan.subject_allocation && masterStudyPlan.subject_allocation.length > 0 ? (
@@ -745,18 +745,18 @@ export default function StudyPlanner({
                         <div key={idx} className="space-y-1.5">
                           <div className="flex items-center justify-between text-xs">
                             <span className="font-semibold text-slate-200">{sa.subject}</span>
-                            <span className="font-mono text-indigo-400 font-bold">{sa.hours_allocated} hrs ({sa.percentage}%)</span>
+                            <span className="font-mono text-slate-300 font-bold">{sa.hours_allocated} hrs ({sa.percentage}%)</span>
                           </div>
                           
                           {}
                           <div className="h-1.5 w-full bg-slate-950 rounded-full overflow-hidden">
                             <div 
-                              className="h-full bg-indigo-500 rounded-full" 
+                              className="h-full bg-brand-purple rounded-full" 
                               style={{ width: `${sa.percentage}%` }}
                             />
                           </div>
 
-                          <p className="text-[10px] text-slate-400 italic font-sans leading-normal">
+                          <p className="text-xs text-slate-400 italic font-sans leading-normal">
                             {sa.reason}
                           </p>
                         </div>
@@ -770,10 +770,10 @@ export default function StudyPlanner({
                 </div>
 
                 {}
-                <div className="lg:col-span-7 p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-4">
+                <div className="lg:col-span-7 p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4">
                   <div className="flex items-center gap-2">
                     <Target className="w-4 h-4 text-emerald-400" />
-                    <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">AI Completion Predictions</h3>
+                    <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">AI Completion Predictions</h3>
                   </div>
 
                   {masterStudyPlan.estimated_completion_dates && masterStudyPlan.estimated_completion_dates.length > 0 ? (
@@ -791,21 +791,21 @@ export default function StudyPlanner({
                           <div key={idx} className="p-3.5 rounded-xl bg-slate-950 border border-slate-900 flex items-center justify-between gap-4">
                             <div className="min-w-0">
                               <h4 className="text-xs font-bold text-slate-100 truncate">{ecd.title}</h4>
-                              <p className="text-[10px] text-slate-400 mt-1 flex items-center gap-1 font-mono">
+                              <p className="text-xs text-slate-400 mt-1 flex items-center gap-1 font-mono">
                                 <span>Est. Complete:</span>
-                                <strong className="text-indigo-400">{ecd.estimated_completion_date}</strong>
+                                <strong className="text-slate-300">{ecd.estimated_completion_date}</strong>
                               </p>
                             </div>
 
                             <div className="flex items-center gap-2">
                               {}
                               <div className="text-right">
-                                <p className="text-[9px] text-slate-500 font-mono">CONFIDENCE</p>
+                                <p className="text-[11px] text-slate-500 font-mono">CONFIDENCE</p>
                                 <p className="text-xs font-bold font-mono text-slate-200">{ecd.confidence_score}%</p>
                               </div>
 
                               {}
-                              <span className={`px-2 py-0.5 border text-[9px] font-mono font-bold rounded-md ${riskClass}`}>
+                              <span className={`px-2 py-0.5 border text-[11px] font-mono font-bold rounded-md ${riskClass}`}>
                                 {risk} RISK
                               </span>
                             </div>
@@ -824,22 +824,22 @@ export default function StudyPlanner({
               {}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {}
-                <div className="lg:col-span-7 p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-4">
+                <div className="lg:col-span-7 p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <Calendar className="w-4 h-4 text-indigo-400" />
-                      <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">Daily focus blocks</h3>
+                      <Calendar className="w-4 h-4 text-slate-300" />
+                      <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">Daily focus blocks</h3>
                     </div>
-                    <span className="text-[10px] font-mono text-slate-500 uppercase">Upcoming Cycle</span>
+                    <span className="text-xs font-mono text-slate-500 uppercase">Upcoming Cycle</span>
                   </div>
 
                   {masterStudyPlan.daily_plan && masterStudyPlan.daily_plan.length > 0 ? (
                     <div className="space-y-3 max-h-[360px] overflow-y-auto pr-1">
                       {masterStudyPlan.daily_plan.map((dp: any, idx: number) => (
                         <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-900 flex gap-4">
-                          <div className="flex flex-col items-center justify-center bg-indigo-500/10 border border-indigo-500/5 rounded-lg px-2.5 py-1.5 shrink-0 h-fit min-w-[75px]">
-                            <span className="text-xs font-extrabold text-indigo-400 tracking-wide font-display">{dp.day}</span>
-                            <span className="text-[10px] font-mono font-bold text-slate-400 mt-0.5">{dp.hours} hrs</span>
+                          <div className="flex flex-col items-center justify-center bg-brand-purple/10 border border-indigo-500/5 rounded-lg px-2.5 py-1.5 shrink-0 h-fit min-w-[75px]">
+                            <span className="text-xs font-semibold text-slate-300 tracking-wide font-sans">{dp.day}</span>
+                            <span className="text-xs font-mono font-bold text-slate-400 mt-0.5">{dp.hours} hrs</span>
                           </div>
 
                           <div className="space-y-1.5 min-w-0">
@@ -848,7 +848,7 @@ export default function StudyPlanner({
                             {dp.tasks && dp.tasks.length > 0 && (
                               <div className="flex flex-wrap items-center gap-1.5 pt-1">
                                 {dp.tasks.map((t: string, tIdx: number) => (
-                                  <span key={tIdx} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[9px] text-slate-300 truncate max-w-[150px]" title={t}>
+                                  <span key={tIdx} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800/50 text-[11px] text-slate-300 truncate max-w-[150px]" title={t}>
                                     {t}
                                   </span>
                                 ))}
@@ -866,17 +866,17 @@ export default function StudyPlanner({
                 </div>
 
                 {}
-                <div className="lg:col-span-5 p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-6">
+                <div className="lg:col-span-5 p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-6">
                   {}
                   {masterStudyPlan.break_schedule && (
                     <div className="space-y-3">
                       <div className="flex items-center gap-2">
                         <Coffee className="w-4 h-4 text-teal-400" />
-                        <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">Burnout Guard</h3>
+                        <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">Burnout Guard</h3>
                       </div>
                       
                       <div className="p-4 rounded-xl bg-teal-950/10 border border-teal-500/10 space-y-2">
-                        <span className="text-[10px] font-mono font-bold text-teal-400 uppercase tracking-wider">
+                        <span className="text-xs font-mono font-bold text-teal-400 font-medium">
                           Methodology: {masterStudyPlan.break_schedule.type || "Default Rest"}
                         </span>
                         <p className="text-xs text-slate-300 leading-relaxed font-sans">
@@ -890,7 +890,7 @@ export default function StudyPlanner({
                   <div className="space-y-3.5">
                     <div className="flex items-center gap-2">
                       <Flame className="w-4 h-4 text-orange-400" />
-                      <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">Pomodoro Recommendations</h3>
+                      <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">Pomodoro Recommendations</h3>
                     </div>
 
                     {masterStudyPlan.pomodoro_sessions && masterStudyPlan.pomodoro_sessions.length > 0 ? (
@@ -899,9 +899,9 @@ export default function StudyPlanner({
                           <div key={idx} className="p-3 rounded-xl bg-slate-950 border border-slate-900 flex items-start gap-2.5">
                             <Clock className="w-4 h-4 text-orange-400 mt-0.5 shrink-0" />
                             <div className="space-y-0.5">
-                              <h4 className="text-xs font-bold text-slate-100 font-display">{ps.label}</h4>
-                              <p className="text-[10px] font-mono font-semibold text-orange-400">{ps.duration}</p>
-                              <p className="text-[10px] text-slate-400 mt-0.5 font-sans">Focus: {ps.focus_area}</p>
+                              <h4 className="text-xs font-bold text-slate-100 font-sans">{ps.label}</h4>
+                              <p className="text-xs font-mono font-semibold text-orange-400">{ps.duration}</p>
+                              <p className="text-xs text-slate-400 mt-0.5 font-sans">Focus: {ps.focus_area}</p>
                             </div>
                           </div>
                         ))}
@@ -917,10 +917,10 @@ export default function StudyPlanner({
 
               {}
               {masterStudyPlan.weekly_plan && masterStudyPlan.weekly_plan.length > 0 && (
-                <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-4">
+                <div className="p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4">
                   <div className="flex items-center gap-2">
-                    <BookOpen className="w-4 h-4 text-indigo-400" />
-                    <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">Weekly Mileposts</h3>
+                    <BookOpen className="w-4 h-4 text-slate-300" />
+                    <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">Weekly Mileposts</h3>
                   </div>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -928,8 +928,8 @@ export default function StudyPlanner({
                       <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-900 space-y-2.5 flex flex-col justify-between">
                         <div>
                           <div className="flex items-center justify-between mb-1">
-                            <span className="text-xs font-extrabold text-white font-display">{wp.week}</span>
-                            <span className="px-1.5 py-0.5 rounded bg-indigo-500/10 text-[9px] font-mono text-indigo-400 font-bold">
+                            <span className="text-xs font-semibold text-slate-100 font-sans">{wp.week}</span>
+                            <span className="px-1.5 py-0.5 rounded bg-brand-purple/10 text-[11px] font-mono text-slate-300 font-bold">
                               {wp.hours} HOURS
                             </span>
                           </div>
@@ -946,10 +946,10 @@ export default function StudyPlanner({
               {}
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
                 {}
-                <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-4">
+                <div className="lg:col-span-6 p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4">
                   <div className="flex items-center gap-2">
                     <Award className="w-4 h-4 text-purple-400" />
-                    <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">Active Revision Plan</h3>
+                    <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">Active Revision Plan</h3>
                   </div>
 
                   {masterStudyPlan.revision_plan && masterStudyPlan.revision_plan.length > 0 ? (
@@ -957,8 +957,8 @@ export default function StudyPlanner({
                       {masterStudyPlan.revision_plan.map((rp: any, idx: number) => (
                         <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-900 space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-xs font-bold text-indigo-400 font-display">{rp.subject}</span>
-                            <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/15 text-[9px] font-mono font-semibold text-purple-300 uppercase tracking-wider">
+                            <span className="text-xs font-bold text-slate-300 font-sans">{rp.subject}</span>
+                            <span className="px-2 py-0.5 rounded bg-purple-500/10 border border-purple-500/15 text-[11px] font-mono font-semibold text-purple-300 font-medium">
                               {rp.suggested_date}
                             </span>
                           </div>
@@ -968,7 +968,7 @@ export default function StudyPlanner({
                           {rp.techniques && rp.techniques.length > 0 && (
                             <div className="flex flex-wrap items-center gap-1.5 pt-1.5 border-t border-slate-900">
                               {rp.techniques.map((t: string, tIdx: number) => (
-                                <span key={tIdx} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800 text-[9px] text-slate-400">
+                                <span key={tIdx} className="px-1.5 py-0.5 rounded bg-slate-900 border border-slate-800/50 text-[11px] text-slate-400">
                                   {t}
                                 </span>
                               ))}
@@ -985,10 +985,10 @@ export default function StudyPlanner({
                 </div>
 
                 {}
-                <div className="lg:col-span-6 p-6 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-4">
+                <div className="lg:col-span-6 p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4">
                   <div className="flex items-center gap-2">
-                    <GraduationCap className="w-4 h-4 text-indigo-400" />
-                    <h3 className="text-sm font-bold text-white font-display uppercase tracking-wider">High-Yield Exam Prep</h3>
+                    <GraduationCap className="w-4 h-4 text-slate-300" />
+                    <h3 className="text-sm font-bold text-slate-100 font-sans font-medium">High-Yield Exam Prep</h3>
                   </div>
 
                   {masterStudyPlan.exam_prep_strategy && masterStudyPlan.exam_prep_strategy.length > 0 ? (
@@ -1005,8 +1005,8 @@ export default function StudyPlanner({
                         return (
                           <div key={idx} className="p-4 rounded-xl bg-slate-950 border border-slate-900 space-y-2">
                             <div className="flex items-center justify-between">
-                              <span className="text-xs font-bold text-indigo-400 font-display">{ep.course || ep.subject}</span>
-                              <span className={`px-1.5 py-0.5 border text-[9px] font-mono font-bold rounded-md ${urgencyClass}`}>
+                              <span className="text-xs font-bold text-slate-300 font-sans">{ep.course || ep.subject}</span>
+                              <span className={`px-1.5 py-0.5 border text-[11px] font-mono font-bold rounded-md ${urgencyClass}`}>
                                 {urgency} PRIORITY
                               </span>
                             </div>
@@ -1026,10 +1026,10 @@ export default function StudyPlanner({
             </>
           ) : (
             
-            <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 border-dashed text-center space-y-4 py-20">
+            <div className="p-8 rounded-xl bg-slate-900 border border-slate-800/50 border-dashed text-center space-y-4 py-20">
               <Calendar className="w-12 h-12 text-slate-700 mx-auto" />
               <div className="space-y-2 max-w-sm mx-auto">
-                <h4 className="text-base font-semibold text-slate-200 font-display">No Study Schedule Computed</h4>
+                <h4 className="text-base font-semibold text-slate-200 font-sans">No Study Schedule Computed</h4>
                 <p className="text-xs text-slate-400">
                   Please add active assignments or trigger recalculation to format your comprehensive academic schedule.
                 </p>
@@ -1038,7 +1038,7 @@ export default function StudyPlanner({
               <button
                 onClick={() => onForceRecalculate({ availableHours, sessionLength, breakInterval })}
                 disabled={isRecalculatingPlan || activeAssignments.length === 0}
-                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition mx-auto cursor-pointer shadow-lg"
+                className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-slate-100 font-semibold rounded-xl text-xs flex items-center justify-center gap-2 transition mx-auto cursor-pointer shadow-sm"
               >
                 {isRecalculatingPlan ? (
                   <>
@@ -1061,8 +1061,8 @@ export default function StudyPlanner({
       {activeSubTab === "legacy" && (
         <div className="space-y-6 max-w-4xl mx-auto">
           {}
-          <div className="p-6 rounded-2xl bg-slate-900 border border-slate-800 space-y-4 shadow-lg">
-            <h3 className="text-sm font-semibold text-white font-display">Formulate individual task roadmap</h3>
+          <div className="p-6 rounded-xl bg-slate-900 border border-slate-800/50 space-y-4 shadow-sm">
+            <h3 className="text-sm font-semibold text-slate-100 font-sans">Formulate individual task roadmap</h3>
             
             <div className="flex flex-col sm:flex-row gap-3">
               <select
@@ -1084,7 +1084,7 @@ export default function StudyPlanner({
               <button
                 onClick={handleGenerateIndividualPlan}
                 disabled={legacyLoading || !selectedAssignmentId}
-                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-white font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition cursor-pointer"
+                className="px-6 py-2.5 bg-indigo-600 hover:bg-indigo-700 disabled:opacity-40 text-slate-100 font-semibold rounded-xl text-sm flex items-center justify-center gap-2 transition cursor-pointer"
               >
                 {legacyLoading ? (
                   <>
@@ -1112,15 +1112,15 @@ export default function StudyPlanner({
           {selectedAssignment ? (
             selectedAssignment.studyPlan ? (
               
-              <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800/80 space-y-6 shadow-xl">
-                <div className="flex items-start justify-between pb-5 border-b border-slate-800">
+              <div className="p-8 rounded-xl bg-slate-900 border border-slate-800/50 space-y-6 shadow-sm">
+                <div className="flex items-start justify-between pb-5 border-b border-slate-800/50">
                   <div className="space-y-1">
                     <span className="text-xs font-mono text-slate-500 uppercase">Strategic Study Roadmap</span>
-                    <h3 className="text-xl font-bold text-white font-display">{selectedAssignment.title}</h3>
+                    <h3 className="text-xl font-bold text-slate-100 font-sans">{selectedAssignment.title}</h3>
                     <div className="flex items-center gap-2 text-xs text-slate-400 font-mono mt-2">
-                      <span>Course: <strong className="text-indigo-400">{selectedAssignment.course}</strong></span>
+                      <span>Course: <strong className="text-slate-300">{selectedAssignment.course}</strong></span>
                       <span>•</span>
-                      <span>Est: <strong className="text-indigo-400">{selectedAssignment.estimatedHours} hours</strong></span>
+                      <span>Est: <strong className="text-slate-300">{selectedAssignment.estimatedHours} hours</strong></span>
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5 text-emerald-400 bg-emerald-500/10 border border-emerald-500/10 px-3 py-1 rounded-full text-xs font-semibold">
@@ -1137,15 +1137,15 @@ export default function StudyPlanner({
                     // Headers
                     if (trimmed.startsWith("###")) {
                       return (
-                        <h5 key={idx} className="text-sm font-semibold text-white uppercase font-mono tracking-wider pt-3 flex items-center gap-1.5">
-                          <ChevronRight className="w-3.5 h-3.5 text-indigo-400" />
+                        <h5 key={idx} className="text-sm font-semibold text-slate-100 uppercase font-mono tracking-wider pt-3 flex items-center gap-1.5">
+                          <ChevronRight className="w-3.5 h-3.5 text-slate-300" />
                           {trimmed.replace("###", "")}
                         </h5>
                       );
                     }
                     if (trimmed.startsWith("##") || trimmed.startsWith("#")) {
                       return (
-                        <h4 key={idx} className="text-base font-bold text-white font-display pt-4 border-b border-slate-800/40 pb-1.5">
+                        <h4 key={idx} className="text-base font-bold text-slate-100 font-sans pt-4 border-b border-slate-800/50 pb-1.5">
                           {trimmed.replace(/^#+\s*/, "")}
                         </h4>
                       );
@@ -1155,7 +1155,7 @@ export default function StudyPlanner({
                     if (trimmed.startsWith("- [ ]") || trimmed.startsWith("- ") || trimmed.startsWith("* ")) {
                       return (
                         <div key={idx} className="flex items-start gap-2 ml-4 pl-1">
-                          <span className="text-indigo-400 mt-1 select-none">•</span>
+                          <span className="text-slate-300 mt-1 select-none">•</span>
                           <span>{trimmed.replace(/^-\s*\[\s*\]\s*/, "").replace(/^-\s*/, "").replace(/^\*\s*/, "")}</span>
                         </div>
                       );
@@ -1170,10 +1170,10 @@ export default function StudyPlanner({
               </div>
             ) : (
               
-              <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 border-dashed text-center space-y-4 py-16">
+              <div className="p-8 rounded-xl bg-slate-900 border border-slate-800/50 border-dashed text-center space-y-4 py-16">
                 <Target className="w-10 h-10 text-slate-600 mx-auto" />
                 <div className="space-y-1">
-                  <h4 className="text-sm font-semibold text-slate-300 font-display">No Individual Plan Formulated Yet</h4>
+                  <h4 className="text-sm font-semibold text-slate-300 font-sans">No Individual Plan Formulated Yet</h4>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto font-sans">
                     Formulate a high-efficiency academic plan for "{selectedAssignment.title}" by clicking the button above.
                   </p>
@@ -1182,10 +1182,10 @@ export default function StudyPlanner({
             )
           ) : (
             
-            <div className="p-8 rounded-2xl bg-slate-900 border border-slate-800 text-center space-y-4 py-16">
+            <div className="p-8 rounded-xl bg-slate-900 border border-slate-800/50 text-center space-y-4 py-16">
               <Calendar className="w-10 h-10 text-slate-600 mx-auto" />
               <div className="space-y-1">
-                <h4 className="text-sm font-semibold text-slate-300 font-display">No Assignment Selected</h4>
+                <h4 className="text-sm font-semibold text-slate-300 font-sans">No Assignment Selected</h4>
                 <p className="text-xs text-slate-500 max-w-xs mx-auto font-sans">
                   Please choose an assignment from the dropdown above to create or review its AI checklist schedule.
                 </p>

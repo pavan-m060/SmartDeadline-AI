@@ -53,18 +53,18 @@ function renderMarkdown(text: string) {
   const flushTable = (key: string | number) => {
     if (inTable) {
       elements.push(
-        <div key={`table-wrapper-${key}`} className="overflow-x-auto my-2.5 rounded-lg border border-slate-800/80">
+        <div key={`table-wrapper-${key}`} className="overflow-x-auto my-2.5 rounded-lg border border-slate-800">
           <table className="w-full text-left text-[11px] border-collapse">
-            <thead className="bg-slate-900/80 text-slate-400 font-mono font-bold uppercase tracking-wider text-[9px] border-b border-slate-800">
+            <thead className="bg-slate-900 text-slate-400 font-mono font-bold font-medium text-[11px] border-b border-slate-800/50">
               <tr>
                 {tableHeaders.map((h, i) => (
                   <th key={i} className="px-2.5 py-1.5 text-slate-300 font-semibold">{h}</th>
                 ))}
               </tr>
             </thead>
-            <tbody className="divide-y divide-slate-900 bg-slate-950/10">
+            <tbody className="divide-y divide-slate-900 bg-slate-950">
               {tableRows.map((row, idx) => (
-                <tr key={idx} className="hover:bg-slate-900/30 transition">
+                <tr key={idx} className="hover:bg-slate-900 transition">
                   {row.map((cell, cIdx) => (
                     <td key={cIdx} className="px-2.5 py-1.5 text-slate-300">{cell}</td>
                   ))}
@@ -86,10 +86,10 @@ function renderMarkdown(text: string) {
     
     return tokens.map((token, i) => {
       if (token.startsWith("**") && token.endsWith("**")) {
-        return <strong key={i} className="font-bold text-white">{token.slice(2, -2)}</strong>;
+        return <strong key={i} className="font-bold text-slate-100">{token.slice(2, -2)}</strong>;
       }
       if (token.startsWith("`") && token.endsWith("`")) {
-        return <code key={i} className="font-mono text-[10px] bg-slate-900 text-indigo-400 px-1 py-0.5 rounded border border-slate-800">{token.slice(1, -1)}</code>;
+        return <code key={i} className="font-mono text-xs bg-slate-900 text-slate-300 px-1 py-0.5 rounded border border-slate-800">{token.slice(1, -1)}</code>;
       }
       if (token.startsWith("*") && token.endsWith("*")) {
         return <em key={i} className="italic text-slate-300">{token.slice(1, -1)}</em>;
@@ -126,23 +126,23 @@ function renderMarkdown(text: string) {
     if (line.startsWith("###")) {
       flushList(i);
       elements.push(
-        <h4 key={i} className="text-xs font-bold text-white mt-3 mb-1.5 font-display flex items-center gap-1 shrink-0">
-          <Sparkles className="w-3 h-3 text-indigo-400" />
+        <h4 key={i} className="text-xs font-bold text-slate-100 mt-3 mb-1.5 font-sans flex items-center gap-1 shrink-0">
+          <Sparkles className="w-3 h-3 text-slate-300" />
           {parseInline(line.substring(3).trim())}
         </h4>
       );
     } else if (line.startsWith("##")) {
       flushList(i);
       elements.push(
-        <h3 key={i} className="text-sm font-bold text-white mt-3.5 mb-1.5 font-display flex items-center gap-1.5 shrink-0 border-b border-slate-900 pb-0.5">
-          <Brain className="w-3.5 h-3.5 text-indigo-400" />
+        <h3 key={i} className="text-sm font-bold text-slate-100 mt-3.5 mb-1.5 font-sans flex items-center gap-1.5 shrink-0 border-b border-slate-900 pb-0.5">
+          <Brain className="w-3.5 h-3.5 text-slate-300" />
           {parseInline(line.substring(2).trim())}
         </h3>
       );
     } else if (line.startsWith("#")) {
       flushList(i);
       elements.push(
-        <h2 key={i} className="text-base font-black text-white mt-4 mb-2 font-display border-b border-slate-800 pb-0.5">
+        <h2 key={i} className="text-base font-black text-slate-100 mt-4 mb-2 font-sans border-b border-slate-800/50 pb-0.5">
           {parseInline(line.substring(1).trim())}
         </h2>
       );
@@ -238,7 +238,7 @@ export default function FloatingAssistant({
 
   const handleClearChat = () => {
     const greetingMsg: ChatMessage = {
-      id: `greeting-${Date.now()}`,
+      id: `greeting-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       role: "model",
       content: "Hello! I am your **AI Academic Coach** 🧠.\n\n" +
                "I synchronized with your assignments, milestones, and logged study sessions. " +
@@ -269,7 +269,7 @@ export default function FloatingAssistant({
     if (!textToSend.trim() || isLoading) return;
 
     const userMsg: ChatMessage = {
-      id: `user-${Date.now()}`,
+      id: `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
       role: "user",
       content: textToSend,
       timestamp: new Date()
@@ -289,7 +289,7 @@ export default function FloatingAssistant({
       const response = await aiChat(textToSend, historyPayload, assignments, studySessions);
 
       const aiMsg: ChatMessage = {
-        id: `ai-${Date.now()}`,
+        id: `ai-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         role: "model",
         content: response.text,
         timestamp: new Date()
@@ -299,7 +299,7 @@ export default function FloatingAssistant({
     } catch (err) {
 
       const errMsg: ChatMessage = {
-        id: `err-${Date.now()}`,
+        id: `err-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
         role: "model",
         content: "⚠️ **Connection Error:** I encountered an issue synchronizing with the AI engine. " +
                  "However, I can still provide robust offline advice based on your current agenda:\n\n" +
@@ -334,20 +334,20 @@ export default function FloatingAssistant({
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0.85, y: 30 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="absolute bottom-20 right-0 w-[420px] h-[580px] max-w-[calc(100vw-3rem)] rounded-2xl bg-slate-950 border border-slate-800/90 shadow-2xl flex flex-col overflow-hidden backdrop-blur-xl"
+            className="absolute bottom-20 right-0 w-[420px] h-[580px] max-w-[calc(100vw-3rem)] rounded-xl bg-slate-950 border border-slate-800 shadow-sm border-slate-800 flex flex-col overflow-hidden backdrop-"
           >
             {}
-            <div className="px-4 py-3 bg-slate-900 border-b border-slate-800/80 flex items-center justify-between shrink-0">
+            <div className="px-4 py-3 bg-slate-900 border-b border-slate-800/50 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-2">
                 <div className="w-8 h-8 rounded-lg bg-indigo-600/10 border border-indigo-500/20 flex items-center justify-center">
-                  <Brain className="w-4.5 h-4.5 text-indigo-400" />
+                  <Brain className="w-4.5 h-4.5 text-slate-300" />
                 </div>
                 <div>
-                  <h4 className="text-xs font-bold text-white font-display flex items-center gap-1.5">
+                  <h4 className="text-xs font-bold text-slate-100 font-sans flex items-center gap-1.5">
                     AI Academic Coach
-                    <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" title="Ready to assist" />
+                    <span className="w-2 h-2 rounded-full bg-emerald-500 " title="Ready to assist" />
                   </h4>
-                  <p className="text-[10px] text-slate-500 font-mono tracking-wider uppercase">Active Context Sync</p>
+                  <p className="text-xs text-slate-500 font-mono tracking-wider uppercase">Active Context Sync</p>
                 </div>
               </div>
               <div className="flex items-center gap-2">
@@ -360,7 +360,7 @@ export default function FloatingAssistant({
                 </button>
                 <button 
                   onClick={() => setIsOpen(false)}
-                  className="p-1 text-slate-400 hover:text-white hover:bg-slate-800/50 rounded-lg transition"
+                  className="p-1 text-slate-400 hover:text-slate-100 hover:bg-slate-800/50 rounded-lg transition"
                 >
                   <X className="w-4.5 h-4.5" />
                 </button>
@@ -371,7 +371,7 @@ export default function FloatingAssistant({
             <div 
               ref={scrollContainerRef}
               onScroll={handleScroll}
-              className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin relative bg-slate-950/45"
+              className="flex-1 overflow-y-auto px-4 py-4 space-y-4 scrollbar-thin relative bg-slate-950"
             >
               {messages.map((m) => {
                 const isAI = m.role === "model";
@@ -379,18 +379,18 @@ export default function FloatingAssistant({
                   <div key={m.id} className={`flex gap-3 ${isAI ? "justify-start" : "justify-end"}`}>
                     {isAI && (
                       <div className="w-7 h-7 rounded-lg bg-slate-900 border border-slate-850 shrink-0 flex items-center justify-center">
-                        <Bot className="w-4 h-4 text-indigo-400" />
+                        <Bot className="w-4 h-4 text-slate-300" />
                       </div>
                     )}
                     <div className="max-w-[82%] flex flex-col gap-1">
-                      <div className={`p-3 rounded-2xl text-xs ${
+                      <div className={`p-3 rounded-xl text-xs ${
                         isAI 
-                          ? "bg-slate-900/60 border border-slate-850/80 text-slate-300 rounded-tl-none" 
-                          : "bg-indigo-600 text-white rounded-tr-none shadow-md"
+                          ? "bg-slate-900 border border-slate-800/50 text-slate-300 rounded-tl-none" 
+                          : "bg-indigo-600 text-slate-100 rounded-tr-none shadow-md"
                       }`}>
                         {renderMarkdown(m.content)}
                       </div>
-                      <span className={`text-[9px] text-slate-500 px-1 font-mono ${!isAI && "text-right"}`}>
+                      <span className={`text-[11px] text-slate-500 px-1 font-mono ${!isAI && "text-right"}`}>
                         {m.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                       </span>
                     </div>
@@ -402,12 +402,12 @@ export default function FloatingAssistant({
               {isLoading && (
                 <div className="flex gap-3 justify-start">
                   <div className="w-7 h-7 rounded-lg bg-slate-900 border border-slate-850 shrink-0 flex items-center justify-center">
-                    <Bot className="w-4 h-4 text-indigo-400" />
+                    <Bot className="w-4 h-4 text-slate-300" />
                   </div>
-                  <div className="p-3 bg-slate-900/40 border border-slate-850/50 rounded-2xl rounded-tl-none flex items-center gap-1.5">
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.3s]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce [animation-delay:-0.15s]" />
-                    <span className="w-1.5 h-1.5 rounded-full bg-indigo-500 animate-bounce" />
+                  <div className="p-3 bg-slate-900 border border-slate-800/50 rounded-xl rounded-tl-none flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-purple  [animation-delay:-0.3s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-purple  [animation-delay:-0.15s]" />
+                    <span className="w-1.5 h-1.5 rounded-full bg-brand-purple " />
                   </div>
                 </div>
               )}
@@ -419,19 +419,19 @@ export default function FloatingAssistant({
             {showScrollBtn && (
               <button 
                 onClick={scrollToBottom}
-                className="absolute bottom-[110px] right-4 p-1.5 bg-slate-900 border border-slate-800 text-slate-400 hover:text-white rounded-full shadow-lg transition"
+                className="absolute bottom-[110px] right-4 p-1.5 bg-slate-900 border border-slate-800/50 text-slate-400 hover:text-slate-100 rounded-full shadow-sm transition"
               >
                 <ArrowDown className="w-4 h-4" />
               </button>
             )}
 
             {}
-            <div className="px-4 py-2 border-t border-slate-900/80 bg-slate-950 flex gap-2 overflow-x-auto scrollbar-none shrink-0 select-none">
+            <div className="px-4 py-2 border-t border-slate-800 bg-slate-950 flex gap-2 overflow-x-auto scrollbar-none shrink-0 select-none">
               {quickActions.map((qa, index) => (
                 <button
                   key={index}
                   onClick={() => handleQuickActionClick(qa.query)}
-                  className="px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900/40 hover:bg-slate-900 text-[10px] font-medium text-slate-300 hover:text-indigo-400 transition whitespace-nowrap active:scale-95 shrink-0"
+                  className="px-2.5 py-1.5 rounded-lg border border-slate-800 bg-slate-900 hover:bg-slate-900 text-xs font-medium text-slate-300 hover:text-slate-300 transition whitespace-nowrap active:scale-95 shrink-0"
                 >
                   {qa.label}
                 </button>
@@ -444,19 +444,19 @@ export default function FloatingAssistant({
                 e.preventDefault();
                 handleSendMessage(inputValue);
               }}
-              className="p-3 bg-slate-900 border-t border-slate-800/80 flex gap-2 shrink-0 items-center"
+              className="p-3 bg-slate-900 border-t border-slate-800 flex gap-2 shrink-0 items-center"
             >
               <input
                 type="text"
                 value={inputValue}
                 onChange={(e: ChangeEvent<HTMLInputElement>) => setInputValue(e.target.value)}
                 placeholder="Ask study coach anything..."
-                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition font-sans"
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-slate-100 placeholder-slate-500 focus:outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500/30 transition font-sans"
               />
               <button
                 type="submit"
                 disabled={!inputValue.trim() || isLoading}
-                className="p-2 rounded-xl bg-indigo-600 hover:bg-indigo-500 disabled:opacity-45 disabled:hover:bg-indigo-600 text-white shadow transition-all active:scale-95"
+                className="p-2 rounded-xl bg-brand-purple hover:bg-brand-purple-dark shadow-sm disabled:opacity-45 disabled:hover:bg-indigo-600 text-slate-100 shadow transition-all active:scale-95"
               >
                 <Send className="w-4 h-4" />
               </button>
@@ -470,10 +470,10 @@ export default function FloatingAssistant({
         onClick={() => setIsOpen(!isOpen)}
         whileHover={{ scale: 1.05 }}
         whileTap={{ scale: 0.95 }}
-        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-2xl border transition-all duration-350 relative group ${
+        className={`w-14 h-14 rounded-full flex items-center justify-center shadow-sm border-slate-800 border transition-all duration-350 relative group ${
           isOpen 
-            ? "bg-slate-900 border-slate-800 text-white" 
-            : "bg-indigo-600 border-indigo-500 hover:bg-indigo-500 text-white"
+            ? "bg-slate-900 border-slate-800 text-slate-100" 
+            : "bg-indigo-600 border-indigo-500 hover:bg-brand-purple text-slate-100"
         }`}
       >
         <AnimatePresence mode="wait">
@@ -503,7 +503,7 @@ export default function FloatingAssistant({
 
         {}
         {!isOpen && (
-          <span className="absolute -top-1.5 -right-1.5 bg-indigo-500 border-2 border-slate-950 text-[9px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center animate-bounce shadow">
+          <span className="absolute -top-1.5 -right-1.5 bg-brand-purple border-2 border-slate-950 text-[11px] font-mono font-bold w-5 h-5 rounded-full flex items-center justify-center  shadow">
             AI
           </span>
         )}

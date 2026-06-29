@@ -4,6 +4,7 @@ import { runAIPrediction, fetchAIPredictions, clearAIPredictions } from "../serv
 import { useToast } from "./Toast";
 import { Sparkles, Clock, AlertTriangle, Gauge, Calendar, CheckCircle2, TrendingUp, Zap, RotateCw, ShieldAlert, ListTodo, Lightbulb, Activity, Award, Brain, History, Trash2, LineChart as LineChartIcon, BarChart3, HeartPulse, Flame } from "lucide-react";
 import { ResponsiveContainer, AreaChart, Area, BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, Cell } from "recharts";
+import { formatDueDate } from "../utils";
 
 interface DeadlinePredictorProps {
   assignments: Assignment[];
@@ -182,10 +183,10 @@ export default function DeadlinePredictor({
   // Helper: colors based on risk level
   const getRiskColors = (level: string) => {
     const l = (level || "MEDIUM").toUpperCase();
-    if (l === "LOW") return { text: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", fill: "bg-emerald-500", glow: "shadow-[0_0_15px_rgba(16,185,129,0.3)]" };
-    if (l === "MEDIUM") return { text: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", fill: "bg-amber-500", glow: "shadow-[0_0_15px_rgba(245,158,11,0.3)]" };
-    if (l === "HIGH") return { text: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20", fill: "bg-rose-500", glow: "shadow-[0_0_15px_rgba(239,68,68,0.3)]" };
-    return { text: "text-red-500 font-extrabold animate-pulse", bg: "bg-red-500/20 border-red-500/30", fill: "bg-red-500", glow: "shadow-[0_0_20px_rgba(239,68,68,0.5)]" };
+    if (l === "LOW") return { text: "text-emerald-400", bg: "bg-emerald-500/10 border-emerald-500/20", fill: "bg-emerald-500", glow: "shadow-sm border-slate-800" };
+    if (l === "MEDIUM") return { text: "text-amber-400", bg: "bg-amber-500/10 border-amber-500/20", fill: "bg-amber-500", glow: "shadow-sm border-slate-800" };
+    if (l === "HIGH") return { text: "text-rose-400", bg: "bg-rose-500/10 border-rose-500/20", fill: "bg-rose-500", glow: "shadow-sm border-slate-800" };
+    return { text: "text-red-500 font-semibold ", bg: "bg-red-500/20 border-red-500/30", fill: "bg-red-500", glow: "shadow-sm border-slate-800" };
   };
 
   // Stress level parser for charting
@@ -195,7 +196,7 @@ export default function DeadlinePredictor({
     if (match) {
       return parseInt(match[1]) * 10;
     }
-    const lower = stress.toLowerCase();
+    const lower = (stress || '').toLowerCase();
     if (lower.includes("high") || lower.includes("severe") || lower.includes("demanding")) {
       return 80;
     }
@@ -251,12 +252,12 @@ export default function DeadlinePredictor({
       {}
       <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
         <div>
-          <h2 className="font-display font-extrabold text-3xl text-white tracking-tight flex items-center gap-2.5">
-            <Gauge className="w-8 h-8 text-indigo-500" />
+          <h2 className="font-sans font-semibold text-3xl text-slate-100 tracking-tight flex items-center gap-2.5">
+            <Gauge className="w-8 h-8 text-slate-400" />
             AI Timeline Predictor
           </h2>
           <p className="text-slate-400 text-sm mt-1 max-w-2xl">
-            Forecast workload pressure, deadlines, stress, and productivity. SmartDeadline AI uses cognitive modeling and historical study sessions to run real-time predictive auditing.
+            Forecast workload pressure, deadlines, stress, and productivity. Smart Deadline AI uses cognitive modeling and historical study sessions to run real-time predictive auditing.
           </p>
         </div>
         
@@ -268,7 +269,7 @@ export default function DeadlinePredictor({
               id="assignment-select"
               value={selectedId}
               onChange={(e) => setSelectedId(e.target.value)}
-              className="bg-slate-900 border border-slate-800 text-slate-200 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition max-w-xs"
+              className="bg-slate-900 border border-slate-800/50 text-slate-200 text-sm rounded-xl px-4 py-2.5 outline-none focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 transition max-w-xs"
             >
               <optgroup label="Active Tasks">
                 {assignments.filter(a => a.status !== "COMPLETED").map(a => (
@@ -288,17 +289,17 @@ export default function DeadlinePredictor({
       </div>
 
       {assignments.length === 0 ? (
-        <div className="bg-slate-900/30 border border-slate-800 rounded-3xl p-12 text-center max-w-xl mx-auto space-y-4">
-          <div className="w-16 h-16 bg-slate-800/50 rounded-2xl flex items-center justify-center text-slate-500 mx-auto">
+        <div className="bg-slate-900 border border-slate-800/50 rounded-3xl p-12 text-center max-w-xl mx-auto space-y-4">
+          <div className="w-16 h-16 bg-slate-800/50 rounded-xl flex items-center justify-center text-slate-500 mx-auto">
             <ListTodo className="w-8 h-8" />
           </div>
-          <h3 className="text-lg font-bold text-white font-display">No Assignments Found</h3>
+          <h3 className="text-lg font-bold text-slate-100 font-sans">No Assignments Found</h3>
           <p className="text-sm text-slate-400 leading-relaxed">
             You must add an assignment before we can analyze deadline risk. Import a syllabus or create a new assignment manually to activate the predictor.
           </p>
         </div>
       ) : !selectedAssignment ? (
-        <div className="bg-slate-900/30 border border-slate-800 rounded-3xl p-12 text-center max-w-xl mx-auto">
+        <div className="bg-slate-900 border border-slate-800/50 rounded-3xl p-12 text-center max-w-xl mx-auto">
           <p className="text-slate-400 text-sm">Please select an assignment from the top dropdown to view its risk prediction.</p>
         </div>
       ) : (
@@ -308,90 +309,90 @@ export default function DeadlinePredictor({
           <div className="lg:col-span-4 space-y-6">
             
             {}
-            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl space-y-5 relative overflow-hidden">
-              <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl -mr-8 -mt-8" />
+            <div className="bg-slate-900 backdrop- border border-slate-800 p-6 rounded-xl space-y-5 relative overflow-hidden">
+              <div className="absolute top-0 right-0 w-32 h-32 bg-brand-purple/5 rounded-full  -mr-8 -mt-8" />
               
               <div>
-                <span className="text-[10px] font-mono font-bold text-indigo-400 uppercase tracking-widest bg-indigo-500/10 px-2 py-0.5 rounded border border-indigo-500/10">
+                <span className="text-xs font-mono font-bold text-slate-300 uppercase tracking-widest bg-brand-purple/10 px-2 py-0.5 rounded border border-indigo-500/10">
                   {selectedAssignment.course}
                 </span>
-                <h3 className="text-xl font-bold text-white mt-2 font-display leading-tight">{selectedAssignment.title}</h3>
+                <h3 className="text-xl font-bold text-slate-100 mt-2 font-sans leading-tight">{selectedAssignment.title}</h3>
                 <p className="text-slate-400 text-xs mt-1.5 line-clamp-2 italic">{selectedAssignment.description || "No description provided."}</p>
               </div>
 
               {}
               <div className="grid grid-cols-2 gap-3.5 pt-1.5">
-                <div className="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex items-center gap-2.5">
+                <div className="bg-slate-900 border border-slate-800/50 p-3 rounded-xl flex items-center gap-2.5">
                   <Calendar className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 block">Due Date</span>
-                    <span className="text-xs font-semibold text-slate-300 font-mono">{selectedAssignment.dueDate}</span>
+                    <span className="text-[11px] font-mono font-medium text-slate-500 block">Due Date</span>
+                    <span className="text-xs font-semibold text-slate-300 font-mono">{formatDueDate(selectedAssignment.dueDate)}</span>
                   </div>
                 </div>
 
-                <div className="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex items-center gap-2.5">
+                <div className="bg-slate-900 border border-slate-800/50 p-3 rounded-xl flex items-center gap-2.5">
                   <Clock className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 block">Time Left</span>
-                    <span className={`text-xs font-bold font-mono ${assignmentContext!.daysLeft <= 2 ? "text-rose-400 animate-pulse" : assignmentContext!.daysLeft <= 5 ? "text-amber-400" : "text-emerald-400"}`}>
+                    <span className="text-[11px] font-mono font-medium text-slate-500 block">Time Left</span>
+                    <span className={`text-xs font-bold font-mono ${assignmentContext!.daysLeft <= 2 ? "text-rose-400 " : assignmentContext!.daysLeft <= 5 ? "text-amber-400" : "text-emerald-400"}`}>
                       {assignmentContext!.daysLeft > 0 ? `${assignmentContext!.daysLeft} days` : assignmentContext!.daysLeft === 0 ? "Today!" : "Overdue"}
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex items-center gap-2.5">
+                <div className="bg-slate-900 border border-slate-800/50 p-3 rounded-xl flex items-center gap-2.5">
                   <TrendingUp className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 block">Difficulty</span>
+                    <span className="text-[11px] font-mono font-medium text-slate-500 block">Difficulty</span>
                     <span className={`text-xs font-bold ${selectedAssignment.difficulty === "HARD" ? "text-rose-400" : selectedAssignment.difficulty === "MEDIUM" ? "text-amber-400" : "text-emerald-400"}`}>
                       {selectedAssignment.difficulty}
                     </span>
                   </div>
                 </div>
 
-                <div className="bg-slate-900/80 border border-slate-800/80 p-3 rounded-xl flex items-center gap-2.5">
+                <div className="bg-slate-900 border border-slate-800/50 p-3 rounded-xl flex items-center gap-2.5">
                   <Zap className="w-4 h-4 text-slate-500" />
                   <div>
-                    <span className="text-[9px] font-mono uppercase tracking-wider text-slate-500 block">Estimated Effort</span>
+                    <span className="text-[11px] font-mono font-medium text-slate-500 block">Estimated Effort</span>
                     <span className="text-xs font-semibold text-slate-300 font-mono">
-                      {selectedAssignment.estimatedHours}h <span className="text-[10px] text-slate-500 font-normal font-sans">({selectedAssignment.actualHoursSpent}h done)</span>
+                      {selectedAssignment.estimatedHours}h <span className="text-xs text-slate-500 font-normal font-sans">({selectedAssignment.actualHoursSpent}h done)</span>
                     </span>
                   </div>
                 </div>
               </div>
 
               {}
-              <div className="border-t border-slate-800/60 pt-4">
-                <span className="text-[10px] font-mono font-bold text-slate-500 uppercase tracking-widest block mb-2">PAST PRODUCTIVITY</span>
+              <div className="border-t border-slate-800 pt-4">
+                <span className="text-xs font-mono font-bold text-slate-500 uppercase tracking-widest block mb-2">PAST PRODUCTIVITY</span>
                 <div className="grid grid-cols-2 gap-4">
-                  <div className="bg-slate-900/50 p-2.5 rounded-xl border border-slate-850">
+                  <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-850">
                     <span className="text-[11px] text-slate-400 font-medium">Logged Hours</span>
-                    <div className="text-lg font-bold text-white font-mono mt-0.5">{assignmentContext?.sessionHours}h</div>
+                    <div className="text-lg font-bold text-slate-100 font-mono mt-0.5">{assignmentContext?.sessionHours}h</div>
                   </div>
-                  <div className="bg-slate-900/50 p-2.5 rounded-xl border border-slate-850">
+                  <div className="bg-slate-900 p-2.5 rounded-xl border border-slate-850">
                     <span className="text-[11px] text-slate-400 font-medium">Study Sessions</span>
-                    <div className="text-lg font-bold text-white font-mono mt-0.5">{assignmentContext?.sessionCount} blocks</div>
+                    <div className="text-lg font-bold text-slate-100 font-mono mt-0.5">{assignmentContext?.sessionCount} blocks</div>
                   </div>
                 </div>
               </div>
             </div>
 
             {}
-            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl space-y-4">
+            <div className="bg-slate-900 backdrop- border border-slate-800 p-6 rounded-xl space-y-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h4 className="text-sm font-semibold text-white font-display">Remaining Milestones</h4>
+                  <h4 className="text-sm font-semibold text-slate-100 font-sans">Remaining Milestones</h4>
                   <p className="text-[11px] text-slate-400 mt-0.5">Toggle milestones to update the risk baseline.</p>
                 </div>
-                <div className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded-lg">
+                <div className="text-xs font-mono font-bold text-slate-300 bg-brand-purple/10 px-2.5 py-1 rounded-lg">
                   {assignmentContext?.completedMilestones} / {assignmentContext?.totalMilestones} Done
                 </div>
               </div>
 
               {}
-              <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-850/50">
+              <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden border border-slate-800">
                 <div 
-                  className="bg-gradient-to-r from-indigo-500 to-purple-500 h-full transition-all duration-500"
+                  className="bg-slate-900 border border-slate-800/50 from-indigo-500 to-purple-500 h-full transition-all duration-500"
                   style={{ width: `${assignmentContext?.totalMilestones ? (assignmentContext.completedMilestones / assignmentContext.totalMilestones) * 100 : 0}%` }}
                 />
               </div>
@@ -406,16 +407,16 @@ export default function DeadlinePredictor({
                       className={`flex items-start gap-3 p-3 rounded-xl border transition cursor-pointer select-none ${
                         milestone.completed 
                           ? "bg-indigo-950/10 border-indigo-500/20 text-slate-400 hover:bg-indigo-950/20" 
-                          : "bg-slate-900/50 border-slate-800/50 text-slate-200 hover:bg-slate-900/80 hover:border-slate-700"
+                          : "bg-slate-900 border-slate-800 text-slate-200 hover:bg-slate-900 hover:border-slate-700"
                       }`}
                     >
                       <div className="pt-0.5 shrink-0">
                         <div className={`w-4 h-4 rounded flex items-center justify-center border transition ${
                           milestone.completed 
-                            ? "bg-indigo-500 border-indigo-500 text-slate-950" 
+                            ? "bg-brand-purple border-indigo-500 text-slate-950" 
                             : "border-slate-600 hover:border-indigo-400"
                         }`}>
-                          {milestone.completed && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3] text-white" />}
+                          {milestone.completed && <CheckCircle2 className="w-3.5 h-3.5 stroke-[3] text-slate-100" />}
                         </div>
                       </div>
                       <div className="min-w-0 flex-1">
@@ -423,7 +424,7 @@ export default function DeadlinePredictor({
                           {milestone.title}
                         </span>
                         {milestone.dueDate && (
-                          <span className="text-[9px] font-mono text-slate-500 block mt-0.5">Target: {milestone.dueDate}</span>
+                          <span className="text-[11px] font-mono text-slate-500 block mt-0.5">Target: {formatDueDate(milestone.dueDate)}</span>
                         )}
                       </div>
                     </div>
@@ -432,7 +433,7 @@ export default function DeadlinePredictor({
               ) : (
                 <div className="text-center py-6 border border-dashed border-slate-800 rounded-xl">
                   <p className="text-xs text-slate-500 italic">No structured milestones loaded.</p>
-                  <p className="text-[10px] text-slate-500 mt-1">Generate a study plan in the "AI Planner" to add structured milestones.</p>
+                  <p className="text-xs text-slate-500 mt-1">Generate a study plan in the "AI Planner" to add structured milestones.</p>
                 </div>
               )}
             </div>
@@ -443,11 +444,11 @@ export default function DeadlinePredictor({
           <div className="lg:col-span-8 space-y-6">
             
             {}
-            <div className="bg-slate-900/40 backdrop-blur-xl border border-slate-800/80 p-6 rounded-2xl flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
-              <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-r from-indigo-500/5 via-purple-500/5 to-transparent pointer-events-none" />
+            <div className="bg-slate-900 backdrop- border border-slate-800 p-6 rounded-xl flex flex-col md:flex-row md:items-center justify-between gap-5 relative overflow-hidden">
+              <div className="absolute top-0 left-0 w-full h-full bg-slate-900 border border-slate-800/50 from-indigo-500/5 via-purple-500/5 to-transparent pointer-events-none" />
               <div>
-                <h4 className="text-sm font-bold text-white flex items-center gap-1.5 font-display">
-                  <Sparkles className="w-4 h-4 text-indigo-400" />
+                <h4 className="text-sm font-bold text-slate-100 flex items-center gap-1.5 font-sans">
+                  <Sparkles className="w-4 h-4 text-slate-300" />
                   Advanced Cognitive Forecasting
                 </h4>
                 <p className="text-xs text-slate-400 mt-1 max-w-md">
@@ -458,7 +459,7 @@ export default function DeadlinePredictor({
                 id="run-predictor-btn"
                 disabled={loading}
                 onClick={() => handleRunPrediction(true)}
-                className="bg-indigo-600 hover:bg-indigo-500 text-white font-semibold text-xs px-5 py-3 rounded-xl flex items-center gap-2 shadow-lg shadow-indigo-500/15 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] transition duration-200 shrink-0 select-none cursor-pointer"
+                className="bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 font-semibold text-xs px-5 py-3 rounded-xl flex items-center gap-2 shadow-sm shadow-indigo-500/15 disabled:opacity-50 disabled:cursor-not-allowed hover:scale-[1.01] active:scale-[0.99] transition duration-200 shrink-0 select-none cursor-pointer"
               >
                 {loading ? (
                   <>
@@ -476,13 +477,13 @@ export default function DeadlinePredictor({
 
             {loading ? (
               
-              <div className="bg-slate-900/40 border border-slate-800/80 p-12 rounded-3xl text-center space-y-6 animate-pulse">
-                <div className="w-16 h-16 bg-indigo-500/10 border border-indigo-500/20 rounded-2xl flex items-center justify-center mx-auto text-indigo-400">
+              <div className="bg-slate-900 border border-slate-800/50 p-12 rounded-3xl text-center space-y-6 ">
+                <div className="w-16 h-16 bg-brand-purple/10 border border-indigo-500/20 rounded-xl flex items-center justify-center mx-auto text-slate-300">
                   <RotateCw className="w-8 h-8 animate-spin" />
                 </div>
                 <div className="space-y-2">
-                  <h4 className="text-md font-bold text-white font-display">Generating AI Predictive Forecast</h4>
-                  <p className="text-xs text-indigo-400 font-mono tracking-wide">{loadingStep}</p>
+                  <h4 className="text-md font-bold text-slate-100 font-sans">Generating AI Predictive Forecast</h4>
+                  <p className="text-xs text-slate-300 font-mono tracking-wide">{loadingStep}</p>
                 </div>
                 <div className="max-w-xs mx-auto space-y-2.5 pt-4">
                   <div className="h-2 bg-slate-800 rounded-full w-full" />
@@ -493,16 +494,16 @@ export default function DeadlinePredictor({
             ) : error ? (
               
               <div className="bg-rose-950/10 border border-rose-900/30 p-12 rounded-3xl text-center space-y-4">
-                <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-2xl flex items-center justify-center mx-auto">
+                <div className="w-14 h-14 bg-rose-500/10 border border-rose-500/20 text-rose-400 rounded-xl flex items-center justify-center mx-auto">
                   <AlertTriangle className="w-7 h-7" />
                 </div>
                 <div>
-                  <h4 className="text-md font-bold text-white font-display">API Evaluation Failed</h4>
+                  <h4 className="text-md font-bold text-slate-100 font-sans">API Evaluation Failed</h4>
                   <p className="text-xs text-slate-400 mt-1 max-w-sm mx-auto leading-relaxed">{error}</p>
                 </div>
                 <button
                   onClick={() => handleRunPrediction(true)}
-                  className="bg-slate-900 border border-slate-800 hover:bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl transition cursor-pointer"
+                  className="bg-slate-900 border border-slate-800/50 hover:bg-slate-800 text-slate-300 text-xs font-semibold px-4 py-2 rounded-xl transition cursor-pointer"
                 >
                   Retry Analysis
                 </button>
@@ -515,15 +516,15 @@ export default function DeadlinePredictor({
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
                   
                   {}
-                  <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                  <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">DEADLINE RISK</span>
+                      <span className="text-xs font-mono text-slate-500 font-medium font-bold">DEADLINE RISK</span>
                       <ShieldAlert className={`w-4 h-4 ${getRiskColors(currentResult.riskLevel).text}`} />
                     </div>
                     <div className="my-2">
                       <div className="flex items-baseline gap-1.5">
-                        <span className="text-2xl font-extrabold text-white font-mono">{currentResult.riskScore}%</span>
-                        <span className={`text-[10px] font-bold tracking-wider uppercase font-mono ${getRiskColors(currentResult.riskLevel).text}`}>
+                        <span className="text-xl font-semibold text-slate-100 font-mono">{currentResult.riskScore}%</span>
+                        <span className={`text-xs font-bold tracking-wider uppercase font-mono ${getRiskColors(currentResult.riskLevel).text}`}>
                           {currentResult.riskLevel}
                         </span>
                       </div>
@@ -534,91 +535,91 @@ export default function DeadlinePredictor({
                         />
                       </div>
                     </div>
-                    <span className="text-[10px] text-slate-400 line-clamp-1 italic">Threat level relative to remaining hours.</span>
+                    <span className="text-xs text-slate-400 line-clamp-1 italic">Threat level relative to remaining hours.</span>
                   </div>
 
                   {}
-                  <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                  <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">EXPECTED COMPLETION</span>
+                      <span className="text-xs font-mono text-slate-500 font-medium font-bold">EXPECTED COMPLETION</span>
                       <Calendar className="w-4 h-4 text-cyan-400" />
                     </div>
                     <div className="my-2">
-                      <div className="text-sm font-bold text-white line-clamp-2 leading-snug">
+                      <div className="text-sm font-bold text-slate-100 line-clamp-2 leading-snug">
                         {currentResult.expectedCompletion}
                       </div>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono">Projected timeline delay/safety cushion.</span>
+                    <span className="text-xs text-slate-400 font-mono">Projected timeline delay/safety cushion.</span>
                   </div>
 
                   {}
-                  <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                  <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">STUDY WORKLOAD</span>
+                      <span className="text-xs font-mono text-slate-500 font-medium font-bold">STUDY WORKLOAD</span>
                       <Flame className="w-4 h-4 text-amber-500" />
                     </div>
                     <div className="my-2">
-                      <div className="text-sm font-bold text-white line-clamp-2 leading-snug">
+                      <div className="text-sm font-bold text-slate-100 line-clamp-2 leading-snug">
                         {currentResult.studyWorkload}
                       </div>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono">Commitment pace required daily.</span>
+                    <span className="text-xs text-slate-400 font-mono">Commitment pace required daily.</span>
                   </div>
 
                   {}
-                  <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                  <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">STRESS LEVEL</span>
-                      <HeartPulse className="w-4 h-4 text-rose-500 animate-pulse" />
+                      <span className="text-xs font-mono text-slate-500 font-medium font-bold">STRESS LEVEL</span>
+                      <HeartPulse className="w-4 h-4 text-rose-500 " />
                     </div>
                     <div className="my-2">
-                      <div className="text-sm font-bold text-white line-clamp-2 leading-snug">
+                      <div className="text-sm font-bold text-slate-100 line-clamp-2 leading-snug">
                         {currentResult.stressLevel}
                       </div>
                     </div>
-                    <span className="text-[10px] text-slate-400 font-mono">Cognitive overload prediction.</span>
+                    <span className="text-xs text-slate-400 font-mono">Cognitive overload prediction.</span>
                   </div>
 
                   {}
-                  <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                  <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">PRODUCTIVITY SCORE</span>
-                      <Award className="w-4 h-4 text-indigo-400" />
+                      <span className="text-xs font-mono text-slate-500 font-medium font-bold">PRODUCTIVITY SCORE</span>
+                      <Award className="w-4 h-4 text-slate-300" />
                     </div>
                     <div className="my-2">
-                      <div className="text-2xl font-extrabold text-white font-mono">
+                      <div className="text-xl font-semibold text-slate-100 font-mono">
                         {currentResult.productivityScore}<span className="text-xs text-slate-500">/100</span>
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-slate-500">Focus Efficiency Rating</span>
+                      <span className="text-xs font-mono font-bold text-slate-500">Focus Efficiency Rating</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 italic">Modeled on focused history.</span>
+                    <span className="text-xs text-slate-400 italic">Modeled on focused history.</span>
                   </div>
 
                   {}
-                  <div className="bg-slate-900/40 border border-slate-800 p-5 rounded-2xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
+                  <div className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl relative overflow-hidden flex flex-col justify-between min-h-[140px]">
                     <div className="flex items-center justify-between">
-                      <span className="text-[10px] font-mono text-slate-500 uppercase tracking-wider font-bold">PREDICTION CONFIDENCE</span>
+                      <span className="text-xs font-mono text-slate-500 font-medium font-bold">PREDICTION CONFIDENCE</span>
                       <Sparkles className="w-4 h-4 text-purple-400" />
                     </div>
                     <div className="my-2">
-                      <div className="text-2xl font-extrabold text-white font-mono">
+                      <div className="text-xl font-semibold text-slate-100 font-mono">
                         {currentResult.confidenceScore}%
                       </div>
-                      <span className="text-[10px] font-mono font-bold text-purple-400">High Reliability</span>
+                      <span className="text-xs font-mono font-bold text-purple-400">High Reliability</span>
                     </div>
-                    <span className="text-[10px] text-slate-400 italic">Based on available telemetry density.</span>
+                    <span className="text-xs text-slate-400 italic">Based on available telemetry density.</span>
                   </div>
 
                 </div>
 
                 {}
-                <div className="border-b border-slate-800/80 flex items-center gap-1">
+                <div className="border-b border-slate-800/50 flex items-center gap-1">
                   <button
                     onClick={() => setActiveTab("analysis")}
                     className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 cursor-pointer ${
                       activeTab === "analysis"
-                        ? "border-indigo-500 text-white bg-indigo-500/5"
-                        : "border-transparent text-slate-400 hover:text-white"
+                        ? "border-indigo-500 text-slate-100 bg-brand-purple/5"
+                        : "border-transparent text-slate-400 hover:text-slate-100"
                     }`}
                   >
                     <Brain className="w-3.5 h-3.5" />
@@ -628,8 +629,8 @@ export default function DeadlinePredictor({
                     onClick={() => setActiveTab("charts")}
                     className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 cursor-pointer ${
                       activeTab === "charts"
-                        ? "border-indigo-500 text-white bg-indigo-500/5"
-                        : "border-transparent text-slate-400 hover:text-white"
+                        ? "border-indigo-500 text-slate-100 bg-brand-purple/5"
+                        : "border-transparent text-slate-400 hover:text-slate-100"
                     }`}
                   >
                     <BarChart3 className="w-3.5 h-3.5" />
@@ -639,8 +640,8 @@ export default function DeadlinePredictor({
                     onClick={() => setActiveTab("history")}
                     className={`px-4 py-2.5 text-xs font-semibold border-b-2 transition flex items-center gap-1.5 cursor-pointer ${
                       activeTab === "history"
-                        ? "border-indigo-500 text-white bg-indigo-500/5"
-                        : "border-transparent text-slate-400 hover:text-white"
+                        ? "border-indigo-500 text-slate-100 bg-brand-purple/5"
+                        : "border-transparent text-slate-400 hover:text-slate-100"
                     }`}
                   >
                     <History className="w-3.5 h-3.5" />
@@ -653,10 +654,10 @@ export default function DeadlinePredictor({
                   <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                     
                     {}
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-3.5 relative overflow-hidden flex flex-col justify-between">
-                      <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/5 rounded-full blur-3xl pointer-events-none" />
+                    <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-3.5 relative overflow-hidden flex flex-col justify-between">
+                      
                       <div className="space-y-3">
-                        <h4 className="text-sm font-bold text-white font-display flex items-center gap-2">
+                        <h4 className="text-sm font-bold text-slate-100 font-sans flex items-center gap-2">
                           <Lightbulb className="w-4.5 h-4.5 text-yellow-400 shrink-0" />
                           AI Predictive Logic
                         </h4>
@@ -664,21 +665,21 @@ export default function DeadlinePredictor({
                           {currentResult.analysis}
                         </p>
                       </div>
-                      <div className="pt-4 border-t border-slate-800/80 text-[10px] text-slate-500 font-mono">
+                      <div className="pt-4 border-t border-slate-800 text-xs text-slate-500 font-mono">
                         📊 Confidence rating computed by analyzing remaining sub-milestones against previous study speed.
                       </div>
                     </div>
 
                     {}
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
-                      <h4 className="text-sm font-bold text-white font-display flex items-center gap-2">
+                    <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-4">
+                      <h4 className="text-sm font-bold text-slate-100 font-sans flex items-center gap-2">
                         <Activity className="w-4.5 h-4.5 text-emerald-400 shrink-0" />
                         AI Recommended Interventions
                       </h4>
                       <div className="space-y-2.5">
                         {currentResult.interventions && currentResult.interventions.length > 0 ? (
                           currentResult.interventions.map((remedy, idx) => (
-                            <div key={idx} className="bg-slate-950/40 border border-slate-850 p-3 rounded-xl flex items-start gap-3 hover:border-slate-700/80 transition duration-150 group">
+                            <div key={idx} className="bg-slate-950 border border-slate-850 p-3 rounded-xl flex items-start gap-3 hover:border-slate-800 transition duration-150 group">
                               <div className="w-5.5 h-5.5 rounded bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center text-xs font-mono font-bold shrink-0 mt-0.5 group-hover:bg-emerald-500 group-hover:text-slate-950 transition duration-200">
                                 {idx + 1}
                               </div>
@@ -699,18 +700,18 @@ export default function DeadlinePredictor({
                   <div className="grid grid-cols-1 gap-6">
                     
                     {}
-                    <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
+                    <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-4">
                       <div className="flex items-center justify-between">
                         <div>
-                          <h4 className="text-sm font-bold text-white font-display">Active Prediction Profile</h4>
+                          <h4 className="text-sm font-bold text-slate-100 font-sans">Active Prediction Profile</h4>
                           <p className="text-[11px] text-slate-400">Core metrics rating index for current evaluation.</p>
                         </div>
-                        <span className="text-xs font-mono font-bold text-indigo-400 bg-indigo-500/10 px-2.5 py-1 rounded">
+                        <span className="text-xs font-mono font-bold text-slate-300 bg-brand-purple/10 px-2.5 py-1 rounded">
                           Live Active Data
                         </span>
                       </div>
                       
-                      <div className="w-full bg-slate-950/40 border border-slate-850/60 p-4 rounded-xl">
+                      <div className="w-full bg-slate-950 border border-slate-800 p-4 rounded-xl">
                         <ResponsiveContainer width="100%" height={260}>
                           <BarChart data={profileChartData} margin={{ top: 15, right: 10, left: -20, bottom: 5 }}>
                             <CartesianGrid strokeDasharray="3 3" stroke="#1e293b" vertical={false} />
@@ -733,13 +734,13 @@ export default function DeadlinePredictor({
 
                     {}
                     {historyChartData.length > 1 ? (
-                      <div className="bg-slate-900/40 border border-slate-800 p-6 rounded-2xl space-y-4">
+                      <div className="bg-slate-900 border border-slate-800/50 p-6 rounded-xl space-y-4">
                         <div>
-                          <h4 className="text-sm font-bold text-white font-display">Historical Progress Trend</h4>
+                          <h4 className="text-sm font-bold text-slate-100 font-sans">Historical Progress Trend</h4>
                           <p className="text-[11px] text-slate-400">Chronological trend of deadline risk vs completion probability.</p>
                         </div>
                         
-                        <div className="w-full bg-slate-950/40 border border-slate-850/60 p-4 rounded-xl">
+                        <div className="w-full bg-slate-950 border border-slate-800 p-4 rounded-xl">
                           <ResponsiveContainer width="100%" height={260}>
                             <AreaChart data={historyChartData} margin={{ top: 15, right: 10, left: -20, bottom: 5 }}>
                               <defs>
@@ -764,10 +765,10 @@ export default function DeadlinePredictor({
                         </div>
                       </div>
                     ) : (
-                      <div className="border border-dashed border-slate-800 p-12 rounded-2xl text-center text-slate-500">
+                      <div className="border border-dashed border-slate-800 p-12 rounded-xl text-center text-slate-500">
                         <LineChartIcon className="w-8 h-8 text-slate-600 mx-auto mb-2.5" />
                         <p className="text-xs">Timeline Progress History needs at least 2 database entries.</p>
-                        <p className="text-[10px] text-slate-500 mt-1">Change milestones status and click 'Run AI Predictive Analytics' again to build logging trends!</p>
+                        <p className="text-xs text-slate-500 mt-1">Change milestones status and click 'Run AI Predictive Analytics' again to build logging trends!</p>
                       </div>
                     )}
 
@@ -779,7 +780,7 @@ export default function DeadlinePredictor({
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <div>
-                        <h4 className="text-sm font-bold text-white font-display">Database Historical Logs</h4>
+                        <h4 className="text-sm font-bold text-slate-100 font-sans">Database Historical Logs</h4>
                         <p className="text-[11px] text-slate-400">Authentic saved runs loaded from the cloud database.</p>
                       </div>
                       {history.length > 0 && (
@@ -798,48 +799,48 @@ export default function DeadlinePredictor({
                         history
                           .filter(h => h.assignmentId === selectedId)
                           .map((log) => (
-                            <div key={log.id} className="bg-slate-900/30 border border-slate-800 p-5 rounded-2xl space-y-3 relative overflow-hidden">
-                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-850/80 pb-2.5">
+                            <div key={log.id} className="bg-slate-900 border border-slate-800/50 p-5 rounded-xl space-y-3 relative overflow-hidden">
+                              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-slate-800/50 pb-2.5">
                                 <div className="flex items-center gap-2">
                                   <span className={`w-2.5 h-2.5 rounded-full ${getRiskColors(log.riskLevel).fill}`} />
-                                  <span className="text-xs font-bold text-white uppercase font-mono tracking-wide">{log.riskLevel} Risk</span>
+                                  <span className="text-xs font-bold text-slate-100 uppercase font-mono tracking-wide">{log.riskLevel} Risk</span>
                                   <span className="text-slate-500 text-xs font-mono">|</span>
                                   <span className="text-xs text-slate-300 font-mono">Risk Score: {log.riskScore}%</span>
                                   <span className="text-slate-500 text-xs font-mono">|</span>
                                   <span className="text-xs text-slate-300 font-mono">Prob: {log.completionProbability}%</span>
                                 </div>
-                                <span className="text-[10px] text-slate-500 font-mono">
+                                <span className="text-xs text-slate-500 font-mono">
                                   {new Date(log.timestamp).toLocaleString()}
                                 </span>
                               </div>
                               
                               <p className="text-xs text-slate-300 italic">"{log.analysis}"</p>
 
-                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1 border-t border-slate-850/40 text-[11px] font-mono">
+                              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-1 border-t border-slate-800 text-[11px] font-mono">
                                 <div>
-                                  <span className="text-slate-500 block uppercase text-[9px]">Expected</span>
+                                  <span className="text-slate-500 block uppercase text-[11px]">Expected</span>
                                   <span className="text-slate-300 font-bold">{log.expectedCompletion}</span>
                                 </div>
                                 <div>
-                                  <span className="text-slate-500 block uppercase text-[9px]">Daily Workload</span>
+                                  <span className="text-slate-500 block uppercase text-[11px]">Daily Workload</span>
                                   <span className="text-slate-300 font-bold">{log.studyWorkload}</span>
                                 </div>
                                 <div>
-                                  <span className="text-slate-500 block uppercase text-[9px]">Stress Rating</span>
+                                  <span className="text-slate-500 block uppercase text-[11px]">Stress Rating</span>
                                   <span className="text-slate-300 font-bold">{log.stressLevel}</span>
                                 </div>
                                 <div>
-                                  <span className="text-slate-500 block uppercase text-[9px]">Productivity</span>
+                                  <span className="text-slate-500 block uppercase text-[11px]">Productivity</span>
                                   <span className="text-slate-300 font-bold">{log.productivityScore}/100</span>
                                 </div>
                               </div>
                             </div>
                           ))
                       ) : (
-                        <div className="bg-slate-900/10 border border-slate-800 border-dashed rounded-2xl p-12 text-center text-slate-400">
+                        <div className="bg-slate-900 border border-slate-800/50 border-dashed rounded-xl p-12 text-center text-slate-400">
                           <History className="w-8 h-8 text-slate-600 mx-auto mb-2" />
                           <p className="text-xs">No saved predictions found for this task yet.</p>
-                          <p className="text-[10px] text-slate-500 mt-1">Run predictions on this assignment to start tracking historical changes!</p>
+                          <p className="text-xs text-slate-500 mt-1">Run predictions on this assignment to start tracking historical changes!</p>
                         </div>
                       )}
                     </div>
@@ -849,7 +850,7 @@ export default function DeadlinePredictor({
 
                 {}
                 <div className="text-center pt-2">
-                  <p className="text-[10px] text-slate-500 font-mono">
+                  <p className="text-xs text-slate-500 font-mono">
                     💡 predictions are securely archived in your cloud-native workspace database. Clearing history cleanses charts.
                   </p>
                 </div>
@@ -857,17 +858,17 @@ export default function DeadlinePredictor({
               </div>
             ) : (
               
-              <div className="bg-slate-900/40 border border-slate-800/80 p-12 rounded-3xl text-center space-y-4">
-                <div className="w-16 h-16 bg-indigo-500/10 rounded-2xl flex items-center justify-center mx-auto text-indigo-400">
-                  <Sparkles className="w-8 h-8 animate-pulse" />
+              <div className="bg-slate-900 border border-slate-800/50 p-12 rounded-3xl text-center space-y-4">
+                <div className="w-16 h-16 bg-brand-purple/10 rounded-xl flex items-center justify-center mx-auto text-slate-300">
+                  <Sparkles className="w-8 h-8 " />
                 </div>
-                <h4 className="text-sm font-bold text-white">Prediction Run Required</h4>
+                <h4 className="text-sm font-bold text-slate-100">Prediction Run Required</h4>
                 <p className="text-xs text-slate-400 max-w-xs mx-auto leading-relaxed">
                   Analyze deadline threat risk, expected completion dates, workloads, stress loads, and productivity curves in one click.
                 </p>
                 <button
                   onClick={() => handleRunPrediction(true)}
-                  className="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold px-5 py-2.5 rounded-xl transition cursor-pointer"
+                  className="bg-brand-purple hover:bg-brand-purple-dark shadow-sm text-slate-100 text-xs font-semibold px-5 py-2.5 rounded-xl transition cursor-pointer"
                 >
                   Generate Initial Prediction
                 </button>

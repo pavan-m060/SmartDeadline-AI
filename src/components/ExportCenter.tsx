@@ -575,21 +575,21 @@ export default function ExportCenter({
   return (
     <div className="space-y-6">
       {}
-      <div className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-indigo-950 via-slate-900 to-slate-950 p-6 border border-slate-800 shadow-xl">
-        <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-indigo-500/10 rounded-full blur-2xl pointer-events-none" />
+      <div className="relative overflow-hidden rounded-xl bg-slate-900 border border-slate-800/50 from-indigo-950 via-slate-900 to-slate-950 p-6 border border-slate-800 shadow-sm">
+        <div className="absolute right-0 top-0 -mt-6 -mr-6 w-32 h-32 bg-brand-purple/10 rounded-full  pointer-events-none" />
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
           <div className="space-y-1">
             <div className="flex items-center gap-2">
-              <Sparkles className="w-5 h-5 text-indigo-400" />
-              <h2 className="text-xl font-bold text-white tracking-tight">Academic Export & Report Center</h2>
+              <Sparkles className="w-5 h-5 text-slate-300" />
+              <h2 className="text-xl font-bold text-slate-100 tracking-tight">Academic Export & Report Center</h2>
             </div>
             <p className="text-xs text-slate-400">
               Compile your course deliverables, study plans, calendar metrics, and analytics into formatted executive documents.
             </p>
           </div>
-          <div className="flex items-center gap-1 bg-indigo-500/10 px-3 py-1 rounded-full border border-indigo-500/20 shrink-0 self-start md:self-auto">
-            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="text-[10px] font-mono text-indigo-300 font-bold uppercase tracking-wider">Reports Ready</span>
+          <div className="flex items-center gap-1 bg-brand-purple/10 px-3 py-1 rounded-full border border-indigo-500/20 shrink-0 self-start md:self-auto">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 " />
+            <span className="text-xs font-mono text-indigo-300 font-bold font-medium">Reports Ready</span>
           </div>
         </div>
       </div>
@@ -597,10 +597,10 @@ export default function ExportCenter({
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
         {}
         <div className="lg:col-span-7 space-y-6">
-          <div className="bg-slate-900/60 border border-slate-850 rounded-2xl p-6 space-y-6 shadow-md">
+          <div className="bg-slate-900 border border-slate-850 rounded-xl p-6 space-y-6 shadow-md">
             {}
             <div className="space-y-3">
-              <label className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-widest block">
+              <label className="text-xs font-mono font-bold text-slate-300 uppercase tracking-widest block">
                 1. Select Report Component
               </label>
               <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5">
@@ -617,21 +617,21 @@ export default function ExportCenter({
                     onClick={() => setReportType(item.id as ReportType)}
                     className={`p-3.5 rounded-xl border text-left transition duration-200 cursor-pointer flex flex-col justify-between h-24 ${
                       reportType === item.id
-                        ? "border-indigo-500 bg-indigo-950/20 shadow-lg shadow-indigo-950/30"
-                        : "border-slate-800 bg-slate-950/40 hover:border-slate-700 hover:bg-slate-950"
+                        ? "border-indigo-500 bg-indigo-950/20 shadow-sm shadow-indigo-950/30"
+                        : "border-slate-800 bg-slate-950 hover:border-slate-700 hover:bg-slate-950"
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <item.icon className={`w-4 h-4 ${reportType === item.id ? "text-indigo-400" : "text-slate-500"}`} />
+                      <item.icon className={`w-4 h-4 ${reportType === item.id ? "text-slate-300" : "text-slate-500"}`} />
                       {reportType === item.id && (
                         <div className="w-1.5 h-1.5 rounded-full bg-indigo-400" />
                       )}
                     </div>
                     <div>
-                      <p className={`text-xs font-semibold ${reportType === item.id ? "text-white" : "text-slate-300"}`}>
+                      <p className={`text-xs font-semibold ${reportType === item.id ? "text-slate-100" : "text-slate-300"}`}>
                         {item.label}
                       </p>
-                      <p className="text-[10px] text-slate-500 mt-0.5 font-sans leading-tight">
+                      <p className="text-xs text-slate-500 mt-0.5 font-sans leading-tight">
                         {item.desc}
                       </p>
                     </div>
@@ -642,7 +642,7 @@ export default function ExportCenter({
 
             {}
             <div className="space-y-3">
-              <label className="text-xs font-mono font-bold text-indigo-400 uppercase tracking-widest block">
+              <label className="text-xs font-mono font-bold text-slate-300 uppercase tracking-widest block">
                 2. Select Export Format
               </label>
               <div className="grid grid-cols-3 gap-3">
@@ -658,19 +658,19 @@ export default function ExportCenter({
                     className={`p-3 rounded-xl border text-left transition duration-200 cursor-pointer h-20 flex flex-col justify-between ${
                       format === fmt.id
                         ? "border-indigo-500 bg-indigo-950/20"
-                        : `border-slate-850 bg-slate-950/30 ${fmt.style}`
+                        : `border-slate-850 bg-slate-950 ${fmt.style}`
                     }`}
                   >
                     <div className="flex items-center justify-between w-full">
-                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider ${format === fmt.id ? "text-indigo-400" : fmt.text}`}>
+                      <span className={`text-xs font-mono font-bold font-medium ${format === fmt.id ? "text-slate-300" : fmt.text}`}>
                         {fmt.id}
                       </span>
                       {format === fmt.id && (
-                        <CheckCircle className="w-3.5 h-3.5 text-indigo-400" />
+                        <CheckCircle className="w-3.5 h-3.5 text-slate-300" />
                       )}
                     </div>
                     <div>
-                      <p className="text-xs font-bold text-white leading-tight">
+                      <p className="text-xs font-bold text-slate-100 leading-tight">
                         {fmt.label}
                       </p>
                     </div>
@@ -680,13 +680,13 @@ export default function ExportCenter({
             </div>
 
             {}
-            <div className="p-4 bg-slate-950/60 border border-slate-850 rounded-xl space-y-3">
+            <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-3">
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="w-4.5 h-4.5 text-indigo-400 animate-pulse" />
+                  <Sparkles className="w-4.5 h-4.5 text-slate-300 " />
                   <div>
-                    <span className="text-xs font-bold text-white">AI Co-Pilot Advisory Recommendations</span>
-                    <p className="text-[10px] text-slate-500 font-sans">
+                    <span className="text-xs font-bold text-slate-100">AI Co-Pilot Advisory Recommendations</span>
+                    <p className="text-xs text-slate-500 font-sans">
                       Inject tailored performance analysis directly into the exported report documents.
                     </p>
                   </div>
@@ -708,11 +708,11 @@ export default function ExportCenter({
               type="button"
               disabled={isExporting || (includeAI && loadingAI)}
               onClick={executeExport}
-              className="w-full py-3.5 bg-gradient-to-r from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-500 hover:to-indigo-600 text-white rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-lg shadow-indigo-950/50 hover:shadow-indigo-900/40 transition duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              className="w-full py-3.5 bg-slate-900 border border-slate-800/50 from-indigo-600 via-indigo-700 to-indigo-800 hover:from-indigo-500 hover:to-indigo-600 text-slate-100 rounded-xl text-sm font-bold flex items-center justify-center gap-2 shadow-sm shadow-indigo-950/50 hover:shadow-indigo-900/40 transition duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isExporting ? (
                 <>
-                  <Loader2 className="w-4 h-4 animate-spin text-white" />
+                  <Loader2 className="w-4 h-4 animate-spin text-slate-100" />
                   <span>Compiling & Formatting Report...</span>
                 </>
               ) : (
@@ -727,52 +727,52 @@ export default function ExportCenter({
 
         {}
         <div className="lg:col-span-5 space-y-4">
-          <div className="bg-slate-900/60 border border-slate-850 rounded-2xl p-5 shadow-md flex flex-col justify-between min-h-[400px]">
+          <div className="bg-slate-900 border border-slate-850 rounded-xl p-5 shadow-md flex flex-col justify-between min-h-[400px]">
             <div className="space-y-4">
-              <div className="flex items-center justify-between border-b border-slate-800/80 pb-3">
+              <div className="flex items-center justify-between border-b border-slate-800/50 pb-3">
                 <div className="flex items-center gap-2">
                   <FileText className="w-4 h-4 text-slate-400" />
-                  <span className="text-xs font-bold text-white uppercase tracking-wider font-mono">Report Preview Summary</span>
+                  <span className="text-xs font-bold text-slate-100 font-medium font-mono">Report Preview Summary</span>
                 </div>
-                <span className="text-[10px] bg-slate-800/80 text-slate-400 px-2 py-0.5 rounded-md font-mono">
+                <span className="text-xs bg-slate-800/80 text-slate-400 px-2 py-0.5 rounded-md font-mono">
                   {format.toUpperCase()} Target
                 </span>
               </div>
 
               {}
-              <div className="p-4 bg-slate-950/60 border border-slate-850 rounded-xl space-y-3.5 font-mono text-[10px] text-slate-400 select-none">
+              <div className="p-4 bg-slate-950 border border-slate-850 rounded-xl space-y-3.5 font-mono text-xs text-slate-400 select-none">
                 <div className="text-center border-b border-slate-900 pb-2.5">
-                  <p className="font-bold text-white text-xs">SMARTDEADLINE AI CO-PILOT SYSTEM</p>
-                  <p className="text-[9px] text-indigo-400 font-semibold uppercase mt-0.5">{reportType.toUpperCase()} DELIVERABLES REPORT</p>
+                  <p className="font-bold text-slate-100 text-xs">SMARTDEADLINE AI CO-PILOT SYSTEM</p>
+                  <p className="text-[11px] text-slate-300 font-semibold uppercase mt-0.5">{reportType.toUpperCase()} DELIVERABLES REPORT</p>
                 </div>
 
-                <div className="grid grid-cols-2 gap-2 text-[9px] border-b border-slate-900 pb-2.5 text-slate-500">
+                <div className="grid grid-cols-2 gap-2 text-[11px] border-b border-slate-900 pb-2.5 text-slate-500">
                   <p><span className="text-slate-400 font-bold">SCHOLAR:</span> {userProfile?.fullName || "Scholar Name"}</p>
                   <p><span className="text-slate-400 font-bold">DATE:</span> {new Date().toLocaleDateString()}</p>
                 </div>
 
                 <div className="space-y-1.5 border-b border-slate-900 pb-2.5">
                   <p className="font-bold text-indigo-300">SUMMARY DATA SUMMARY:</p>
-                  <div className="grid grid-cols-3 gap-1 text-[9px] text-slate-500">
-                    <div>Assignments: <span className="text-white font-bold">{assignments.length}</span></div>
-                    <div>Completed: <span className="text-white font-bold">{assignments.filter(a => a.status === "COMPLETED").length}</span></div>
-                    <div>Focus Sessions: <span className="text-white font-bold">{studySessions.length}</span></div>
+                  <div className="grid grid-cols-3 gap-1 text-[11px] text-slate-500">
+                    <div>Assignments: <span className="text-slate-100 font-bold">{assignments.length}</span></div>
+                    <div>Completed: <span className="text-slate-100 font-bold">{assignments.filter(a => a.status === "COMPLETED").length}</span></div>
+                    <div>Focus Sessions: <span className="text-slate-100 font-bold">{studySessions.length}</span></div>
                   </div>
                 </div>
 
                 {includeAI && (
                   <div className="space-y-1.5 p-2.5 bg-indigo-950/15 border border-indigo-900/30 rounded-lg">
-                    <div className="flex items-center gap-1.5 text-indigo-400 font-bold">
-                      <Sparkles className="w-3.5 h-3.5 animate-pulse" />
+                    <div className="flex items-center gap-1.5 text-slate-300 font-bold">
+                      <Sparkles className="w-3.5 h-3.5 " />
                       <span>AI INSIGHT SUMMARY:</span>
                     </div>
                     {loadingAI ? (
                       <div className="flex items-center gap-2 py-2 text-slate-500">
-                        <Loader2 className="w-3.5 h-3.5 animate-spin text-indigo-400" />
+                        <Loader2 className="w-3.5 h-3.5 animate-spin text-slate-300" />
                         <span>Generating custom advisory...</span>
                       </div>
                     ) : aiError ? (
-                      <div className="text-rose-400 text-[9px]">
+                      <div className="text-rose-400 text-[11px]">
                         {aiError}
                       </div>
                     ) : aiRecommendations ? (
@@ -781,12 +781,12 @@ export default function ExportCenter({
                           "{aiRecommendations.summary}"
                         </p>
                         <div className="space-y-1">
-                          <p className="text-emerald-400 font-bold text-[9px] uppercase">Smart Strength:</p>
-                          <p className="text-slate-400 text-[9px]">{aiRecommendations.strengths[0] || "Consistent assignment status cataloging."}</p>
+                          <p className="text-emerald-400 font-bold text-[11px] uppercase">Smart Strength:</p>
+                          <p className="text-slate-400 text-[11px]">{aiRecommendations.strengths[0] || "Consistent assignment status cataloging."}</p>
                         </div>
                         <div className="space-y-1">
-                          <p className="text-indigo-400 font-bold text-[9px] uppercase">Advisory Nudge:</p>
-                          <p className="text-slate-400 text-[9px]">{aiRecommendations.recommendations[0] || "Organize critical deliverables first to balance pacing."}</p>
+                          <p className="text-slate-300 font-bold text-[11px] uppercase">Advisory Nudge:</p>
+                          <p className="text-slate-400 text-[11px]">{aiRecommendations.recommendations[0] || "Organize critical deliverables first to balance pacing."}</p>
                         </div>
                       </div>
                     ) : (
@@ -797,8 +797,8 @@ export default function ExportCenter({
               </div>
             </div>
 
-            <div className="flex items-center gap-2 text-[10px] text-slate-500 p-3 bg-slate-950/30 rounded-xl border border-slate-850 mt-4 leading-relaxed">
-              <Info className="w-4 h-4 text-indigo-400 shrink-0" />
+            <div className="flex items-center gap-2 text-xs text-slate-500 p-3 bg-slate-950 rounded-xl border border-slate-850 mt-4 leading-relaxed">
+              <Info className="w-4 h-4 text-slate-300 shrink-0" />
               <p>
                 PDF format compiles graphic layouts with vector charts. Excel format is configured with standard CSV structure for advanced modeling.
               </p>
