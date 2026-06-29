@@ -42,6 +42,9 @@ flaskProcess.on("exit", () => {
 
 });
 
+} catch (error) {
+  console.error("Failed to start Flask backend:", error);
+}
 // Proxy routes to Flask on port 5000 for Auth and AI
 app.all(["/api/auth/*", "/api/ai/*"], async (req: Request, res: Response): Promise<void> => {
   const targetUrl = `http://127.0.0.1:5000${req.originalUrl}`;
