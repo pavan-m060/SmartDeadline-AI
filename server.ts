@@ -8,7 +8,7 @@ import { spawn, execSync } from "child_process";
 dotenv.config();
 
 const app = express();
-const PORT = 3000;
+const PORT = Number(process.env.PORT) || 8080;
 
 app.use(express.json());
 
@@ -24,25 +24,6 @@ try {
     console.log("pip not found, installing...");
     execSync("curl -sS https://bootstrap.pypa.io/get-pip.py | python3 - --break-system-packages", { stdio: "inherit" });
   }
-
-  // Attempt with --break-system-packages (needed on newer debian/ubuntu systems)
-  try {
-    execSync("python3 -m pip install -r requirements.txt --break-system-packages", {
-      cwd: backendCwd,
-      stdio: "inherit"
-    });
-  } catch (e) {
-
-    execSync("python3 -m pip install -r requirements.txt", {
-      cwd: backendCwd,
-      stdio: "inherit"
-    });
-  }
-
-} catch (err) {
-
-}
-
 
 const flaskProcess = spawn("python3", ["run.py"], {
   cwd: backendCwd,
