@@ -14,7 +14,7 @@ RUN pip3 install --break-system-packages -r backend/requirements.txt
 
 COPY . .
 
-RUN npm run build
+RUN npm install --legacy-peer-deps
 
 ENV NODE_ENV=production
 
